@@ -147,6 +147,62 @@
     adSetPlaying(adPlaying);
   }
 
+  var tourGallery = document.getElementById('tourGallery');
+  if(tourGallery){
+    var galleryTrack = document.getElementById('galleryTrack');
+    var gallerySlides = galleryTrack.children;
+    var galleryDots = document.querySelectorAll('#galleryDots .gallery-dot');
+    var galleryPrev = document.getElementById('galleryPrev');
+    var galleryNext = document.getElementById('galleryNext');
+    var galleryPause = document.getElementById('galleryPause');
+    var galleryPauseIcon = document.getElementById('galleryPauseIcon');
+    var galleryReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var galleryIndex = 0;
+    var galleryTimer = null;
+    var galleryPlaying = !galleryReduceMotion && gallerySlides.length > 1;
+
+    function galleryRender(){
+      galleryTrack.style.transform = 'translateX(-' + (galleryIndex * 100) + '%)';
+      galleryDots.forEach(function(d,i){ d.setAttribute('aria-current', i === galleryIndex ? 'true' : 'false'); });
+    }
+    function galleryGo(i){
+      galleryIndex = (i + gallerySlides.length) % gallerySlides.length;
+      galleryRender();
+    }
+    function galleryNextSlide(){ galleryGo(galleryIndex + 1); }
+    function galleryStart(){
+      if(galleryTimer || gallerySlides.length < 2) return;
+      galleryTimer = setInterval(galleryNextSlide, 4000);
+    }
+    function galleryStop(){
+      clearInterval(galleryTimer);
+      galleryTimer = null;
+    }
+    function gallerySetPlaying(play){
+      galleryPlaying = play;
+      if(play){ galleryStart(); } else { galleryStop(); }
+      if(galleryPause){
+        galleryPause.setAttribute('aria-pressed', String(!play));
+        galleryPause.setAttribute('aria-label', play ? 'Pausar pase automático' : 'Reanudar pase automático');
+        galleryPauseIcon.innerHTML = '<use href="#' + (play ? 'i-pause' : 'i-play') + '"/>';
+      }
+    }
+
+    if(galleryPrev) galleryPrev.addEventListener('click', function(){ galleryGo(galleryIndex - 1); gallerySetPlaying(false); });
+    if(galleryNext) galleryNext.addEventListener('click', function(){ galleryGo(galleryIndex + 1); gallerySetPlaying(false); });
+    galleryDots.forEach(function(dot,i){
+      dot.addEventListener('click', function(){ galleryGo(i); gallerySetPlaying(false); });
+    });
+    if(galleryPause) galleryPause.addEventListener('click', function(){ gallerySetPlaying(!galleryPlaying); });
+    tourGallery.addEventListener('mouseenter', galleryStop);
+    tourGallery.addEventListener('mouseleave', function(){ if(galleryPlaying) galleryStart(); });
+    tourGallery.addEventListener('focusin', galleryStop);
+    tourGallery.addEventListener('focusout', function(){ if(galleryPlaying) galleryStart(); });
+
+    galleryRender();
+    gallerySetPlaying(galleryPlaying);
+  }
+
   var yearEl = document.getElementById('year');
   if(yearEl) yearEl.textContent = new Date().getFullYear();
 

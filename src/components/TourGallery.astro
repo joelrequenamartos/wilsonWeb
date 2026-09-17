@@ -1,0 +1,52 @@
+---
+interface Props {
+  images: string[];
+  title: string;
+}
+
+const { images, title } = Astro.props;
+const multi = images.length > 1;
+---
+<section class="section section-alt" id="galeria">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Así se ve</span>
+      <h2 class="section-title">Galería</h2>
+    </div>
+
+    <div class="tour-gallery reveal" id="tourGallery" aria-roledescription={multi ? 'carrusel' : undefined} aria-label={`Galería de fotos: ${title}`} tabindex={multi ? 0 : undefined}>
+      <div class="gallery-viewport">
+        <div class="gallery-track" id="galleryTrack">
+          {images.map((src, i) => (
+            <div class="gallery-slide">
+              <img src={src} alt={`${title} — foto ${i + 1}`} loading="lazy" />
+            </div>
+          ))}
+        </div>
+        {multi && (
+          <>
+            <button class="gallery-arrow gallery-prev" id="galleryPrev" aria-label="Foto anterior">
+              <svg class="icon"><use href="#i-arrow" /></svg>
+            </button>
+            <button class="gallery-arrow gallery-next" id="galleryNext" aria-label="Foto siguiente">
+              <svg class="icon"><use href="#i-arrow" /></svg>
+            </button>
+          </>
+        )}
+      </div>
+
+      {multi && (
+        <div class="gallery-controls">
+          <div class="gallery-dots" id="galleryDots">
+            {images.map((_, i) => (
+              <button class="gallery-dot" aria-current={i === 0 ? 'true' : 'false'} aria-label={`Ir a la foto ${i + 1}`}></button>
+            ))}
+          </div>
+          <button class="gallery-pause" id="galleryPause" aria-label="Pausar pase automático" aria-pressed="false">
+            <svg class="icon" id="galleryPauseIcon" style="width:13px;height:13px"><use href="#i-pause" /></svg>
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

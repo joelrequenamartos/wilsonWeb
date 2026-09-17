@@ -27,6 +27,7 @@ const tours = defineCollection({
     coverPosition: z.string().optional(),
     coverVideo: z.string().optional(),
     coverVideoPoster: z.string().optional(),
+    gallery: z.array(z.string()).optional(),
     detail: z.object({
       subtitle: z.string(),
       intro: z.string(),

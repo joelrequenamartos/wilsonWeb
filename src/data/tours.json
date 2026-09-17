@@ -70,7 +70,11 @@
           "a": "Sí, es ideal si te interesa el deporte, la cultura urbana y vivir la ciudad de forma auténtica."
         }
       ]
-    }
+    },
+    "gallery": [
+      "/images/yankee.png",
+      "/images/inside.png"
+    ]
   },
   {
     "id": "bronx-gospel",
@@ -148,7 +152,11 @@
           "a": "El tour se realiza igualmente incluso con lluvia ligera, adaptando el recorrido a zonas resguardadas."
         }
       ]
-    }
+    },
+    "gallery": [
+      "/images/image.png",
+      "/images/gospel.png"
+    ]
   },
   {
     "id": "tour-privado-espanol",
@@ -226,7 +234,10 @@
           "a": "Se combina caminata con transporte público, adaptando el ritmo al grupo. Lleva calzado cómodo."
         }
       ]
-    }
+    },
+    "gallery": [
+      "/images/actor.png"
+    ]
   },
   {
     "id": "maraton-de-wilson",
@@ -294,7 +305,10 @@
           "a": "El recorrido se ajusta para que la experiencia siga siendo óptima pase lo que pase."
         }
       ]
-    }
+    },
+    "gallery": [
+      "/images/maraton.png"
+    ]
   },
   {
     "id": "free-tour-roosevelt",
@@ -372,6 +386,9 @@
           "a": "Los rincones más sorprendentes de Manhattan y Roosevelt Island: el teleférico, la isla completa y curiosidades de la Quinta Avenida hasta llegar al Citigroup Center."
         }
       ]
-    }
+    },
+    "gallery": [
+      "/images/roosvelt.png"
+    ]
   }
 ]

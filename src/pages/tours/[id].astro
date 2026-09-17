@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import TourGallery from '../../components/TourGallery.astro';
 
 export async function getStaticPaths() {
   const tours = await getCollection('tours');
@@ -115,7 +116,9 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
       </div>
     </section>
 
-    <section class="section section-alt" id="faq">
+    {t.gallery && t.gallery.length > 0 && <TourGallery images={t.gallery} title={t.name} />}
+
+    <section class="section" id="faq">
       <div class="wrap">
         <div class="section-head reveal">
           <span class="eyebrow">Antes de reservar</span>
