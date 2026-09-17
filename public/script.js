@@ -253,14 +253,28 @@
 
   var countdownEl = document.getElementById('ebookCountdownTime');
   if(countdownEl){
+    var COUNTDOWN_KEY = 'ebookCountdownEnd';
+    var COUNTDOWN_MIN = 120 * 60 * 1000;
+    var COUNTDOWN_MAX = 180 * 60 * 1000;
+    function newCountdownEnd(){
+      var end = Date.now() + COUNTDOWN_MIN + Math.random() * (COUNTDOWN_MAX - COUNTDOWN_MIN);
+      try{ localStorage.setItem(COUNTDOWN_KEY, String(end)); }catch(e){}
+      return end;
+    }
+    var countdownEnd;
+    try{
+      var stored = parseInt(localStorage.getItem(COUNTDOWN_KEY), 10);
+      countdownEnd = (stored && stored > Date.now()) ? stored : newCountdownEnd();
+    }catch(e){
+      countdownEnd = newCountdownEnd();
+    }
+    function pad(n){ return String(n).padStart(2, '0'); }
     function renderCountdown(){
-      var now = new Date();
-      var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-      var diff = Math.max(0, midnight - now);
+      var diff = countdownEnd - Date.now();
+      if(diff <= 0){ countdownEnd = newCountdownEnd(); diff = countdownEnd - Date.now(); }
       var h = Math.floor(diff / 3600000);
       var m = Math.floor((diff % 3600000) / 60000);
       var s = Math.floor((diff % 60000) / 1000);
-      function pad(n){ return String(n).padStart(2, '0'); }
       countdownEl.textContent = pad(h) + 'h ' + pad(m) + 'm ' + pad(s) + 's';
     }
     renderCountdown();
