@@ -1,5 +1,45 @@
 import { defineCollection, z } from 'astro:content';
 import { file } from 'astro/loaders';
+import { readFile } from 'node:fs/promises';
+
+const AVATAR_COLORS = ['var(--coral)', '#C25F26', 'var(--gold)', '#A8501E', '#B8672C', '#D98B3F'];
+
+// Reseñas: si hay una clave de Google Places API configurada (GOOGLE_PLACES_API_KEY
+// + GOOGLE_PLACE_ID como variables de entorno, p.ej. en Vercel), las trae en cada
+// build directamente desde Google. Si no están configuradas, o la llamada falla,
+// usa las de src/data/reviews.json tal cual — así nada se rompe hasta que se activen.
+async function loadReviews() {
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  const placeId = process.env.GOOGLE_PLACE_ID;
+
+  if (apiKey && placeId) {
+    try {
+      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&language=es&key=${encodeURIComponent(apiKey)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const googleReviews = data?.result?.reviews;
+      if (Array.isArray(googleReviews) && googleReviews.length > 0) {
+        console.log(`[reviews] Usando ${googleReviews.length} reseñas reales de Google Places.`);
+        return googleReviews.map((r: any, i: number) => ({
+          id: `google-${i}`,
+          order: i + 1,
+          name: r.author_name ?? 'Cliente de Google',
+          initial: (r.author_name ?? '?').trim().charAt(0).toUpperCase(),
+          avatarColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
+          source: 'Google',
+          context: 'Reseña verificada',
+          quote: r.text ?? ''
+        }));
+      }
+      console.warn('[reviews] La API de Google Places respondió sin reseñas; usando las locales.');
+    } catch (err) {
+      console.warn('[reviews] No se pudo contactar con Google Places; usando las locales.', err);
+    }
+  }
+
+  const raw = await readFile(new URL('./data/reviews.json', import.meta.url), 'utf-8');
+  return JSON.parse(raw);
+}
 
 const tours = defineCollection({
   loader: file('src/data/tours.json'),
@@ -77,7 +117,7 @@ const places = defineCollection({
 });
 
 const reviews = defineCollection({
-  loader: file('src/data/reviews.json'),
+  loader: loadReviews,
   schema: z.object({
     id: z.string(),
     order: z.number(),
