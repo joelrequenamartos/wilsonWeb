@@ -1,9 +1,10 @@
 ---
 const benefits = [
-  { icon: 'i-map', text: '12 rutas secretas fuera del circuito turístico habitual' },
-  { icon: 'i-pin', text: 'Mapa interactivo descargable con todos los puntos del libro' },
-  { icon: 'i-fork', text: 'Restaurantes locales recomendados, barrio por barrio' },
-  { icon: 'i-badge', text: 'Descuento exclusivo del 10% en tu próximo tour' }
+  { icon: 'i-map', title: 'Itinerarios', text: 'optimizados' },
+  { icon: 'i-pin', title: 'Lugares', text: 'que realmente merecen la pena' },
+  { icon: 'i-fork', title: 'Restaurantes', text: 'recomendados' },
+  { icon: 'i-tram', title: 'Guía del metro', text: 'paso a paso' },
+  { icon: 'i-bulb', title: 'Trucos', text: 'para ahorrar tiempo y evitar errores' }
 ];
 ---
 <section class="section ebook-section" id="ebook">
@@ -17,7 +18,7 @@ const benefits = [
       <p class="section-sub">Todo lo que un guía certificado no te cuenta en un tour de dos horas, en un ebook para explorar la ciudad por tu cuenta.</p>
       <ul class="ebook-list">
         {benefits.map((b) => (
-          <li><svg class="icon"><use href={`#${b.icon}`} /></svg>{b.text}</li>
+          <li><svg class="icon"><use href={`#${b.icon}`} /></svg><span><strong>{b.title}</strong> {b.text}</span></li>
         ))}
       </ul>
       <div class="ebook-price-row">
