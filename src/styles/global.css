@@ -68,7 +68,7 @@
   .brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink);}
   .brand-mark{width:38px;height:38px;flex:none;}
   .brand-word{font-family:"Poppins"; font-weight:800; font-size:1.22rem; letter-spacing:-.01em;}
-  .brand-logo{height:34px; width:auto; display:block;}
+  .brand-logo{width:170px; height:auto; display:block; flex:none;}
   .brand-word em{font-style:normal; color:var(--coral);}
   .nav-links{display:flex; align-items:center; gap:26px; list-style:none; margin:0; padding:0;}
   .nav-links a{text-decoration:none; font-weight:600; font-size:.93rem; color:var(--ink-soft); transition:color .15s;}
@@ -83,6 +83,7 @@
     .nav-links a{font-size:1.15rem;}
     .nav-phone{display:none;}
     .nav-toggle{display:inline-flex;}
+    .brand-logo{width:135px;}
   }
 
   /* ---------- hero cover (imagen completa + título simple) ---------- */
