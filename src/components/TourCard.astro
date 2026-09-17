@@ -6,21 +6,18 @@ interface Props {
 }
 
 const { tour } = Astro.props;
-const tagColor = tour.premium ? undefined : '#F4EEE3';
+const isFree = !tour.premium && tour.category === 'free';
 ---
-<article class:list={['tour-card', { premium: tour.premium }]}>
+<article class:list={['tour-card', { premium: tour.premium, free: isFree }]}>
   {tour.premium && (
     <div class="premium-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Premium</div>
   )}
-  {!tour.premium && tour.category === 'free' && (
+  {isFree && (
     <div class="premium-badge free-badge">Gratuito</div>
   )}
   <div class:list={['tour-art', tour.art, { 'tour-art-photo': tour.coverImage }]}>
     {tour.coverImage && <img src={tour.coverImage} alt={tour.name} style={tour.coverPosition ? `object-position:${tour.coverPosition}` : undefined} />}
     <svg class="icon-big"><use href={`#${tour.icon}`} /></svg>
-    {tour.category !== 'free' && (
-      <span class="cat-tag" style={tagColor ? `color:${tagColor}` : undefined}>{tour.categoryLabel}</span>
-    )}
   </div>
   <div class="tour-perf"><span class="notch notch-l"></span><span class="notch notch-r"></span></div>
   <div class="tour-body">
