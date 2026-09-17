@@ -1,8 +1,72 @@
 [
-  { "id": "rucker-park", "name": "Holcombe Rucker Park", "description": "La cuna del streetball en Harlem, donde nacieron leyendas del baloncesto callejero.", "icon": "i-baseball", "art": "art-sports", "tourLabel": "Incluido en Sports Tour" },
-  { "id": "yankee-stadium", "name": "Yankee Stadium", "description": "La casa de los Yankees, en el corazón del Bronx. Vive un juego de MLB como se vive de verdad.", "icon": "i-baseball", "art": "art-premium", "tourLabel": "Incluido en Sports Tour", "mapPosition": { "top": "10%", "left": "74%" } },
-  { "id": "joker-stairs", "name": "Joker Stairs", "description": "Las icónicas escaleras del Bronx que se volvieron set de cine. Foto obligada.", "icon": "i-flag", "art": "art-culture", "tourLabel": "Incluido en Sports Tour" },
-  { "id": "apollo-theater", "name": "Apollo Theater", "description": "El templo de la música afroamericana en Harlem, cuna de leyendas del soul y el jazz.", "icon": "i-music", "art": "art-food3", "tourLabel": "Incluido en Bronx & Góspel", "mapPosition": { "top": "26%", "left": "26%" } },
-  { "id": "roosevelt-tramway", "name": "Roosevelt Island Tramway", "description": "El teleférico más icónico de Manhattan, con vistas aéreas del East River.", "icon": "i-tram", "art": "art-free", "tourLabel": "Incluido en Free Tour", "mapPosition": { "top": "66%", "left": "82%" } },
-  { "id": "central-park", "name": "Central Park", "description": "El pulmón verde de Nueva York, parada clave en la ruta completa de la Maratón de Wilson.", "icon": "i-map", "art": "art-custom", "tourLabel": "Incluido en Maratón de Wilson", "mapPosition": { "top": "44%", "left": "56%" } }
+  {
+    "id": "rucker-park",
+    "name": "Holcombe Rucker Park",
+    "description": "La cuna del streetball en Harlem, donde nacieron leyendas del baloncesto callejero.",
+    "icon": "i-baseball",
+    "art": "art-sports",
+    "tourLabel": "Incluido en Sports Tour",
+    "order": 1
+  },
+  {
+    "id": "yankee-stadium",
+    "name": "Yankee Stadium",
+    "description": "La casa de los Yankees, en el corazón del Bronx. Vive un juego de MLB como se vive de verdad.",
+    "icon": "i-baseball",
+    "art": "art-premium",
+    "tourLabel": "Incluido en Sports Tour",
+    "mapPosition": {
+      "top": "10%",
+      "left": "74%"
+    },
+    "order": 2
+  },
+  {
+    "id": "joker-stairs",
+    "name": "Joker Stairs",
+    "description": "Las icónicas escaleras del Bronx que se volvieron set de cine. Foto obligada.",
+    "icon": "i-flag",
+    "art": "art-culture",
+    "tourLabel": "Incluido en Sports Tour",
+    "order": 3
+  },
+  {
+    "id": "apollo-theater",
+    "name": "Apollo Theater",
+    "description": "El templo de la música afroamericana en Harlem, cuna de leyendas del soul y el jazz.",
+    "icon": "i-music",
+    "art": "art-food3",
+    "tourLabel": "Incluido en Bronx & Góspel",
+    "mapPosition": {
+      "top": "26%",
+      "left": "26%"
+    },
+    "order": 4
+  },
+  {
+    "id": "roosevelt-tramway",
+    "name": "Roosevelt Island Tramway",
+    "description": "El teleférico más icónico de Manhattan, con vistas aéreas del East River.",
+    "icon": "i-tram",
+    "art": "art-free",
+    "tourLabel": "Incluido en Free Tour",
+    "mapPosition": {
+      "top": "66%",
+      "left": "82%"
+    },
+    "order": 5
+  },
+  {
+    "id": "central-park",
+    "name": "Central Park",
+    "description": "El pulmón verde de Nueva York, parada clave en la ruta completa de la Maratón de Wilson.",
+    "icon": "i-map",
+    "art": "art-custom",
+    "tourLabel": "Incluido en Maratón de Wilson",
+    "mapPosition": {
+      "top": "44%",
+      "left": "56%"
+    },
+    "order": 6
+  }
 ]

@@ -16,7 +16,9 @@ const filterLabels: Record<string, string> = {
   asiatica: 'Asiática'
 };
 
-const cuisineOrder = [...new Set(restaurants.map((r) => r.data.cuisine))];
+// Orden fijo de las pestañas de filtro (independiente del orden de la rejilla,
+// que ya llega ordenada por el campo "order" de cada restaurante).
+const cuisineOrder = ['pizza', 'mexicana', 'italiana', 'americana', 'asiatica'];
 const tabs = cuisineOrder.map((cuisine) => ({
   cuisine,
   label: filterLabels[cuisine] ?? cuisine,

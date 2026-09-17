@@ -1,8 +1,62 @@
 [
-  { "id": "marta-g", "name": "Marta G.", "initial": "M", "avatarColor": "var(--coral)", "source": "Google", "context": "Sports Tour NYC", "quote": "Vimos streetball en Rucker Park y dos horas después estábamos en las gradas de Yankee Stadium. Wilson conoce cada esquina." },
-  { "id": "diego-r", "name": "Diego R.", "initial": "D", "avatarColor": "#C25F26", "source": "TripAdvisor", "context": "Tour Privado", "quote": "Le contamos qué nos gustaba y armó una ruta perfecta para toda la familia, en español y sin prisas." },
-  { "id": "carla-p", "name": "Carla P.", "initial": "C", "avatarColor": "var(--gold)", "source": "Google", "context": "Bronx & Góspel", "quote": "La misa góspel me puso la piel de gallina, y comer después en Sylvia's fue el broche perfecto." },
-  { "id": "julian-m", "name": "Julián M.", "initial": "J", "avatarColor": "#A8501E", "source": "TripAdvisor", "context": "Maratón de Wilson", "quote": "Pensé que un solo día no alcanzaba para ver Nueva York. Alcanzó, y sobró tiempo para comer bien." },
-  { "id": "sofia-l", "name": "Sofía L.", "initial": "S", "avatarColor": "#B8672C", "source": "Google", "context": "Free Tour", "quote": "Gratis y mejor que varios tours pagos que hice en otras ciudades. El cruce en tranvía es una locura de vistas." },
-  { "id": "andres-t", "name": "Andrés T.", "initial": "A", "avatarColor": "#D98B3F", "source": "Google", "context": "Sports Tour NYC", "quote": "Como huésped del Four Seasons no esperaba algo tan auténtico. Se sintió como salir con un amigo de toda la vida." }
+  {
+    "id": "marta-g",
+    "name": "Marta G.",
+    "initial": "M",
+    "avatarColor": "var(--coral)",
+    "source": "Google",
+    "context": "Sports Tour NYC",
+    "quote": "Vimos streetball en Rucker Park y dos horas después estábamos en las gradas de Yankee Stadium. Wilson conoce cada esquina.",
+    "order": 1
+  },
+  {
+    "id": "diego-r",
+    "name": "Diego R.",
+    "initial": "D",
+    "avatarColor": "#C25F26",
+    "source": "TripAdvisor",
+    "context": "Tour Privado",
+    "quote": "Le contamos qué nos gustaba y armó una ruta perfecta para toda la familia, en español y sin prisas.",
+    "order": 2
+  },
+  {
+    "id": "carla-p",
+    "name": "Carla P.",
+    "initial": "C",
+    "avatarColor": "var(--gold)",
+    "source": "Google",
+    "context": "Bronx & Góspel",
+    "quote": "La misa góspel me puso la piel de gallina, y comer después en Sylvia's fue el broche perfecto.",
+    "order": 3
+  },
+  {
+    "id": "julian-m",
+    "name": "Julián M.",
+    "initial": "J",
+    "avatarColor": "#A8501E",
+    "source": "TripAdvisor",
+    "context": "Maratón de Wilson",
+    "quote": "Pensé que un solo día no alcanzaba para ver Nueva York. Alcanzó, y sobró tiempo para comer bien.",
+    "order": 4
+  },
+  {
+    "id": "sofia-l",
+    "name": "Sofía L.",
+    "initial": "S",
+    "avatarColor": "#B8672C",
+    "source": "Google",
+    "context": "Free Tour",
+    "quote": "Gratis y mejor que varios tours pagos que hice en otras ciudades. El cruce en tranvía es una locura de vistas.",
+    "order": 5
+  },
+  {
+    "id": "andres-t",
+    "name": "Andrés T.",
+    "initial": "A",
+    "avatarColor": "#D98B3F",
+    "source": "Google",
+    "context": "Sports Tour NYC",
+    "quote": "Como huésped del Four Seasons no esperaba algo tan auténtico. Se sintió como salir con un amigo de toda la vida.",
+    "order": 6
+  }
 ]

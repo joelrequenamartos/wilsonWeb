@@ -8,7 +8,7 @@ interface Props {
 
 const { tours } = Astro.props;
 ---
-<section class="section" id="tours">
+<section class="section section-alt" id="tours">
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow">Tu pase de acceso a la ciudad</span>
@@ -19,7 +19,7 @@ const { tours } = Astro.props;
     <div class="grid grid-3">
       {tours.map((tour) => <TourCard tour={tour.data} />)}
 
-      <article class="tour-card" style="align-items:center; justify-content:center; text-align:center; padding:20px; background:var(--bg-alt); border-style:dashed;">
+      <article class="tour-card" style="align-items:center; justify-content:center; text-align:center; padding:20px; background:var(--surface); border-style:dashed;">
         <div class="tour-body" style="align-items:center; justify-content:center;">
           <svg class="icon" style="width:34px;height:34px;color:var(--coral)"><use href="#i-chat" /></svg>
           <h3>¿No encuentras tu plan ideal?</h3>

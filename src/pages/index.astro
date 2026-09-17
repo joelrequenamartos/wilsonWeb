@@ -15,10 +15,12 @@ import GuideSection from '../components/GuideSection.astro';
 import CtaBanner from '../components/CtaBanner.astro';
 import Footer from '../components/Footer.astro';
 
-const tours = await getCollection('tours');
-const restaurants = await getCollection('restaurants');
-const places = await getCollection('places');
-const reviews = await getCollection('reviews');
+const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
+
+const tours = (await getCollection('tours')).sort(byOrder);
+const restaurants = (await getCollection('restaurants')).sort(byOrder);
+const places = (await getCollection('places')).sort(byOrder);
+const reviews = (await getCollection('reviews')).sort(byOrder);
 ---
 <Layout>
   <Header />

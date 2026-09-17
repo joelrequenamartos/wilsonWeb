@@ -5,6 +5,7 @@ const tours = defineCollection({
   loader: file('src/data/tours.json'),
   schema: z.object({
     id: z.string(),
+    order: z.number(),
     name: z.string(),
     shortName: z.string(),
     category: z.enum(['sports', 'culture', 'custom', 'free']),
@@ -29,6 +30,7 @@ const restaurants = defineCollection({
   loader: file('src/data/restaurants.json'),
   schema: z.object({
     id: z.string(),
+    order: z.number(),
     name: z.string(),
     cuisine: z.string(),
     cuisineLabel: z.string(),
@@ -46,6 +48,7 @@ const places = defineCollection({
   loader: file('src/data/places.json'),
   schema: z.object({
     id: z.string(),
+    order: z.number(),
     name: z.string(),
     description: z.string(),
     icon: z.string(),
@@ -59,6 +62,7 @@ const reviews = defineCollection({
   loader: file('src/data/reviews.json'),
   schema: z.object({
     id: z.string(),
+    order: z.number(),
     name: z.string(),
     initial: z.string(),
     avatarColor: z.string(),

@@ -1,26 +1,261 @@
 [
-  { "id": "napolis-corner", "name": "Napoli's Corner", "cuisine": "pizza", "cuisineLabel": "Pizza", "neighborhood": "Little Italy", "price": "$$", "rating": 4.7, "note": "Horno de leña y masa madre de 48 horas. La slice clásica de Nueva York.", "art": "art-food1", "mapPosition": { "top": "22%", "left": "34%" } },
-  { "id": "ember-and-crust", "name": "Ember & Crust", "cuisine": "pizza", "cuisineLabel": "Pizza", "neighborhood": "Harlem", "price": "$$", "rating": 4.6, "note": "Pizza al fuego de leña a pasos del Apollo Theater.", "art": "art-food2", "mapPosition": { "top": "73%", "left": "74%" } },
-  { "id": "bronx-slice-house", "name": "Bronx Slice House", "cuisine": "pizza", "cuisineLabel": "Pizza", "neighborhood": "Bronx", "price": "$", "rating": 4.5, "note": "La porción gigante de rigor antes de entrar a Yankee Stadium.", "art": "art-food3" },
-  { "id": "tonys-brick-oven", "name": "Tony's Brick Oven", "cuisine": "pizza", "cuisineLabel": "Pizza", "neighborhood": "Midtown", "price": "$$", "rating": 4.6, "note": "Pizzería clásica de barrio, en el mismo horno desde 1978.", "art": "art-food1" },
-
-  { "id": "casa-jalisco", "name": "Casa Jalisco", "cuisine": "mexicana", "cuisineLabel": "Mexicana", "neighborhood": "East Harlem", "price": "$$", "rating": 4.6, "note": "Tacos al pastor cortados al trompo y mezcal artesanal.", "art": "art-food2", "mapPosition": { "top": "18%", "left": "66%" } },
-  { "id": "el-fogon-del-bronx", "name": "El Fogón del Bronx", "cuisine": "mexicana", "cuisineLabel": "Mexicana", "neighborhood": "Bronx", "price": "$", "rating": 4.5, "note": "Tacos de canasta y salsas caseras, receta de familia de Guadalajara.", "art": "art-food3" },
-  { "id": "taqueria-sol", "name": "Taquería Sol", "cuisine": "mexicana", "cuisineLabel": "Mexicana", "neighborhood": "Midtown", "price": "$$", "rating": 4.7, "note": "Birria y tacos de barbacoa, con consomé para mojar hasta el final.", "art": "art-food1" },
-  { "id": "cantina-roosevelt", "name": "Cantina Roosevelt", "cuisine": "mexicana", "cuisineLabel": "Mexicana", "neighborhood": "Roosevelt Island", "price": "$$", "rating": 4.4, "note": "Margaritas con vista al East River, perfecto para cerrar el free tour.", "art": "art-food2" },
-
-  { "id": "trattoria-rosa", "name": "Trattoria Rosa", "cuisine": "italiana", "cuisineLabel": "Italiana", "neighborhood": "Little Italy", "price": "$$$", "rating": 4.7, "note": "Pasta fresca hecha a mano cada mañana, receta de familia siciliana.", "art": "art-food3" },
-  { "id": "nonnas-table", "name": "Nonna's Table", "cuisine": "italiana", "cuisineLabel": "Italiana", "neighborhood": "Upper East Side", "price": "$$$", "rating": 4.8, "note": "La receta de la abuela, sin cambios, desde hace tres generaciones.", "art": "art-food1", "featuredRank": 1 },
-  { "id": "via-roma", "name": "Via Roma", "cuisine": "italiana", "cuisineLabel": "Italiana", "neighborhood": "Chelsea", "price": "$$", "rating": 4.6, "note": "Risottos de temporada y una carta de vinos 100% italiana.", "art": "art-food2" },
-  { "id": "little-italy-osteria", "name": "Little Italy Osteria", "cuisine": "italiana", "cuisineLabel": "Italiana", "neighborhood": "Little Italy", "price": "$$$", "rating": 4.7, "note": "El clásico del barrio, con la misma carta desde 1952.", "art": "art-food3" },
-
-  { "id": "44th-and-vine", "name": "44th & Vine", "cuisine": "americana", "cuisineLabel": "Americana", "neighborhood": "Midtown", "price": "$$$", "rating": 4.8, "note": "El descanso ideal a mitad de la Maratón de Wilson, con vista a la ciudad.", "art": "art-food1", "featuredRank": 3, "mapPosition": { "top": "58%", "left": "47%" } },
-  { "id": "yankee-clipper-grill", "name": "Yankee Clipper Grill", "cuisine": "americana", "cuisineLabel": "Americana", "neighborhood": "Bronx", "price": "$$", "rating": 4.4, "note": "Pre y post partido: alitas, pantallas gigantes y ambiente de estadio.", "art": "art-food2" },
-  { "id": "liberty-diner", "name": "Liberty Diner", "cuisine": "americana", "cuisineLabel": "Americana", "neighborhood": "Downtown", "price": "$$", "rating": 4.5, "note": "Diner clásico abierto 24 horas: hamburguesas, malteadas y neón de verdad.", "art": "art-food3" },
-  { "id": "harlem-soul-kitchen", "name": "Harlem Soul Kitchen", "cuisine": "americana", "cuisineLabel": "Americana", "neighborhood": "Harlem", "price": "$$", "rating": 4.7, "note": "Costillas y mac and cheese, la parada obligada tras la misa góspel.", "art": "art-food1" },
-
-  { "id": "golden-dragon", "name": "Golden Dragon", "cuisine": "asiatica", "cuisineLabel": "China", "neighborhood": "Chinatown", "price": "$$", "rating": 4.5, "note": "Dim sum de fin de semana en carritos: siempre hay fila y siempre vale la pena.", "art": "art-food2" },
-  { "id": "sakura-sushi-bar", "name": "Sakura Sushi Bar", "cuisine": "asiatica", "cuisineLabel": "Japonesa", "neighborhood": "Midtown", "price": "$$$", "rating": 4.8, "note": "Omakase accesible con pescado fresco traído cada madrugada.", "art": "art-food3", "featuredRank": 2 },
-  { "id": "bangkok-street", "name": "Bangkok Street", "cuisine": "asiatica", "cuisineLabel": "Tailandesa", "neighborhood": "Hell's Kitchen", "price": "$$", "rating": 4.5, "note": "Pad thai y curry picante estilo callejero, tan picante como en Bangkok.", "art": "art-food1" },
-  { "id": "seoul-garden", "name": "Seoul Garden", "cuisine": "asiatica", "cuisineLabel": "Coreana", "neighborhood": "Koreatown", "price": "$$", "rating": 4.6, "note": "BBQ coreano a la mesa con parrilla propia y kimchi fermentado en casa.", "art": "art-food2" }
+  {
+    "id": "napolis-corner",
+    "name": "Napoli's Corner",
+    "cuisine": "pizza",
+    "cuisineLabel": "Pizza",
+    "neighborhood": "Little Italy",
+    "price": "$$",
+    "rating": 4.7,
+    "note": "Horno de leña y masa madre de 48 horas. La slice clásica de Nueva York.",
+    "art": "art-food1",
+    "mapPosition": {
+      "top": "22%",
+      "left": "34%"
+    },
+    "order": 1
+  },
+  {
+    "id": "ember-and-crust",
+    "name": "Ember & Crust",
+    "cuisine": "pizza",
+    "cuisineLabel": "Pizza",
+    "neighborhood": "Harlem",
+    "price": "$$",
+    "rating": 4.6,
+    "note": "Pizza al fuego de leña a pasos del Apollo Theater.",
+    "art": "art-food2",
+    "mapPosition": {
+      "top": "73%",
+      "left": "74%"
+    },
+    "order": 2
+  },
+  {
+    "id": "bronx-slice-house",
+    "name": "Bronx Slice House",
+    "cuisine": "pizza",
+    "cuisineLabel": "Pizza",
+    "neighborhood": "Bronx",
+    "price": "$",
+    "rating": 4.5,
+    "note": "La porción gigante de rigor antes de entrar a Yankee Stadium.",
+    "art": "art-food3",
+    "order": 3
+  },
+  {
+    "id": "tonys-brick-oven",
+    "name": "Tony's Brick Oven",
+    "cuisine": "pizza",
+    "cuisineLabel": "Pizza",
+    "neighborhood": "Midtown",
+    "price": "$$",
+    "rating": 4.6,
+    "note": "Pizzería clásica de barrio, en el mismo horno desde 1978.",
+    "art": "art-food1",
+    "order": 4
+  },
+  {
+    "id": "casa-jalisco",
+    "name": "Casa Jalisco",
+    "cuisine": "mexicana",
+    "cuisineLabel": "Mexicana",
+    "neighborhood": "East Harlem",
+    "price": "$$",
+    "rating": 4.6,
+    "note": "Tacos al pastor cortados al trompo y mezcal artesanal.",
+    "art": "art-food2",
+    "mapPosition": {
+      "top": "18%",
+      "left": "66%"
+    },
+    "order": 5
+  },
+  {
+    "id": "el-fogon-del-bronx",
+    "name": "El Fogón del Bronx",
+    "cuisine": "mexicana",
+    "cuisineLabel": "Mexicana",
+    "neighborhood": "Bronx",
+    "price": "$",
+    "rating": 4.5,
+    "note": "Tacos de canasta y salsas caseras, receta de familia de Guadalajara.",
+    "art": "art-food3",
+    "order": 6
+  },
+  {
+    "id": "taqueria-sol",
+    "name": "Taquería Sol",
+    "cuisine": "mexicana",
+    "cuisineLabel": "Mexicana",
+    "neighborhood": "Midtown",
+    "price": "$$",
+    "rating": 4.7,
+    "note": "Birria y tacos de barbacoa, con consomé para mojar hasta el final.",
+    "art": "art-food1",
+    "order": 7
+  },
+  {
+    "id": "cantina-roosevelt",
+    "name": "Cantina Roosevelt",
+    "cuisine": "mexicana",
+    "cuisineLabel": "Mexicana",
+    "neighborhood": "Roosevelt Island",
+    "price": "$$",
+    "rating": 4.4,
+    "note": "Margaritas con vista al East River, perfecto para cerrar el free tour.",
+    "art": "art-food2",
+    "order": 8
+  },
+  {
+    "id": "trattoria-rosa",
+    "name": "Trattoria Rosa",
+    "cuisine": "italiana",
+    "cuisineLabel": "Italiana",
+    "neighborhood": "Little Italy",
+    "price": "$$$",
+    "rating": 4.7,
+    "note": "Pasta fresca hecha a mano cada mañana, receta de familia siciliana.",
+    "art": "art-food3",
+    "order": 9
+  },
+  {
+    "id": "nonnas-table",
+    "name": "Nonna's Table",
+    "cuisine": "italiana",
+    "cuisineLabel": "Italiana",
+    "neighborhood": "Upper East Side",
+    "price": "$$$",
+    "rating": 4.8,
+    "note": "La receta de la abuela, sin cambios, desde hace tres generaciones.",
+    "art": "art-food1",
+    "featuredRank": 1,
+    "order": 10
+  },
+  {
+    "id": "via-roma",
+    "name": "Via Roma",
+    "cuisine": "italiana",
+    "cuisineLabel": "Italiana",
+    "neighborhood": "Chelsea",
+    "price": "$$",
+    "rating": 4.6,
+    "note": "Risottos de temporada y una carta de vinos 100% italiana.",
+    "art": "art-food2",
+    "order": 11
+  },
+  {
+    "id": "little-italy-osteria",
+    "name": "Little Italy Osteria",
+    "cuisine": "italiana",
+    "cuisineLabel": "Italiana",
+    "neighborhood": "Little Italy",
+    "price": "$$$",
+    "rating": 4.7,
+    "note": "El clásico del barrio, con la misma carta desde 1952.",
+    "art": "art-food3",
+    "order": 12
+  },
+  {
+    "id": "44th-and-vine",
+    "name": "44th & Vine",
+    "cuisine": "americana",
+    "cuisineLabel": "Americana",
+    "neighborhood": "Midtown",
+    "price": "$$$",
+    "rating": 4.8,
+    "note": "El descanso ideal a mitad de la Maratón de Wilson, con vista a la ciudad.",
+    "art": "art-food1",
+    "featuredRank": 3,
+    "mapPosition": {
+      "top": "58%",
+      "left": "47%"
+    },
+    "order": 13
+  },
+  {
+    "id": "yankee-clipper-grill",
+    "name": "Yankee Clipper Grill",
+    "cuisine": "americana",
+    "cuisineLabel": "Americana",
+    "neighborhood": "Bronx",
+    "price": "$$",
+    "rating": 4.4,
+    "note": "Pre y post partido: alitas, pantallas gigantes y ambiente de estadio.",
+    "art": "art-food2",
+    "order": 14
+  },
+  {
+    "id": "liberty-diner",
+    "name": "Liberty Diner",
+    "cuisine": "americana",
+    "cuisineLabel": "Americana",
+    "neighborhood": "Downtown",
+    "price": "$$",
+    "rating": 4.5,
+    "note": "Diner clásico abierto 24 horas: hamburguesas, malteadas y neón de verdad.",
+    "art": "art-food3",
+    "order": 15
+  },
+  {
+    "id": "harlem-soul-kitchen",
+    "name": "Harlem Soul Kitchen",
+    "cuisine": "americana",
+    "cuisineLabel": "Americana",
+    "neighborhood": "Harlem",
+    "price": "$$",
+    "rating": 4.7,
+    "note": "Costillas y mac and cheese, la parada obligada tras la misa góspel.",
+    "art": "art-food1",
+    "order": 16
+  },
+  {
+    "id": "golden-dragon",
+    "name": "Golden Dragon",
+    "cuisine": "asiatica",
+    "cuisineLabel": "China",
+    "neighborhood": "Chinatown",
+    "price": "$$",
+    "rating": 4.5,
+    "note": "Dim sum de fin de semana en carritos: siempre hay fila y siempre vale la pena.",
+    "art": "art-food2",
+    "order": 17
+  },
+  {
+    "id": "sakura-sushi-bar",
+    "name": "Sakura Sushi Bar",
+    "cuisine": "asiatica",
+    "cuisineLabel": "Japonesa",
+    "neighborhood": "Midtown",
+    "price": "$$$",
+    "rating": 4.8,
+    "note": "Omakase accesible con pescado fresco traído cada madrugada.",
+    "art": "art-food3",
+    "featuredRank": 2,
+    "order": 18
+  },
+  {
+    "id": "bangkok-street",
+    "name": "Bangkok Street",
+    "cuisine": "asiatica",
+    "cuisineLabel": "Tailandesa",
+    "neighborhood": "Hell's Kitchen",
+    "price": "$$",
+    "rating": 4.5,
+    "note": "Pad thai y curry picante estilo callejero, tan picante como en Bangkok.",
+    "art": "art-food1",
+    "order": 19
+  },
+  {
+    "id": "seoul-garden",
+    "name": "Seoul Garden",
+    "cuisine": "asiatica",
+    "cuisineLabel": "Coreana",
+    "neighborhood": "Koreatown",
+    "price": "$$",
+    "rating": 4.6,
+    "note": "BBQ coreano a la mesa con parrilla propia y kimchi fermentado en casa.",
+    "art": "art-food2",
+    "order": 20
+  }
 ]
