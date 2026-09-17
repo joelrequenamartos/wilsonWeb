@@ -23,6 +23,7 @@ const tours = defineCollection({
     priceNote: z.string(),
     art: z.string(),
     mapPosition: z.object({ top: z.string(), left: z.string() }).optional(),
+    coverImage: z.string().optional(),
     detail: z.object({
       subtitle: z.string(),
       intro: z.string(),

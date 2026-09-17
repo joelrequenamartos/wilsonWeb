@@ -1,6 +1,7 @@
 [
   {
     "id": "sports-tour-nyc",
+    "coverImage": "/images/yankee.png",
     "name": "Sports Tour NYC — Yankee Stadium Experience",
     "category": "sports",
     "categoryLabel": "Deportivo",
@@ -72,6 +73,7 @@
   },
   {
     "id": "bronx-gospel",
+    "coverImage": "/images/image.png",
     "name": "El Bronx y Misa Góspel en Harlem",
     "category": "culture",
     "categoryLabel": "Cultural",
@@ -147,6 +149,7 @@
   },
   {
     "id": "tour-privado-espanol",
+    "coverImage": "/images/actor.png",
     "name": "Tour Privado en Nueva York en Español",
     "category": "custom",
     "categoryLabel": "A tu medida",
@@ -290,6 +293,7 @@
   },
   {
     "id": "free-tour-roosevelt",
+    "coverImage": "/images/roosvelt.png",
     "name": "Free Tour: Roosevelt Island hasta Manhattan",
     "category": "free",
     "categoryLabel": "Gratuito",

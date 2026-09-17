@@ -22,8 +22,14 @@ const waHref = `https://wa.me/16466297581?text=${waMessage}`;
 <Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro}>
   <Header />
   <main id="main">
-    <section class="tour-hero">
-      <div class="wrap">
+    <section class:list={['tour-hero', { 'tour-hero-photo': t.coverImage }]}>
+      {t.coverImage && (
+        <>
+          <div class="tour-hero-media"><img src={t.coverImage} alt="" /></div>
+          <div class="tour-hero-scrim"></div>
+        </>
+      )}
+      <div class="wrap tour-hero-content">
         <a class="tour-back" href="/#tours"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver a los tours</a>
         <div class:list={['cat-tag', 'tour-hero-tag']}>{t.categoryLabel}</div>
         <h1>{t.name}</h1>
