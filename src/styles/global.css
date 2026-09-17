@@ -424,6 +424,8 @@
   .tour-hero-photo .tour-hero-subtitle{color:rgba(255,255,255,.88);}
   .tour-hero-photo .tour-hero-meta{color:rgba(255,255,255,.88);}
   .tour-hero-photo .tour-hero-meta .icon{color:var(--coral);}
+  .tour-subhead{padding-block:clamp(28px,4vw,40px);}
+  .tour-subhead .tour-hero-subtitle{margin-top:0;}
   .tour-hero-photo .btn-outline{border-color:#fff; color:#fff;}
   .tour-hero-photo .btn-outline:hover{background:#fff; border-color:#fff; color:var(--coral-dark);}
   @media (max-width:640px){.tour-hero-photo{min-height:min(70vh,480px);}}
