@@ -12,7 +12,7 @@ const { reviews } = Astro.props;
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow">Lo dicen ellos, no nosotros</span>
-      <h2 class="section-title">Reseñas de viajeros reales</h2>
+      <h2 class="section-title">Reseñas de viajeros reales, contados por quienes los viven</h2>
     </div>
 
     <div class="review-summary reveal">
@@ -23,23 +23,6 @@ const { reviews } = Astro.props;
       </div>
     </div>
 
-    <div class="grid grid-3">
-      {reviews.map((review) => (
-        <article class="review-card">
-          <div class="review-top">
-            <div class="avatar" style={`background:${review.data.avatarColor}`}>{review.data.initial}</div>
-            <div><div class="review-name">{review.data.name}</div><div class="review-source">{review.data.source} · {review.data.context}</div></div>
-          </div>
-          <span class="stars">★★★★★</span>
-          <p class="review-quote">"{review.data.quote}"</p>
-        </article>
-      ))}
-    </div>
-
-    <div class="review-photos-head reveal">
-      <span class="eyebrow">Momentos reales</span>
-      <h3 class="review-photos-title">Así son nuestros tours, contados por quienes los viven</h3>
-    </div>
-    <TourPhotosCarousel />
+    <TourPhotosCarousel reviews={reviews} />
   </div>
 </section>

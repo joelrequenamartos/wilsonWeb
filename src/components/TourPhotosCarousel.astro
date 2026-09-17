@@ -1,27 +1,49 @@
 ---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  reviews: CollectionEntry<'reviews'>[];
+}
+
+const { reviews } = Astro.props;
+
 const photoCount = 12;
 // Orden pedido: 06, 03, 02, 09 primero; el resto da igual el orden.
 const priorityOrder = [6, 3, 2, 9];
 const rest = Array.from({ length: photoCount }, (_, i) => i + 1).filter((n) => !priorityOrder.includes(n));
 const photoOrder = [...priorityOrder, ...rest];
 const photos = photoOrder.map((n) => `/images/reviews/review-${String(n).padStart(2, '0')}.jpg`);
+
+const slides = photos.map((src, i) => ({ src, review: reviews[i % reviews.length]?.data }));
 ---
-<div class="review-carousel reveal" id="reviewCarousel" aria-roledescription="carrusel" aria-label="Fotos de clientes en nuestros tours">
-  <button class="review-nav-btn review-prev" id="reviewPrev" aria-label="Foto anterior">
+<div class="review-carousel reveal" id="reviewCarousel" aria-roledescription="carrusel" aria-label="Reseñas de clientes con fotos de nuestros tours">
+  <button class="review-nav-btn review-prev" id="reviewPrev" aria-label="Reseña anterior">
     <svg class="icon"><use href="#i-arrow" /></svg>
   </button>
 
   <div class="review-viewport">
     <div class="review-track" id="reviewTrack">
-      {photos.map((src, i) => (
+      {slides.map((slide, i) => (
         <div class="review-slide" data-index={i}>
-          <img src={src} alt={`Clientes de Silver Tours NY en uno de nuestros tours — foto ${i + 1}`} loading="lazy" />
+          <div class="review-slide-photo">
+            <img src={slide.src} alt={`Clientes de Silver Tours NY en uno de nuestros tours — foto ${i + 1}`} loading="lazy" />
+          </div>
+          {slide.review && (
+            <div class="review-slide-quote">
+              <div class="review-top">
+                <div class="avatar" style={`background:${slide.review.avatarColor}`}>{slide.review.initial}</div>
+                <div><div class="review-name">{slide.review.name}</div><div class="review-source">{slide.review.source} · {slide.review.context}</div></div>
+              </div>
+              <span class="stars">★★★★★</span>
+              <p class="review-quote">"{slide.review.quote}"</p>
+            </div>
+          )}
         </div>
       ))}
     </div>
   </div>
 
-  <button class="review-nav-btn review-next" id="reviewNext" aria-label="Foto siguiente">
+  <button class="review-nav-btn review-next" id="reviewNext" aria-label="Reseña siguiente">
     <svg class="icon"><use href="#i-arrow" /></svg>
   </button>
 
