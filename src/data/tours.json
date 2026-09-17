@@ -1,7 +1,7 @@
 [
   {
     "id": "sports-tour-nyc",
-    "coverImage": "/images/inside.png",
+    "coverImage": "/images/yankee.png",
     "name": "Sports Tour NYC — Yankee Stadium Experience",
     "category": "sports",
     "categoryLabel": "Deportivo",
@@ -44,7 +44,8 @@
         },
         {
           "name": "Yankee Stadium",
-          "description": "La casa de los Yankees. Vives el partido desde las gradas de left o right field, con opción real de ver un home run de cerca."
+          "description": "La casa de los Yankees. Vives el partido desde las gradas de left o right field, con opción real de ver un home run de cerca.",
+          "image": "/images/inside.png"
         },
         {
           "name": "Joker Stairs",
