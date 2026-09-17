@@ -1,7 +1,7 @@
 [
   {
     "id": "sports-tour-nyc",
-    "coverImage": "/images/yankee.png",
+    "coverImage": "/images/inside.png",
     "name": "Sports Tour NYC — Yankee Stadium Experience",
     "category": "sports",
     "categoryLabel": "Deportivo",
@@ -113,7 +113,8 @@
       "places": [
         {
           "name": "Misa góspel en Harlem",
-          "description": "Vive la espiritualidad y la fuerza de la música góspel en vivo dentro de una iglesia bautista local."
+          "description": "Vive la espiritualidad y la fuerza de la música góspel en vivo dentro de una iglesia bautista local.",
+          "image": "/images/gospel.png"
         },
         {
           "name": "Yankee Stadium",
@@ -297,6 +298,8 @@
   {
     "id": "free-tour-roosevelt",
     "coverImage": "/images/roosvelt.png",
+    "coverVideo": "/videos/roosevelt.mp4",
+    "coverVideoPoster": "/videos/roosevelt-poster.jpg",
     "name": "Free Tour: Roosevelt Island hasta Manhattan",
     "category": "free",
     "categoryLabel": "Gratuito",

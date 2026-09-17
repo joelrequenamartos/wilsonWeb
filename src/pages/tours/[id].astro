@@ -22,8 +22,17 @@ const waHref = `https://wa.me/16466297581?text=${waMessage}`;
 <Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro}>
   <Header />
   <main id="main">
-    <section class:list={['tour-hero', { 'tour-hero-photo': t.coverImage }]}>
-      {t.coverImage && (
+    <section class:list={['tour-hero', { 'tour-hero-photo': t.coverImage || t.coverVideo }]}>
+      {t.coverVideo ? (
+        <>
+          <div class="tour-hero-media">
+            <video autoplay muted loop playsinline poster={t.coverVideoPoster} style={t.coverPosition ? `object-position:${t.coverPosition}` : undefined}>
+              <source src={t.coverVideo} type="video/mp4" />
+            </video>
+          </div>
+          <div class="tour-hero-scrim"></div>
+        </>
+      ) : t.coverImage && (
         <>
           <div class="tour-hero-media"><img src={t.coverImage} alt="" style={t.coverPosition ? `object-position:${t.coverPosition}` : undefined} /></div>
           <div class="tour-hero-scrim"></div>
@@ -74,7 +83,10 @@ const waHref = `https://wa.me/16466297581?text=${waMessage}`;
           <div class="tour-places-list">
             {t.detail.places.map((place) => (
               <div class="place-card">
-                <div class:list={['place-icon', t.art]}><svg class="icon"><use href="#i-pin" /></svg></div>
+                {place.image
+                  ? <div class="place-icon place-icon-photo"><img src={place.image} alt="" /></div>
+                  : <div class:list={['place-icon', t.art]}><svg class="icon"><use href="#i-pin" /></svg></div>
+                }
                 <div>
                   <h3>{place.name}</h3>
                   <p>{place.description}</p>

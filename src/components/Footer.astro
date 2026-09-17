@@ -8,11 +8,11 @@ interface Props {
 const { tours } = Astro.props;
 
 const exploreLinks = [
-  { href: '#restaurantes', label: 'Restaurantes' },
-  { href: '#lugares', label: 'Lugares de interés' },
-  { href: '#mapa', label: 'Mapa interactivo' },
-  { href: '#resenas', label: 'Reseñas' },
-  { href: '#ebook', label: 'Ebook' }
+  { href: '/#restaurantes', label: 'Restaurantes' },
+  { href: '/#lugares', label: 'Lugares de interés' },
+  { href: '/#mapa', label: 'Mapa interactivo' },
+  { href: '/#resenas', label: 'Reseñas' },
+  { href: '/#ebook', label: 'Ebook' }
 ];
 
 const socials = [
@@ -36,7 +36,7 @@ const socials = [
     <div class="footer-col">
       <h4>Tours</h4>
       <ul>
-        {tours.map((tour) => <li><a href="#tours">{tour.data.shortName}</a></li>)}
+        {tours.map((tour) => <li><a href="/#tours">{tour.data.shortName}</a></li>)}
       </ul>
     </div>
     <div class="footer-col">

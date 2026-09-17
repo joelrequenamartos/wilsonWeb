@@ -25,6 +25,8 @@ const tours = defineCollection({
     mapPosition: z.object({ top: z.string(), left: z.string() }).optional(),
     coverImage: z.string().optional(),
     coverPosition: z.string().optional(),
+    coverVideo: z.string().optional(),
+    coverVideoPoster: z.string().optional(),
     detail: z.object({
       subtitle: z.string(),
       intro: z.string(),
@@ -35,7 +37,7 @@ const tours = defineCollection({
       availability: z.string(),
       includes: z.array(z.string()),
       notIncludes: z.array(z.string()).optional(),
-      places: z.array(z.object({ name: z.string(), description: z.string() })),
+      places: z.array(z.object({ name: z.string(), description: z.string(), image: z.string().optional() })),
       faq: z.array(z.object({ q: z.string(), a: z.string() }))
     })
   })

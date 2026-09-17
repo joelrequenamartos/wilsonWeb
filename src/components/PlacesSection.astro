@@ -21,7 +21,7 @@ const { places } = Astro.props;
           <div>
             <h3>{place.data.name}</h3>
             <p>{place.data.description}</p>
-            <a class="place-link" href="#tours">{place.data.tourLabel} <svg class="icon" style="width:13px;height:13px"><use href="#i-arrow" /></svg></a>
+            <a class="place-link" href="/#tours">{place.data.tourLabel} <svg class="icon" style="width:13px;height:13px"><use href="#i-arrow" /></svg></a>
           </div>
         </div>
       ))}

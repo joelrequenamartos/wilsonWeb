@@ -13,8 +13,8 @@ const featured = restaurants
 ---
 <section class="section section-alt" style="padding-bottom:0;">
   <div class="wrap">
-    <span class="eyebrow">Publicidad · Recomendado por Silver Tours NY</span>
     <div class="ad-banner reveal" id="adBanner" aria-roledescription="carrusel" aria-label="Top 3 restaurantes destacados" tabindex="0">
+      <span class="ad-sponsor-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Espacio destacado</span>
       <div class="ad-track" id="adTrack">
         {featured.map((restaurant) => (
           <div class="ad-slide">
@@ -25,7 +25,7 @@ const featured = restaurants
               <div class="rest-tags"><span>{restaurant.data.cuisineLabel}</span><span>{restaurant.data.neighborhood}</span><span>★ {restaurant.data.rating}</span></div>
               <p class="rest-note">{restaurant.data.note}</p>
             </div>
-            <a class="btn btn-primary btn-sm ad-cta" href="#restaurantes">Ver restaurantes</a>
+            <a class="btn btn-primary btn-sm ad-cta" href="/#restaurantes">Ver restaurantes</a>
           </div>
         ))}
       </div>

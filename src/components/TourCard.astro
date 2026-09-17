@@ -19,7 +19,7 @@ const tagColor = tour.premium ? undefined : '#F4EEE3';
   </div>
   <div class="tour-perf"><span class="notch notch-l"></span><span class="notch notch-r"></span></div>
   <div class="tour-body">
-    <h3>{tour.name}</h3>
+    <h3><a class="tour-title-link" href={`/tours/${tour.id}`}>{tour.name}</a></h3>
     <p class="desc">{tour.description}</p>
     <div class="tour-meta">
       <span><svg class="icon"><use href="#i-clock" /></svg>{tour.duration}</span>
