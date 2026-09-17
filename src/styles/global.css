@@ -60,9 +60,13 @@
   header.site{
     position:relative; z-index:50;
     width:min(calc(100% - 24px), var(--maxw)); margin:12px auto 0;
-    background:color-mix(in srgb, var(--bg) 92%, transparent);
-    backdrop-filter:blur(12px); border:1px solid var(--line);
+    border:1px solid var(--line);
     border-radius:var(--radius-lg); box-shadow:var(--shadow);
+  }
+  header.site::before{
+    content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit;
+    background:color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter:blur(12px);
   }
   .nav{display:flex; align-items:center; justify-content:space-between; padding-block:12px; gap:16px;}
   .brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink);}
