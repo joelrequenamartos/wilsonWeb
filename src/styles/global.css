@@ -333,7 +333,7 @@
     aspect-ratio:1; border-radius:28px; overflow:hidden; box-shadow:var(--shadow); max-width:300px;
   }
   .guide-photo img{width:100%; height:100%; object-fit:cover; object-position:center 25%;}
-  .guide-badges{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;}
+  .guide-badges{display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:18px; max-width:300px;}
   .guide-badge{display:flex; align-items:center; gap:6px; font-size:.78rem; font-weight:700; background:var(--teal-tint); color:var(--teal-dark); padding:6px 12px; border-radius:100px;}
 
   /* ---------- cta banner ---------- */
@@ -341,7 +341,7 @@
   .cta-banner h2{color:var(--ink); font-size:clamp(1.8rem,3vw + 1rem,2.8rem);}
   .cta-banner p{color:var(--ink-soft); margin-top:12px; max-width:52ch; margin-inline:auto;}
   .cta-banner .hero-cta{justify-content:center; margin-top:26px;}
-  .guide-grid .hero-cta{margin-top:30px;}
+  .guide-grid .hero-cta{margin-top:30px; max-width:56ch; text-align:center;}
   .guide-grid .hero-cta .btn-primary{box-shadow:0 0 30px 10px color-mix(in srgb, var(--coral) 30%, transparent);}
   .cta-banner .btn-outline{border-color:var(--ink); color:var(--ink);}
   .cta-banner .btn-outline:hover{background:var(--coral); border-color:var(--coral); color:#fff;}
