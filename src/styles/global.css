@@ -146,7 +146,6 @@
   .tour-art-photo{background:none;}
   .tour-art-photo::before{display:none;}
   .tour-art-photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;}
-  .tour-art-photo::after{content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(13,11,9,.08) 0%, rgba(13,11,9,.6) 100%);}
   .cat-tag{
     font-family:"Space Mono"; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; font-weight:700;
     background:rgba(255,255,255,.22); padding:5px 10px; border-radius:100px; display:inline-flex; align-items:center; gap:6px; position:relative; z-index:1;
@@ -459,6 +458,19 @@
   .tour-faq-item summary::after{content:"+"; float:right; font-family:"Space Mono"; color:var(--coral-dark);}
   .tour-faq-item[open] summary::after{content:"–";}
   .tour-faq-item p{margin-top:12px; color:var(--ink-soft); font-size:.94rem;}
+
+  /* ---------- 404 ---------- */
+  .not-found{min-height:60vh; display:flex; align-items:center;}
+  .not-found-content{text-align:center; max-width:56ch; margin-inline:auto;}
+  .not-found h1{
+    font-size:clamp(2rem,3.2vw + 1rem,3.2rem); margin-top:14px; position:relative;
+  }
+  .not-found h1::before{
+    content:"404"; position:absolute; top:50%; left:50%; transform:translate(-50%,-55%);
+    font-size:clamp(6rem,18vw,11rem); font-weight:800; color:var(--bg-alt); z-index:-1; white-space:nowrap;
+  }
+  .not-found .section-sub{margin-inline:auto;}
+  .not-found .hero-cta{justify-content:center; margin-top:28px;}
 
   /* ---------- reveal ---------- */
   .reveal{opacity:1; transform:none;}

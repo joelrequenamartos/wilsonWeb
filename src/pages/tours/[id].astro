@@ -18,8 +18,9 @@ const allTours = (await getCollection('tours')).sort((a, b) => a.data.order - b.
 
 const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
 const waHref = `https://wa.me/16466297581?text=${waMessage}`;
+const shareImage = t.coverVideoPoster ?? t.coverImage;
 ---
-<Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro}>
+<Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage}>
   <Header />
   <main id="main">
     <section class:list={['tour-hero', { 'tour-hero-photo': t.coverImage || t.coverVideo }]}>
@@ -34,7 +35,7 @@ const waHref = `https://wa.me/16466297581?text=${waMessage}`;
         </>
       ) : t.coverImage && (
         <>
-          <div class="tour-hero-media"><img src={t.coverImage} alt="" style={t.coverPosition ? `object-position:${t.coverPosition}` : undefined} /></div>
+          <div class="tour-hero-media"><img src={t.coverImage} alt={t.name} style={t.coverPosition ? `object-position:${t.coverPosition}` : undefined} /></div>
           <div class="tour-hero-scrim"></div>
         </>
       )}
@@ -84,7 +85,7 @@ const waHref = `https://wa.me/16466297581?text=${waMessage}`;
             {t.detail.places.map((place) => (
               <div class="place-card">
                 {place.image
-                  ? <div class="place-icon place-icon-photo"><img src={place.image} alt="" /></div>
+                  ? <div class="place-icon place-icon-photo"><img src={place.image} alt={place.name} /></div>
                   : <div class:list={['place-icon', t.art]}><svg class="icon"><use href="#i-pin" /></svg></div>
                 }
                 <div>

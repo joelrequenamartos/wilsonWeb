@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+---
+<Layout title="Página no encontrada — Silver Tours NY" description="Esta ruta no existe en Silver Tours NY. Vuelve al inicio o descubre nuestros tours.">
+  <Header />
+  <main id="main">
+    <section class="section not-found">
+      <div class="wrap not-found-content">
+        <span class="eyebrow">Error 404</span>
+        <h1>Esta ruta no está en nuestro mapa</h1>
+        <p class="section-sub">Puede que el enlace esté roto o que la página se haya movido. Prueba a volver al inicio o echa un vistazo a los tours.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="/">Volver al inicio</a>
+          <a class="btn btn-outline" href="/#tours">Ver todos los tours</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer tours={tours} />
+</Layout>

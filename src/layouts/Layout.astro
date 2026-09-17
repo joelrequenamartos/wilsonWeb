@@ -5,12 +5,17 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
 }
 
 const {
   title = 'Silver Tours NY',
-  description = 'Tours guiados en Nueva York con Silver Tours NY: deporte, cultura y rutas locales, más restaurantes, lugares de interés y mapa interactivo.'
+  description = 'Tours guiados en Nueva York con Silver Tours NY: deporte, cultura y rutas locales, más restaurantes, lugares de interés y mapa interactivo.',
+  image = '/images/roosvelt.png'
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = new URL(image, Astro.site);
 ---
 <!doctype html>
 <html lang="es">
@@ -19,8 +24,21 @@ const {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalURL} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Silver Tours NY" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:image" content={ogImageURL} />
+  <meta property="og:locale" content="es_ES" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImageURL} />
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido</a>
