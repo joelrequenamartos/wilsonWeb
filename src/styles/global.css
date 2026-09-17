@@ -21,7 +21,9 @@
     background:var(--bg); color:var(--ink);
     font-family:"Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
     padding-inline:0; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; min-height:100vh; min-height:100svh;
   }
+  main{flex:1 0 auto;}
   img{max-width:100%;display:block;}
   a{color:inherit;}
   h1,h2,h3,h4{font-family:"Poppins", system-ui, sans-serif; margin:0; text-wrap:balance; font-weight:700;}
