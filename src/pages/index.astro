@@ -5,7 +5,6 @@ import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import TrustStrip from '../components/TrustStrip.astro';
 import ToursSection from '../components/ToursSection.astro';
-import AdBanner from '../components/AdBanner.astro';
 import RestaurantsSection from '../components/RestaurantsSection.astro';
 import PlacesSection from '../components/PlacesSection.astro';
 import MapSection from '../components/MapSection.astro';
@@ -29,7 +28,6 @@ const reviews = (await getCollection('reviews')).sort(byOrder);
     <TrustStrip />
     <ToursSection tours={tours} />
     <ReviewsSection reviews={reviews} />
-    <AdBanner restaurants={restaurants} />
     <RestaurantsSection restaurants={restaurants} />
     <PlacesSection places={places} />
     <MapSection tours={tours} restaurants={restaurants} places={places} />

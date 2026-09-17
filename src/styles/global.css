@@ -254,7 +254,7 @@
 
   /* ---------- featured restaurants ad banner ---------- */
   .ad-banner{
-    position:relative; overflow:hidden; border-radius:var(--radius-lg); margin-top:14px;
+    position:relative; overflow:hidden; border-radius:var(--radius-lg); margin-block:14px 34px;
     background:linear-gradient(115deg,var(--coral) 0%,var(--coral-dark) 55%,#8A3C14 100%);
     box-shadow:0 24px 48px -20px rgba(168,80,30,.55), 0 0 0 1px rgba(255,255,255,.12) inset;
   }
