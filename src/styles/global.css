@@ -179,6 +179,7 @@
     font-family:"Space Mono"; font-size:.66rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
     padding:5px 10px; border-radius:100px; display:flex; align-items:center; gap:5px;
   }
+  .free-badge{background:#178F4E;}
 
   /* gradient art variants */
   .art-sports{background:linear-gradient(135deg,#A8501E,#E07A3E);}

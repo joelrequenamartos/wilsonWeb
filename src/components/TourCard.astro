@@ -12,6 +12,9 @@ const tagColor = tour.premium ? undefined : '#F4EEE3';
   {tour.premium && (
     <div class="premium-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Premium</div>
   )}
+  {!tour.premium && tour.category === 'free' && (
+    <div class="premium-badge free-badge">Gratis</div>
+  )}
   <div class:list={['tour-art', tour.art, { 'tour-art-photo': tour.coverImage }]}>
     {tour.coverImage && <img src={tour.coverImage} alt={tour.name} style={tour.coverPosition ? `object-position:${tour.coverPosition}` : undefined} />}
     <svg class="icon-big"><use href={`#${tour.icon}`} /></svg>
