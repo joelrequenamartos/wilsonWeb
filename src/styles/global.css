@@ -280,6 +280,12 @@
 
   /* ---------- reviews ---------- */
   .review-summary{display:flex; align-items:center; gap:22px; margin-bottom:32px; flex-wrap:wrap;}
+  .ta-badge{
+    display:inline-flex; align-items:center; gap:8px; padding:9px 18px; border-radius:100px;
+    background:var(--surface); border:1px solid var(--line); font-family:"Space Mono"; font-size:.86rem;
+    font-weight:700; color:var(--ink-soft);
+  }
+  .ta-badge img{width:20px;height:20px; flex:none;}
   .review-score{font-family:"Poppins"; font-size:3rem; font-weight:800; line-height:1;}
   .review-score-meta{display:flex; flex-direction:column; gap:4px;}
   .review-top{display:flex; align-items:center; gap:12px;}
