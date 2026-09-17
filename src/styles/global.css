@@ -16,7 +16,8 @@
   }
 
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;overflow-x:hidden;}
+  html,body{margin:0;padding:0;}
+  html{overflow-x:hidden;}
   body{
     background:var(--bg); color:var(--ink);
     font-family:"Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -60,7 +61,7 @@
 
   /* ---------- header ---------- */
   header.site{
-    position:relative; z-index:50;
+    position:sticky; top:12px; z-index:50;
     width:min(calc(100% - 24px), var(--maxw)); margin:12px auto 0;
     border:1px solid var(--line);
     border-radius:var(--radius-lg); box-shadow:var(--shadow);
