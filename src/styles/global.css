@@ -141,7 +141,12 @@
     display:flex; align-items:flex-end; padding:16px; color:#fff;
   }
   .tour-art::before{content:"";position:absolute; inset:0; background-image:radial-gradient(circle, rgba(255,255,255,.35) 1.5px, transparent 1.5px); background-size:16px 16px; opacity:.5;}
-  .tour-art .icon-big{width:44px;height:44px; position:absolute; top:16px; right:16px; opacity:.9;}
+  .tour-art .icon-big{width:44px;height:44px; position:absolute; top:16px; right:16px; opacity:.9; z-index:2;}
+  .tour-art .cat-tag{z-index:2;}
+  .tour-art-photo{background:none;}
+  .tour-art-photo::before{display:none;}
+  .tour-art-photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;}
+  .tour-art-photo::after{content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(13,11,9,.08) 0%, rgba(13,11,9,.6) 100%);}
   .cat-tag{
     font-family:"Space Mono"; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; font-weight:700;
     background:rgba(255,255,255,.22); padding:5px 10px; border-radius:100px; display:inline-flex; align-items:center; gap:6px; position:relative; z-index:1;

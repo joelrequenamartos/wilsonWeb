@@ -12,7 +12,8 @@ const tagColor = tour.premium ? undefined : '#F4EEE3';
   {tour.premium && (
     <div class="premium-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Premium</div>
   )}
-  <div class:list={['tour-art', tour.art]}>
+  <div class:list={['tour-art', tour.art, { 'tour-art-photo': tour.coverImage }]}>
+    {tour.coverImage && <img src={tour.coverImage} alt="" />}
     <svg class="icon-big"><use href={`#${tour.icon}`} /></svg>
     <span class="cat-tag" style={tagColor ? `color:${tagColor}` : undefined}>{tour.categoryLabel}</span>
   </div>
