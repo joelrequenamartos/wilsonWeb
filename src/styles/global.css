@@ -496,8 +496,8 @@
   .review-photos-head{text-align:center; margin-top:56px; margin-bottom:8px;}
   .review-photos-head .eyebrow{justify-content:center;}
   .review-photos-title{font-size:clamp(1.3rem,1.6vw + .8rem,1.7rem); margin-top:10px; margin-inline:auto; max-width:44ch;}
-  .review-carousel{position:relative; display:flex; align-items:center; gap:8px; padding-block:32px 16px;}
-  .review-viewport{flex:1; min-width:0; overflow:hidden; height:clamp(280px,42vw,440px); position:relative;}
+  .review-carousel{position:relative; display:flex; align-items:center; gap:8px; padding-block:32px 28px;}
+  .review-viewport{flex:1; min-width:0; overflow:hidden; height:clamp(320px,48vw,500px); position:relative;}
   .review-track{display:flex; align-items:center; height:100%; transition:transform .5s cubic-bezier(.65,0,.35,1); will-change:transform;}
   @media (prefers-reduced-motion: reduce){.review-track{transition:none;}}
   .review-slide{
@@ -507,7 +507,7 @@
   }
   .review-slide img{width:100%; height:100%; object-fit:cover;}
   .review-slide.is-adjacent{opacity:.8; transform:scale(.86);}
-  .review-slide.is-active{opacity:1; transform:scale(1); box-shadow:0 30px 54px -22px rgba(26,21,18,.5); cursor:default;}
+  .review-slide.is-active{opacity:1; transform:scale(1); box-shadow:0 14px 24px -12px rgba(26,21,18,.4); cursor:default;}
   .review-nav-btn{
     flex:none; width:40px; height:40px; border-radius:50%; background:#fff; border:none;
     display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);
@@ -521,6 +521,7 @@
   @media (max-width:640px){
     .review-nav-btn{width:34px; height:34px;}
     .review-slide{margin-inline:6px;}
+    .review-viewport{height:clamp(300px,58vw,420px);}
   }
 
   /* ---------- 404 ---------- */
