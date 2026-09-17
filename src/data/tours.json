@@ -22,7 +22,7 @@
     },
     "shortName": "Sports Tour NYC",
     "levelIcon": "i-badge",
-    "order": 1,
+    "order": 2,
     "detail": {
       "subtitle": "Streetball en Harlem, cine callejero en el Bronx y un partido de MLB en vivo",
       "intro": "Una experiencia urbana pensada en exclusiva para huéspedes del Four Seasons Hotel New York: te movemos por la ciudad igual que se mueve un neoyorquino, nada de autobús panorámico. De la cancha de Holcombe Rucker Park a las gradas de Yankee Stadium, pasando por las escaleras que hizo famosas la película Joker.",
@@ -101,7 +101,7 @@
     },
     "shortName": "Bronx & Góspel en Harlem",
     "levelIcon": "i-flag",
-    "order": 2,
+    "order": 1,
     "detail": {
       "subtitle": "Misa góspel en Harlem y recorrido por el Bronx, en español",
       "intro": "Vive una misa góspel auténtica en una iglesia bautista local y después cruza al Bronx para conocer Yankee Stadium, los grafitis de leyendas del hip-hop y las escaleras de Joker. Grupo reducido, guiado en español por un local con más de 15 años en el barrio.",

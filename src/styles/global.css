@@ -132,7 +132,7 @@
 
   /* ---------- tour ticket cards ---------- */
   .tour-card{
-    position:relative; background:var(--surface); border-radius:var(--radius-lg); overflow:visible; border:1px solid var(--line);
+    position:relative; background:var(--surface); border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--line);
     box-shadow:var(--shadow); display:flex; flex-direction:column; transition:transform .2s ease, box-shadow .2s ease;
   }
   .tour-card:hover{transform:translateY(-6px);}
