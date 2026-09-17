@@ -19,7 +19,10 @@ const multi = images.length > 1;
         <div class="gallery-track" id="galleryTrack">
           {images.map((src, i) => (
             <div class="gallery-slide">
-              <img src={src} alt={`${title} — foto ${i + 1}`} loading="lazy" />
+              {src === 'placeholder'
+                ? <div class="gallery-placeholder"><span class="hero-placeholder-badge">📷 Foto pendiente {i + 1}</span></div>
+                : <img src={src} alt={`${title} — foto ${i + 1}`} loading="lazy" />
+              }
             </div>
           ))}
         </div>

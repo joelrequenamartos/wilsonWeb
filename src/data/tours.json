@@ -72,8 +72,9 @@
       ]
     },
     "gallery": [
-      "/images/yankee.png",
-      "/images/inside.png"
+      "placeholder",
+      "placeholder",
+      "placeholder"
     ]
   },
   {
@@ -154,8 +155,9 @@
       ]
     },
     "gallery": [
-      "/images/image.png",
-      "/images/gospel.png"
+      "placeholder",
+      "placeholder",
+      "placeholder"
     ]
   },
   {
@@ -236,7 +238,9 @@
       ]
     },
     "gallery": [
-      "/images/actor.png"
+      "placeholder",
+      "placeholder",
+      "placeholder"
     ]
   },
   {
@@ -307,7 +311,9 @@
       ]
     },
     "gallery": [
-      "/images/maraton.png"
+      "placeholder",
+      "placeholder",
+      "placeholder"
     ]
   },
   {
@@ -388,7 +394,9 @@
       ]
     },
     "gallery": [
-      "/images/roosvelt.png"
+      "placeholder",
+      "placeholder",
+      "placeholder"
     ]
   }
 ]
