@@ -18,15 +18,6 @@ const { tours } = Astro.props;
 
     <div class="grid grid-3">
       {tours.map((tour) => <TourCard tour={tour.data} />)}
-
-      <article class="tour-card" style="align-items:center; justify-content:center; text-align:center; padding:20px; background:var(--surface); border-style:dashed;">
-        <div class="tour-body" style="align-items:center; justify-content:center;">
-          <svg class="icon" style="width:34px;height:34px;color:var(--coral)"><use href="#i-chat" /></svg>
-          <h3>¿No encuentras tu plan ideal?</h3>
-          <p class="desc">Escríbenos y armamos un recorrido a medida para tu grupo, en el idioma y ritmo que prefieras.</p>
-          <a class="btn btn-primary" href="/#contacto">Hablar por WhatsApp</a>
-        </div>
-      </article>
     </div>
   </div>
 </section>
