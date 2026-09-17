@@ -1,0 +1,129 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const tours = await getCollection('tours');
+  return tours.map((tour) => ({
+    params: { id: tour.id },
+    props: { tour }
+  }));
+}
+
+const { tour } = Astro.props;
+const t = tour.data;
+const allTours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+
+const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
+const waHref = `https://wa.me/16466297581?text=${waMessage}`;
+---
+<Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro}>
+  <Header />
+  <main id="main">
+    <section class="tour-hero">
+      <div class="wrap">
+        <a class="tour-back" href="/#tours"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver a los tours</a>
+        <div class:list={['cat-tag', 'tour-hero-tag']}>{t.categoryLabel}</div>
+        <h1>{t.name}</h1>
+        <p class="tour-hero-subtitle">{t.detail.subtitle}</p>
+        <div class="tour-hero-meta">
+          <span><svg class="icon"><use href="#i-clock" /></svg>{t.duration}</span>
+          <span><svg class="icon"><use href={`#${t.levelIcon}`} /></svg>{t.level}</span>
+          <span><svg class="icon"><use href="#i-pin" /></svg>{t.location}</span>
+          <span class="rating-row"><span class="stars">★★★★★</span>{t.rating.toFixed(1)} ({t.reviewCount})</span>
+        </div>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">Reservar por WhatsApp</a>
+          <a class="btn btn-outline" href="#faq">Ver preguntas frecuentes</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap tour-detail-grid">
+        <div class="tour-detail-main">
+          <p class="tour-intro">{t.detail.intro}</p>
+
+          <h2 class="tour-detail-h2">Qué incluye</h2>
+          <ul class="tour-check-list">
+            {t.detail.includes.map((item) => (
+              <li><svg class="icon" style="color:var(--coral)"><use href="#i-badge" /></svg>{item}</li>
+            ))}
+          </ul>
+
+          {t.detail.notIncludes && t.detail.notIncludes.length > 0 && (
+            <>
+              <h2 class="tour-detail-h2">No incluye</h2>
+              <ul class="tour-check-list tour-check-list-muted">
+                {t.detail.notIncludes.map((item) => (
+                  <li><svg class="icon"><use href="#i-close" /></svg>{item}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          <h2 class="tour-detail-h2">Lugares que visitarás</h2>
+          <div class="tour-places-list">
+            {t.detail.places.map((place) => (
+              <div class="place-card">
+                <div class:list={['place-icon', t.art]}><svg class="icon"><use href="#i-pin" /></svg></div>
+                <div>
+                  <h3>{place.name}</h3>
+                  <p>{place.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <aside class="tour-detail-side">
+          <div class="tour-info-card">
+            <div class="tour-price">{t.price}<small>{t.priceNote}</small></div>
+            <p class="tour-price-detail">{t.detail.priceDetail}</p>
+            <dl class="tour-info-list">
+              <div><dt><svg class="icon"><use href="#i-pin" /></svg>Punto de encuentro</dt><dd>{t.detail.meetingPoint}</dd></div>
+              <div><dt><svg class="icon"><use href="#i-clock" /></svg>Duración</dt><dd>{t.duration}</dd></div>
+              <div><dt><svg class="icon"><use href="#i-chat" /></svg>Idioma</dt><dd>{t.detail.language}</dd></div>
+              <div><dt><svg class="icon"><use href="#i-tram" /></svg>Transporte</dt><dd>{t.detail.transport}</dd></div>
+              <div><dt><svg class="icon"><use href="#i-badge" /></svg>Disponibilidad</dt><dd>{t.detail.availability}</dd></div>
+            </dl>
+            <a class="btn btn-primary" style="width:100%; margin-top:6px;" href={waHref} target="_blank" rel="noopener">Reservar por WhatsApp</a>
+            <p class="tour-info-note">La reserva y el pago se gestionan directamente por WhatsApp, fuera de esta web.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="faq">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Antes de reservar</span>
+          <h2 class="section-title">Preguntas frecuentes</h2>
+        </div>
+        <div class="tour-faq-list">
+          {t.detail.faq.map((item) => (
+            <details class="tour-faq-item">
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-banner">
+      <div class="wrap">
+        <span class="eyebrow">Reserva en menos de un minuto</span>
+        <h2>¿Listo para vivir {t.shortName}?</h2>
+        <p>Escríbenos por WhatsApp y confirmamos tu plaza al momento.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">Reservar por WhatsApp</a>
+          <a class="btn btn-outline" href="/#tours">Ver otros tours</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer tours={allTours} />
+</Layout>

@@ -22,7 +22,20 @@ const tours = defineCollection({
     price: z.string(),
     priceNote: z.string(),
     art: z.string(),
-    mapPosition: z.object({ top: z.string(), left: z.string() }).optional()
+    mapPosition: z.object({ top: z.string(), left: z.string() }).optional(),
+    detail: z.object({
+      subtitle: z.string(),
+      intro: z.string(),
+      meetingPoint: z.string(),
+      language: z.string(),
+      priceDetail: z.string(),
+      transport: z.string(),
+      availability: z.string(),
+      includes: z.array(z.string()),
+      notIncludes: z.array(z.string()).optional(),
+      places: z.array(z.object({ name: z.string(), description: z.string() })),
+      faq: z.array(z.object({ q: z.string(), a: z.string() }))
+    })
   })
 });
 

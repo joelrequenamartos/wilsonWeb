@@ -29,6 +29,6 @@ const tagColor = tour.premium ? undefined : '#F4EEE3';
       <div class="rating-row"><span class="stars">★★★★★</span>{tour.rating.toFixed(1)} ({tour.reviewCount})</div>
       <div class="tour-price">{tour.price}<small>{tour.priceNote}</small></div>
     </div>
-    <a class="btn btn-outline" href="#contacto">Ver detalles <svg class="icon"><use href="#i-arrow" /></svg></a>
+    <a class="btn btn-outline" href={`/tours/${tour.id}`}>Ver detalles <svg class="icon"><use href="#i-arrow" /></svg></a>
   </div>
 </article>

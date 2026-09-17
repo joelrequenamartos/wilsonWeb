@@ -21,7 +21,54 @@
     },
     "shortName": "Sports Tour NYC",
     "levelIcon": "i-badge",
-    "order": 1
+    "order": 1,
+    "detail": {
+      "subtitle": "Streetball en Harlem, cine callejero en el Bronx y un partido de MLB en vivo",
+      "intro": "Una experiencia urbana pensada en exclusiva para huéspedes del Four Seasons Hotel New York: te movemos por la ciudad igual que se mueve un neoyorquino, nada de autobús panorámico. De la cancha de Holcombe Rucker Park a las gradas de Yankee Stadium, pasando por las escaleras que hizo famosas la película Joker.",
+      "meetingPoint": "Recogida en el Four Seasons Hotel New York (exclusivo para huéspedes)",
+      "language": "Español / English",
+      "priceDetail": "$220 por persona · incluye entrada al partido",
+      "transport": "Metro de Nueva York y caminatas cortas",
+      "availability": "Según calendario de partidos de los Yankees",
+      "includes": [
+        "Entrada al partido de los Yankees en Yankee Stadium (gradas de left o right field)",
+        "Recorrido guiado por Holcombe Rucker Park",
+        "Parada en las Joker Stairs del Bronx",
+        "Guía certificado en español e inglés"
+      ],
+      "places": [
+        {
+          "name": "Holcombe Rucker Park",
+          "description": "Una de las canchas de baloncesto callejero más icónicas del mundo, cuna del streetball en Harlem y escenario de torneos históricos."
+        },
+        {
+          "name": "Yankee Stadium",
+          "description": "La casa de los Yankees. Vives el partido desde las gradas de left o right field, con opción real de ver un home run de cerca."
+        },
+        {
+          "name": "Joker Stairs",
+          "description": "Las escaleras del Bronx que hizo famosas la película Joker, con parada para fotos y contexto sobre el barrio y el rodaje."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Está abierto al público general?",
+          "a": "No. Este Sports Tour es exclusivo para huéspedes del Four Seasons Hotel New York."
+        },
+        {
+          "q": "¿Incluye la entrada al partido?",
+          "a": "Sí, la entrada al juego de los Yankees en Yankee Stadium está incluida en el precio."
+        },
+        {
+          "q": "¿Se usa transporte privado?",
+          "a": "No, nos movemos en metro y a pie, tal y como lo haría un local."
+        },
+        {
+          "q": "¿Es apto si es mi primera vez en Nueva York?",
+          "a": "Sí, es ideal si te interesa el deporte, la cultura urbana y vivir la ciudad de forma auténtica."
+        }
+      ]
+    }
   },
   {
     "id": "bronx-gospel",
@@ -31,12 +78,12 @@
     "premium": false,
     "icon": "i-music",
     "description": "Historia, música en vivo y gastronomía local en un domingo distinto: de una misa góspel auténtica a los sabores del Bronx.",
-    "duration": "4 h",
+    "duration": "7 h",
     "location": "Harlem",
     "level": "Solo domingos",
     "rating": 4.8,
     "reviewCount": 142,
-    "price": "$85",
+    "price": "$65",
     "priceNote": "por persona",
     "art": "art-culture",
     "mapPosition": {
@@ -45,7 +92,58 @@
     },
     "shortName": "Bronx & Góspel en Harlem",
     "levelIcon": "i-flag",
-    "order": 2
+    "order": 2,
+    "detail": {
+      "subtitle": "Misa góspel en Harlem y recorrido por el Bronx, en español",
+      "intro": "Vive una misa góspel auténtica en una iglesia bautista local y después cruza al Bronx para conocer Yankee Stadium, los grafitis de leyendas del hip-hop y las escaleras de Joker. Grupo reducido, guiado en español por un local con más de 15 años en el barrio.",
+      "meetingPoint": "214 W 42nd St, frente al New Amsterdam Theatre, a las 9:00 a.m.",
+      "language": "Español",
+      "priceDetail": "$65 por persona",
+      "transport": "Caminando y en transporte público",
+      "availability": "Solo domingos · plazas limitadas",
+      "includes": [
+        "Entrada a la misa góspel en iglesia bautista local",
+        "Recorrido guiado por el Bronx y Harlem",
+        "Paradas en Yankee Stadium, Joker Stairs y grafitis de hip-hop",
+        "Grupo reducido"
+      ],
+      "places": [
+        {
+          "name": "Misa góspel en Harlem",
+          "description": "Vive la espiritualidad y la fuerza de la música góspel en vivo dentro de una iglesia bautista local."
+        },
+        {
+          "name": "Yankee Stadium",
+          "description": "Parada en el estadio legendario de los Yankees, en el corazón del Bronx."
+        },
+        {
+          "name": "Grafitis de leyendas del hip-hop",
+          "description": "Murales y rincones que rinden homenaje a la cultura hip-hop nacida en el Bronx."
+        },
+        {
+          "name": "Joker Stairs",
+          "description": "Las escaleras que hizo famosas la película Joker, parada obligada para fotos."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Es apto para tu primera visita a Nueva York?",
+          "a": "Sí, es una de las mejores formas de tener una visión completa de la ciudad en poco tiempo."
+        },
+        {
+          "q": "¿Es un tour privado?",
+          "a": "Es un tour premium en grupo reducido; también hay opción privada bajo consulta."
+        },
+        {
+          "q": "¿Se camina mucho?",
+          "a": "Se camina bastante, pero el ritmo está equilibrado con pausas estratégicas."
+        },
+        {
+          "q": "¿Qué pasa si llueve?",
+          "a": "El tour se realiza igualmente incluso con lluvia ligera, adaptando el recorrido a zonas resguardadas."
+        }
+      ]
+    }
   },
   {
     "id": "tour-privado-espanol",
@@ -55,17 +153,73 @@
     "premium": false,
     "icon": "i-chat",
     "description": "Tú decides los intereses, el ritmo y el tiempo. Un recorrido 100% personalizado guiado en español, ideal para familias y grupos.",
-    "duration": "Flexible",
+    "duration": "4h 15min",
     "location": "Toda la ciudad",
-    "level": "Hasta 6 personas",
+    "level": "Hasta 4 personas",
     "rating": 5.0,
     "reviewCount": 61,
-    "price": "$150",
-    "priceNote": "grupo",
+    "price": "$500",
+    "priceNote": "grupo (hasta 4)",
     "art": "art-custom",
     "shortName": "Tour privado en español",
     "levelIcon": "i-family",
-    "order": 3
+    "order": 3,
+    "detail": {
+      "subtitle": "Tu ruta, a tu ritmo, diseñada desde cero para tu grupo",
+      "intro": "Nada de rutas cerradas: diseñamos el recorrido según tus intereses, tu ritmo y el tiempo del que dispongas, con un guía certificado que se adapta sobre la marcha.",
+      "meetingPoint": "Recogida en tu hotel (solo Manhattan)",
+      "language": "Español",
+      "priceDetail": "$500 hasta 4 personas · +$100 por persona adicional",
+      "transport": "A pie y en transporte público",
+      "availability": "Bajo reserva, cualquier día",
+      "includes": [
+        "Guía certificado en español",
+        "Diseño 100% personalizado del recorrido",
+        "Gestión completa del itinerario",
+        "Fotos y vídeos del recorrido",
+        "Pequeños obsequios"
+      ],
+      "notIncludes": [
+        "Transporte privado (Uber/Taxi)",
+        "Propinas"
+      ],
+      "places": [
+        {
+          "name": "Barrios famosos y locales",
+          "description": "De Midtown a los rincones que solo conoce un local, según lo que más te interese."
+        },
+        {
+          "name": "Cine y localizaciones icónicas",
+          "description": "Recorre los escenarios de tus películas y series favoritas rodadas en Nueva York."
+        },
+        {
+          "name": "Historia y memoria urbana",
+          "description": "El pasado de la ciudad contado por alguien que la vive cada día."
+        },
+        {
+          "name": "Gastronomía local",
+          "description": "Las paradas que un local recomendaría, no las de la guía turística."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Es completamente privado?",
+          "a": "Sí, el tour es exclusivo para ti y tu grupo."
+        },
+        {
+          "q": "¿Todos siguen la misma ruta?",
+          "a": "No, se diseña según tus preferencias y puede ajustarse durante el propio recorrido."
+        },
+        {
+          "q": "¿Es buena opción si es tu primera vez en la ciudad?",
+          "a": "Sí, es una de las mejores opciones si quieres una introducción clara y adaptada a tus intereses."
+        },
+        {
+          "q": "¿Se camina mucho?",
+          "a": "Se combina caminata con transporte público, adaptando el ritmo al grupo. Lleva calzado cómodo."
+        }
+      ]
+    }
   },
   {
     "id": "maraton-de-wilson",
@@ -80,8 +234,8 @@
     "level": "Nivel alto",
     "rating": 4.9,
     "reviewCount": 54,
-    "price": "$260",
-    "priceNote": "por persona",
+    "price": "$1,099",
+    "priceNote": "grupo de 4",
     "art": "art-premium",
     "mapPosition": {
       "top": "52%",
@@ -89,7 +243,50 @@
     },
     "shortName": "Maratón de Wilson",
     "levelIcon": "i-badge",
-    "order": 4
+    "order": 4,
+    "detail": {
+      "subtitle": "Nueva York de principio a fin, en un solo día",
+      "intro": "Una experiencia premium pensada para descubrir la ciudad de principio a fin en un solo día, con una ruta creada estratégicamente y guiada en tiempo real: sin prisas y sin perder tiempo en lo irrelevante. Se ajusta sobre la marcha según el clima, el tráfico y el ambiente.",
+      "meetingPoint": "Recogida en tu hotel (solo Manhattan)",
+      "language": "Español",
+      "priceDetail": "$1,099 para grupos de hasta 4 personas · +$150 por persona a partir de la 5ª",
+      "transport": "A pie y en transporte público",
+      "availability": "Bajo reserva, cualquier día",
+      "includes": [
+        "Ruta estratégica de un día completo, de la mañana a la noche",
+        "Banquete callejero incluido: pizza al estilo NY, dumplings en Chinatown, clásicos de Little Italy, hamburguesas y snacks típicos",
+        "Un billete de $2 auténtico y una moneda de 50 centavos de recuerdo",
+        "Guía certificado en español"
+      ],
+      "places": [
+        {
+          "name": "Banquete callejero por la ciudad",
+          "description": "Pizza estilo Nueva York, dumplings auténticos en Chinatown, clásicos de Little Italy y las hamburguesas más famosas, todo incluido en la ruta."
+        },
+        {
+          "name": "Lo mejor de Manhattan en un día",
+          "description": "Una ruta pensada para no perder tiempo en desplazamientos ni colas, cubriendo los imprescindibles de la ciudad."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Es apto para tu primera visita?",
+          "a": "Sí, es una de las mejores formas de tener una visión completa de la ciudad en poco tiempo."
+        },
+        {
+          "q": "¿Es un tour privado?",
+          "a": "Es un tour premium con ruta diseñada y grupo reducido; también hay opciones totalmente personalizadas."
+        },
+        {
+          "q": "¿Se camina mucho?",
+          "a": "Se camina bastante, pero el ritmo está equilibrado con pausas estratégicas."
+        },
+        {
+          "q": "¿Y si llueve?",
+          "a": "El recorrido se ajusta para que la experiencia siga siendo óptima pase lo que pase."
+        }
+      ]
+    }
   },
   {
     "id": "free-tour-roosevelt",
@@ -113,6 +310,57 @@
     },
     "shortName": "Free Tour Roosevelt Island",
     "levelIcon": "i-badge",
-    "order": 5
+    "order": 5,
+    "detail": {
+      "subtitle": "Roosevelt Island y el Midtown que el 90% de los turistas se pierde",
+      "intro": "El 90% de la gente que visita Nueva York se pierde esto. Un free tour que mezcla Roosevelt Island con el Midtown más oculto: pasajes peatonales, edificios icónicos y pequeños oasis urbanos que no salen en las guías.",
+      "meetingPoint": "Bloomberg Tower, 731 Lexington Avenue",
+      "language": "Español",
+      "priceDetail": "Gratis (a propina) · solo se paga el tranvía/metro, unos $3",
+      "transport": "A pie y en transporte público",
+      "availability": "Todos los días · plazas limitadas",
+      "includes": [
+        "Cruce en el Roosevelt Island Tramway sobre el East River",
+        "Recorrido por Four Freedoms Park y las ruinas del Smallpox Hospital",
+        "Vuelta a Midtown Manhattan por su lado más oculto",
+        "Las mejores historias sobre la cultura neoyorquina y los mejores sitios para foto"
+      ],
+      "places": [
+        {
+          "name": "Roosevelt Island Tramway",
+          "description": "El teleférico que cruza el East River conectando Manhattan con Roosevelt Island, con vistas panorámicas por el camino."
+        },
+        {
+          "name": "Four Freedoms Park y Smallpox Hospital",
+          "description": "Un parque conmemorativo y las ruinas de un hospital histórico, en el extremo sur de la isla."
+        },
+        {
+          "name": "Midtown oculto",
+          "description": "Pasajes peatonales, curiosidades arquitectónicas y pequeños oasis urbanos que la mayoría de turistas nunca ve."
+        },
+        {
+          "name": "Citigroup Center",
+          "description": "Punto final del recorrido, en una zona perfectamente conectada con transporte público."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Es gratis de verdad?",
+          "a": "Sí, la reserva es completamente gratuita. Funciona con el modelo de propina libre: al terminar, cada persona aporta lo que considere."
+        },
+        {
+          "q": "¿En qué idioma se hace?",
+          "a": "El free tour se realiza íntegramente en español."
+        },
+        {
+          "q": "¿Dónde es el punto de encuentro?",
+          "a": "En el edificio Bloomberg Tower, 731 Lexington Avenue."
+        },
+        {
+          "q": "¿Qué lugares se visitan?",
+          "a": "Los rincones más sorprendentes de Manhattan y Roosevelt Island: el teleférico, la isla completa y curiosidades de la Quinta Avenida hasta llegar al Citigroup Center."
+        }
+      ]
+    }
   }
 ]

@@ -87,7 +87,7 @@
   /* ---------- hero cover (imagen completa + título simple) ---------- */
   .hero-cover{
     position:relative; min-height:min(96vh,900px); display:flex; align-items:flex-end;
-    overflow:hidden; color:#fff; margin-top:-84px; padding-top:84px;
+    overflow:hidden; color:#fff; margin-top:-130px; padding-top:130px;
   }
   .hero-cover-media{
     position:absolute; inset:0;
@@ -371,6 +371,51 @@
   .footer-news input{flex:1; min-width:0; border-radius:100px; border:1px solid var(--line); background:var(--surface); padding:10px 16px; color:var(--ink); font:inherit;}
   .footer-news input::placeholder{color:var(--ink-mute);}
   .footer-bottom{border-top:1px solid var(--line); padding-block:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:.78rem; color:var(--ink-mute);}
+
+  /* ---------- tour detail page ---------- */
+  .tour-hero{background:var(--bg-alt); border-bottom:3px solid var(--coral); padding-block:clamp(36px,6vw,64px);}
+  .tour-back{
+    display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:.9rem;
+    color:var(--ink-soft); text-decoration:none; margin-bottom:18px;
+  }
+  .tour-back:hover{color:var(--coral-dark);}
+  .tour-back .icon{width:16px;height:16px;}
+  .tour-hero-tag{position:static; display:inline-flex; margin-bottom:14px; color:#fff; background:var(--coral);}
+  .tour-hero h1{font-size:clamp(1.9rem,3vw + 1rem,3rem); max-width:22ch;}
+  .tour-hero-subtitle{margin-top:14px; font-size:1.15rem; color:var(--ink-soft); max-width:60ch;}
+  .tour-hero-meta{display:flex; flex-wrap:wrap; gap:20px; margin-top:24px; font-size:.92rem; font-weight:600; color:var(--ink-soft);}
+  .tour-hero-meta span{display:flex; align-items:center; gap:7px;}
+  .tour-hero-meta .icon{color:var(--coral-dark);}
+
+  .tour-detail-grid{display:grid; grid-template-columns:1.6fr .9fr; gap:clamp(28px,4vw,56px); align-items:start;}
+  @media (max-width:900px){.tour-detail-grid{grid-template-columns:1fr;}}
+  .tour-intro{font-size:1.08rem; color:var(--ink-soft); max-width:68ch;}
+  .tour-detail-h2{font-size:1.3rem; margin-top:38px; margin-bottom:16px;}
+  .tour-check-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .tour-check-list li{display:flex; align-items:flex-start; gap:10px; font-size:.96rem;}
+  .tour-check-list li .icon{margin-top:2px; flex:none;}
+  .tour-check-list-muted li{color:var(--ink-mute);}
+  .tour-places-list{display:flex; flex-direction:column; gap:14px;}
+
+  .tour-detail-side{position:sticky; top:calc(env(safe-area-inset-top,0px) + 92px);}
+  .tour-info-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:26px;}
+  .tour-info-card .tour-price{font-family:"Space Mono"; font-weight:700; font-size:1.6rem;}
+  .tour-info-card .tour-price small{display:block; font-family:"Poppins"; font-weight:600; font-size:.7rem; color:var(--ink-mute); text-transform:uppercase; letter-spacing:.04em;}
+  .tour-price-detail{margin-top:6px; font-size:.85rem; color:var(--ink-soft);}
+  .tour-info-list{margin:20px 0 0; padding:18px 0 0; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:16px;}
+  .tour-info-list > div{display:flex; flex-direction:column; gap:4px;}
+  .tour-info-list dt{display:flex; align-items:center; gap:7px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-mute);}
+  .tour-info-list dt .icon{color:var(--coral-dark);}
+  .tour-info-list dd{margin:0; font-size:.92rem; font-weight:600;}
+  .tour-info-note{margin-top:14px; font-size:.76rem; color:var(--ink-mute); text-align:center;}
+
+  .tour-faq-list{display:flex; flex-direction:column; gap:12px; max-width:76ch;}
+  .tour-faq-item{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); padding:18px 22px;}
+  .tour-faq-item summary{cursor:pointer; font-weight:700; list-style:none;}
+  .tour-faq-item summary::-webkit-details-marker{display:none;}
+  .tour-faq-item summary::after{content:"+"; float:right; font-family:"Space Mono"; color:var(--coral-dark);}
+  .tour-faq-item[open] summary::after{content:"–";}
+  .tour-faq-item p{margin-top:12px; color:var(--ink-soft); font-size:.94rem;}
 
   /* ---------- reveal ---------- */
   .reveal{opacity:1; transform:none;}
