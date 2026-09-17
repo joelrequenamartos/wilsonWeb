@@ -342,7 +342,7 @@
   .cta-banner p{color:var(--ink-soft); margin-top:12px; max-width:52ch; margin-inline:auto;}
   .cta-banner .hero-cta{justify-content:center; margin-top:26px;}
   .guide-grid .hero-cta{margin-top:30px;}
-  .guide-grid .hero-cta .btn-primary{box-shadow:0 0 0 8px color-mix(in srgb, var(--coral) 18%, transparent);}
+  .guide-grid .hero-cta .btn-primary{box-shadow:0 0 30px 10px color-mix(in srgb, var(--coral) 30%, transparent);}
   .cta-banner .btn-outline{border-color:var(--ink); color:var(--ink);}
   .cta-banner .btn-outline:hover{background:var(--coral); border-color:var(--coral); color:#fff;}
 
