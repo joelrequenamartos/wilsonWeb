@@ -74,6 +74,7 @@
   {
     "id": "bronx-gospel",
     "coverImage": "/images/image.png",
+    "coverPosition": "center 78%",
     "name": "El Bronx y Misa Góspel en Harlem",
     "category": "culture",
     "categoryLabel": "Cultural",
@@ -150,6 +151,7 @@
   {
     "id": "tour-privado-espanol",
     "coverImage": "/images/actor.png",
+    "coverPosition": "center 35%",
     "name": "Tour Privado en Nueva York en Español",
     "category": "custom",
     "categoryLabel": "A tu medida",
@@ -226,6 +228,7 @@
   },
   {
     "id": "maraton-de-wilson",
+    "coverImage": "/images/maraton.png",
     "name": "La Maratón de Wilson",
     "category": "sports",
     "categoryLabel": "Día completo",

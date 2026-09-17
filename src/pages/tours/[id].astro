@@ -25,7 +25,7 @@ const waHref = `https://wa.me/16466297581?text=${waMessage}`;
     <section class:list={['tour-hero', { 'tour-hero-photo': t.coverImage }]}>
       {t.coverImage && (
         <>
-          <div class="tour-hero-media"><img src={t.coverImage} alt="" /></div>
+          <div class="tour-hero-media"><img src={t.coverImage} alt="" style={t.coverPosition ? `object-position:${t.coverPosition}` : undefined} /></div>
           <div class="tour-hero-scrim"></div>
         </>
       )}
