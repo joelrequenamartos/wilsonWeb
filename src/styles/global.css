@@ -103,14 +103,6 @@
   .hero-cover .btn{margin-top:26px;}
   @media (max-width:640px){.hero-cover{min-height:min(88vh,680px);} .hero-cover-content{padding-block:44px 48px;}}
 
-  /* ---------- trust strip ---------- */
-  .trust-strip{border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface-2);}
-  .trust-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:20px; padding-block:26px;}
-  @media (max-width:920px){.trust-grid{grid-template-columns:repeat(2,1fr);}}
-  @media (max-width:520px){.trust-grid{grid-template-columns:1fr;}}
-  .trust-item{display:flex; align-items:center; gap:12px; font-size:.88rem; font-weight:600; color:var(--ink-soft);}
-  .trust-item .icon{width:22px;height:22px; color:var(--coral); flex:none;}
-
   /* ---------- cards grid generic ---------- */
   .grid{display:grid; gap:26px;}
   .grid-3{grid-template-columns:repeat(3,1fr);}

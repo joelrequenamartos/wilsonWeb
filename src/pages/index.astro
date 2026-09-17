@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
-import TrustStrip from '../components/TrustStrip.astro';
 import ToursSection from '../components/ToursSection.astro';
 import RestaurantsSection from '../components/RestaurantsSection.astro';
 import PlacesSection from '../components/PlacesSection.astro';
@@ -25,7 +24,6 @@ const reviews = (await getCollection('reviews')).sort(byOrder);
   <Header />
   <main id="main">
     <Hero />
-    <TrustStrip />
     <ToursSection tours={tours} />
     <ReviewsSection reviews={reviews} />
     <RestaurantsSection restaurants={restaurants} />
