@@ -524,6 +524,34 @@
   .not-found .section-sub{margin-inline:auto;}
   .not-found .hero-cta{justify-content:center; margin-top:28px;}
 
+  /* ---------- blog ---------- */
+  .blog-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow); display:flex; flex-direction:column; transition:transform .2s ease;
+  }
+  .blog-card:hover{transform:translateY(-6px);}
+  .blog-card-body{padding:26px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .blog-date{font-family:"Space Mono"; font-size:.76rem; color:var(--ink-mute); text-transform:uppercase; letter-spacing:.04em;}
+  .blog-card h3{font-size:1.15rem;}
+  .blog-title-link{color:inherit; text-decoration:none;}
+  .blog-title-link:hover{color:var(--coral-dark); text-decoration:underline;}
+  .blog-card .desc{color:var(--ink-soft); font-size:.92rem; flex:1;}
+  .blog-read-more{display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:.88rem; color:var(--coral-dark); text-decoration:none; margin-top:4px;}
+  .blog-read-more:hover{text-decoration:underline;}
+  .blog-read-more .icon{width:15px;height:15px;}
+
+  .blog-post-wrap{max-width:72ch; margin-inline:auto;}
+  .blog-post-wrap .tour-back{display:flex;}
+  .blog-post-title{font-size:clamp(1.8rem,2.6vw + 1rem,2.6rem); margin-top:14px;}
+  .blog-post-author{margin-top:8px; font-size:.9rem; color:var(--ink-soft); font-weight:600;}
+  .blog-prose{margin-top:34px; color:var(--ink-soft); font-size:1.03rem; line-height:1.75;}
+  .blog-prose h2{font-size:1.3rem; color:var(--ink); margin-top:38px; margin-bottom:12px;}
+  .blog-prose p{margin-top:16px;}
+  .blog-prose p:first-child{margin-top:0;}
+  .blog-prose ul, .blog-prose ol{margin-top:16px; padding-left:1.3em; display:flex; flex-direction:column; gap:8px;}
+  .blog-prose a{color:var(--coral-dark); font-weight:600;}
+  .blog-prose strong{color:var(--ink);}
+
   /* ---------- reveal ---------- */
   .reveal{opacity:1; transform:none;}
   @media (prefers-reduced-motion: no-preference){

@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { file } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import { readFile } from 'node:fs/promises';
 
 const AVATAR_COLORS = ['var(--coral)', '#C25F26', 'var(--gold)', '#A8501E', '#B8672C', '#D98B3F'];
@@ -130,4 +130,15 @@ const reviews = defineCollection({
   })
 });
 
-export const collections = { tours, restaurants, places, reviews };
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    excerpt: z.string(),
+    date: z.coerce.date(),
+    author: z.string().default('Wilson Silver'),
+    readTime: z.string().default('4 min de lectura')
+  })
+});
+
+export const collections = { tours, restaurants, places, reviews, blog };

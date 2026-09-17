@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const dateFmt = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Layout title="Blog — Silver Tours NY" description="Consejos, rutas y recomendaciones de Wilson para moverte por Nueva York como un local.">
+  <Header />
+  <main id="main">
+    <section class="section" id="blog">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Desde la calle, no desde una guía</span>
+          <h1 class="section-title">Blog de Silver Tours NY</h1>
+          <p class="section-sub">Consejos de Wilson para moverte, comer y disfrutar Nueva York como un local, no como un turista más.</p>
+        </div>
+
+        <div class="grid grid-3">
+          {posts.map((post) => (
+            <article class="blog-card">
+              <div class="blog-card-body">
+                <span class="blog-date">{dateFmt.format(post.data.date)} · {post.data.readTime}</span>
+                <h3><a class="blog-title-link" href={`/blog/${post.id}`}>{post.data.title}</a></h3>
+                <p class="desc">{post.data.excerpt}</p>
+                <a class="blog-read-more" href={`/blog/${post.id}`}>Leer más <svg class="icon"><use href="#i-arrow" /></svg></a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer tours={tours} />
+</Layout>
