@@ -17,7 +17,6 @@ const isFree = !tour.premium && tour.category === 'free';
   )}
   <div class:list={['tour-art', tour.art, { 'tour-art-photo': tour.coverImage }]}>
     {tour.coverImage && <img src={tour.coverImage} alt={tour.name} style={tour.coverPosition ? `object-position:${tour.coverPosition}` : undefined} />}
-    <svg class="icon-big"><use href={`#${tour.icon}`} /></svg>
   </div>
   <div class="tour-perf"><span class="notch notch-l"></span><span class="notch notch-r"></span></div>
   <div class="tour-body">
