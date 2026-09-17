@@ -1,6 +1,10 @@
 ---
 const photoCount = 12;
-const photos = Array.from({ length: photoCount }, (_, i) => `/images/reviews/review-${String(i + 1).padStart(2, '0')}.jpg`);
+// Orden pedido: 06, 03, 02, 09 primero; el resto da igual el orden.
+const priorityOrder = [6, 3, 2, 9];
+const rest = Array.from({ length: photoCount }, (_, i) => i + 1).filter((n) => !priorityOrder.includes(n));
+const photoOrder = [...priorityOrder, ...rest];
+const photos = photoOrder.map((n) => `/images/reviews/review-${String(n).padStart(2, '0')}.jpg`);
 ---
 <div class="review-carousel reveal" id="reviewCarousel" aria-roledescription="carrusel" aria-label="Fotos de clientes en nuestros tours">
   <button class="review-nav-btn review-prev" id="reviewPrev" aria-label="Foto anterior">
