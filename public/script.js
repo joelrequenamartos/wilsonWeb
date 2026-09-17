@@ -251,6 +251,22 @@
   var yearEl = document.getElementById('year');
   if(yearEl) yearEl.textContent = new Date().getFullYear();
 
+  var countdownEl = document.getElementById('ebookCountdownTime');
+  if(countdownEl){
+    function renderCountdown(){
+      var now = new Date();
+      var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+      var diff = Math.max(0, midnight - now);
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      function pad(n){ return String(n).padStart(2, '0'); }
+      countdownEl.textContent = pad(h) + 'h ' + pad(m) + 'm ' + pad(s) + 's';
+    }
+    renderCountdown();
+    setInterval(renderCountdown, 1000);
+  }
+
   if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window){
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(en){
