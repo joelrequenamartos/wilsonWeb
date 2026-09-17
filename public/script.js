@@ -30,20 +30,6 @@
     });
   }
 
-  var mapTabsEl = document.getElementById('mapTabs');
-  var mapTabs = mapTabsEl ? mapTabsEl.querySelectorAll('.map-tab') : [];
-  var pins = document.querySelectorAll('.pin');
-  mapTabs.forEach(function(tab){
-    tab.addEventListener('click', function(){
-      mapTabs.forEach(function(t){ t.setAttribute('aria-pressed','false'); });
-      tab.setAttribute('aria-pressed','true');
-      var f = tab.getAttribute('data-filter');
-      pins.forEach(function(p){
-        p.style.display = (f === 'all' || p.getAttribute('data-cat') === f) ? '' : 'none';
-      });
-    });
-  });
-
   var restTabsEl = document.getElementById('restTabs');
   var restTabs = restTabsEl ? restTabsEl.querySelectorAll('.map-tab') : [];
   var restCards = document.querySelectorAll('#restGrid .rest-card');

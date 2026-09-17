@@ -5,7 +5,6 @@ import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import ToursSection from '../components/ToursSection.astro';
 import RestaurantsSection from '../components/RestaurantsSection.astro';
-import MapSection from '../components/MapSection.astro';
 import ReviewsSection from '../components/ReviewsSection.astro';
 import EbookSection from '../components/EbookSection.astro';
 import GuideSection from '../components/GuideSection.astro';
@@ -16,7 +15,6 @@ const byOrder = (a: { data: { order: number } }, b: { data: { order: number } })
 
 const tours = (await getCollection('tours')).sort(byOrder);
 const restaurants = (await getCollection('restaurants')).sort(byOrder);
-const places = (await getCollection('places')).sort(byOrder);
 const reviews = (await getCollection('reviews')).sort(byOrder);
 ---
 <Layout>
@@ -26,7 +24,6 @@ const reviews = (await getCollection('reviews')).sort(byOrder);
     <ToursSection tours={tours} />
     <ReviewsSection reviews={reviews} />
     <RestaurantsSection restaurants={restaurants} />
-    <MapSection tours={tours} restaurants={restaurants} places={places} />
     <EbookSection />
     <GuideSection />
     <CtaBanner />

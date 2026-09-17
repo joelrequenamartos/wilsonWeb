@@ -198,8 +198,7 @@
   .place-card p{font-size:.87rem; color:var(--ink-soft);}
   .place-link{display:inline-flex; align-items:center; gap:5px; margin-top:8px; font-size:.78rem; font-weight:700; color:var(--coral-dark); text-decoration:none;}
 
-  /* ---------- map ---------- */
-  .map-shell{display:grid; grid-template-columns:1fr; gap:22px;}
+  /* ---------- filter tabs (reutilizadas por restaurantes) ---------- */
   .map-tabs{display:flex; flex-wrap:wrap; gap:10px;}
   .map-tab{
     font-family:"Space Mono"; font-size:.78rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
@@ -207,26 +206,6 @@
     cursor:pointer; transition:all .15s ease; display:flex; align-items:center; gap:7px;
   }
   .map-tab[aria-pressed="true"]{background:var(--coral); color:#fff; border-color:var(--coral);}
-  .map-box{
-    position:relative; border-radius:var(--radius-lg); overflow:hidden; min-height:440px; border:1px solid var(--line);
-    background:
-      linear-gradient(120deg, var(--teal-tint) 0%, var(--teal-tint) 22%, transparent 22.4%),
-      repeating-linear-gradient(0deg, var(--line) 0 1px, transparent 1px 46px),
-      repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 46px),
-      var(--bg-alt);
-  }
-  .map-zone{position:absolute; font-family:"Space Mono"; font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-mute); font-weight:700;}
-  .pin{
-    position:absolute; width:30px;height:30px; border-radius:50% 50% 50% 0; transform:translate(-50%,-100%) rotate(-45deg);
-    display:flex; align-items:center; justify-content:center; box-shadow:0 6px 14px -4px rgba(0,0,0,.4); border:2px solid #fff;
-    cursor:default; transition:transform .15s ease;
-  }
-  .pin:hover{transform:translate(-50%,-100%) rotate(-45deg) scale(1.15);}
-  .pin .icon{width:14px;height:14px; transform:rotate(45deg); color:#fff;}
-  .pin-tours{background:var(--cat-sports);}
-  .pin-food{background:var(--coral);}
-  .pin-places{background:var(--gold);}
-  .map-legend{display:flex; flex-wrap:wrap; gap:18px; font-size:.82rem; color:var(--ink-soft);}
   #restTabs{margin-bottom:28px;}
   .rest-empty{color:var(--ink-mute); font-size:.9rem; margin-bottom:20px;}
   .rest-more-wrap{display:flex; justify-content:center; margin-top:30px;}
@@ -293,8 +272,6 @@
     display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; padding:0;
   }
   @media (prefers-reduced-motion: reduce){.ad-track{transition:none;}}
-  .map-legend span{display:flex; align-items:center; gap:7px; font-weight:600;}
-  .legend-dot{width:11px;height:11px;border-radius:50%; display:inline-block;}
 
   /* ---------- reviews ---------- */
   .review-summary{display:flex; align-items:center; gap:22px; margin-bottom:32px; flex-wrap:wrap;}
