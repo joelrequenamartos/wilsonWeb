@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import RestaurantsSection from '../components/RestaurantsSection.astro';
+
+const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
+
+const tours = (await getCollection('tours')).sort(byOrder);
+const restaurants = (await getCollection('restaurants')).sort(byOrder);
+---
+<Layout title="Restaurantes — Silver Tours NY" description="Los mejores restaurantes de Nueva York, seleccionados por cercanía a nuestros tours y por algo más importante: que valgan la parada.">
+  <Header />
+  <main id="main">
+    <div class="wrap" style="padding-top:28px;">
+      <a class="tour-back" href="/"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al inicio</a>
+    </div>
+    <RestaurantsSection restaurants={restaurants} />
+  </main>
+  <Footer tours={tours} />
+</Layout>
