@@ -19,17 +19,16 @@ const tagColor = tour.premium ? undefined : '#F4EEE3';
   </div>
   <div class="tour-perf"><span class="notch notch-l"></span><span class="notch notch-r"></span></div>
   <div class="tour-body">
-    <h3><a class="tour-title-link" href={`/tours/${tour.id}`}>{tour.name}</a></h3>
+    <div class="tour-heading">
+      <h3><a class="tour-title-link" href={`/tours/${tour.id}`}>{tour.name}</a></h3>
+      <div class="rating-row"><span class="stars">★★★★★</span>{tour.rating.toFixed(1)} ({tour.reviewCount})</div>
+    </div>
     <p class="desc">{tour.description}</p>
     <div class="tour-meta">
       <span><svg class="icon"><use href="#i-clock" /></svg>{tour.duration}</span>
       <span><svg class="icon"><use href="#i-pin" /></svg>{tour.location}</span>
       <span><svg class="icon"><use href={`#${tour.levelIcon}`} /></svg>{tour.level}</span>
     </div>
-    <div class="tour-foot">
-      <div class="rating-row"><span class="stars">★★★★★</span>{tour.rating.toFixed(1)} ({tour.reviewCount})</div>
-      <div class="tour-price">{tour.price}<small>{tour.priceNote}</small></div>
-    </div>
-    <a class="btn btn-outline" href={`/tours/${tour.id}`}>Ver detalles <svg class="icon"><use href="#i-arrow" /></svg></a>
+    <a class="btn btn-outline tour-cta" href={`/tours/${tour.id}`}>Ver detalles <svg class="icon"><use href="#i-arrow" /></svg></a>
   </div>
 </article>

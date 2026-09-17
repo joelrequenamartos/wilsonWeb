@@ -155,6 +155,7 @@
   .tour-perf .notch{position:absolute; top:50%; transform:translateY(-50%); width:22px; height:22px; border-radius:50%; background:var(--bg-alt);}
   .tour-perf .notch-l{left:-11px;} .tour-perf .notch-r{right:-11px;}
   .tour-body{padding:20px; display:flex; flex-direction:column; gap:12px; flex:1;}
+  .tour-heading{display:flex; flex-direction:column; gap:6px;}
   .tour-body h3{font-size:1.22rem;}
   .tour-title-link{color:inherit; text-decoration:none;}
   .tour-title-link:hover{color:var(--coral-dark); text-decoration:underline;}
@@ -162,9 +163,7 @@
   .tour-meta{display:flex; flex-wrap:wrap; gap:14px; font-family:"Space Mono"; font-size:.76rem; color:var(--ink-mute); font-variant-numeric:tabular-nums;}
   .tour-meta span{display:flex; align-items:center; gap:5px;}
   .tour-meta .icon{width:15px;height:15px;}
-  .tour-foot{margin-top:auto; display:flex; align-items:center; justify-content:space-between; padding-top:8px;}
-  .tour-price{font-family:"Space Mono"; font-weight:700; font-size:1.05rem;}
-  .tour-price small{display:block; font-family:"Poppins"; font-weight:600; font-size:.68rem; color:var(--ink-mute); text-transform:uppercase; letter-spacing:.04em;}
+  .tour-cta{margin-top:auto; width:100%;}
   .stars{color:var(--gold); font-size:.85rem; letter-spacing:1px;}
   .rating-row{display:flex; align-items:center; gap:8px; font-size:.8rem; color:var(--ink-mute);}
 
@@ -172,7 +171,6 @@
   .tour-card.premium .tour-body .desc{color:var(--ink-soft);}
   .tour-card.premium h3{color:var(--ink);}
   .tour-card.premium .tour-meta{color:var(--ink-mute);}
-  .tour-card.premium .tour-price{color:var(--coral-dark);}
   .tour-card.premium .cat-tag{background:rgba(255,255,255,.22); color:#F4EEE3;}
   .tour-card.premium .btn-outline{border-color:var(--coral); color:var(--coral-dark);}
   .tour-card.premium .btn-outline:hover{background:var(--coral); color:#fff;}
