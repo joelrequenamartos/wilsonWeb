@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import TourPhotosCarousel from './TourPhotosCarousel.astro';
 
 interface Props {
   reviews: CollectionEntry<'reviews'>[];
@@ -34,5 +35,11 @@ const { reviews } = Astro.props;
         </article>
       ))}
     </div>
+
+    <div class="review-photos-head reveal">
+      <span class="eyebrow">Momentos reales</span>
+      <h3 class="review-photos-title">Así son nuestros tours, contados por quienes los viven</h3>
+    </div>
+    <TourPhotosCarousel />
   </div>
 </section>

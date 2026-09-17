@@ -1,0 +1,25 @@
+---
+const photoCount = 12;
+const photos = Array.from({ length: photoCount }, (_, i) => `/images/reviews/review-${String(i + 1).padStart(2, '0')}.jpg`);
+---
+<div class="review-carousel reveal" id="reviewCarousel" aria-roledescription="carrusel" aria-label="Fotos de clientes en nuestros tours">
+  <button class="review-nav-btn review-prev" id="reviewPrev" aria-label="Foto anterior">
+    <svg class="icon"><use href="#i-arrow" /></svg>
+  </button>
+
+  <div class="review-viewport">
+    <div class="review-track" id="reviewTrack">
+      {photos.map((src, i) => (
+        <div class="review-slide" data-index={i}>
+          <img src={src} alt={`Clientes de Silver Tours NY en uno de nuestros tours — foto ${i + 1}`} loading="lazy" />
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <button class="review-nav-btn review-next" id="reviewNext" aria-label="Foto siguiente">
+    <svg class="icon"><use href="#i-arrow" /></svg>
+  </button>
+
+  <div class="review-counter" id="reviewCounter">1 / {photoCount}</div>
+</div>

@@ -203,6 +203,65 @@
     gallerySetPlaying(galleryPlaying);
   }
 
+  var reviewCarousel = document.getElementById('reviewCarousel');
+  if(reviewCarousel){
+    var reviewTrack = document.getElementById('reviewTrack');
+    var reviewSlideEls = Array.prototype.slice.call(reviewTrack.children);
+    var reviewViewport = reviewCarousel.querySelector('.review-viewport');
+    var reviewPrev = document.getElementById('reviewPrev');
+    var reviewNext = document.getElementById('reviewNext');
+    var reviewCounter = document.getElementById('reviewCounter');
+    var reviewReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reviewIndex = 0;
+    var reviewTimer = null;
+    var reviewPlaying = !reviewReduceMotion;
+
+    function reviewRender(){
+      var slide = reviewSlideEls[reviewIndex];
+      var slideWidth = slide.offsetWidth;
+      var slideStyle = window.getComputedStyle(slide);
+      var slideTotalWidth = slideWidth + parseFloat(slideStyle.marginLeft) + parseFloat(slideStyle.marginRight);
+      var viewportWidth = reviewViewport.offsetWidth;
+      var slideCenter = slide.offsetLeft + slideWidth / 2;
+      var offset = viewportWidth / 2 - slideCenter;
+      reviewTrack.style.transform = 'translateX(' + offset + 'px)';
+
+      reviewSlideEls.forEach(function(el, i){
+        el.classList.remove('is-active', 'is-adjacent');
+        if(i === reviewIndex){ el.classList.add('is-active'); }
+        else if(i === reviewIndex - 1 || i === reviewIndex + 1){ el.classList.add('is-adjacent'); }
+      });
+      if(reviewCounter) reviewCounter.textContent = (reviewIndex + 1) + ' / ' + reviewSlideEls.length;
+    }
+    function reviewGo(i){
+      reviewIndex = (i + reviewSlideEls.length) % reviewSlideEls.length;
+      reviewRender();
+    }
+    function reviewNextSlide(){ reviewGo(reviewIndex + 1); }
+    function reviewStart(){
+      if(reviewTimer || reviewSlideEls.length < 2) return;
+      reviewTimer = setInterval(reviewNextSlide, 3200);
+    }
+    function reviewStop(){
+      clearInterval(reviewTimer);
+      reviewTimer = null;
+    }
+
+    reviewPrev.addEventListener('click', function(){ reviewGo(reviewIndex - 1); reviewStop(); reviewPlaying = false; });
+    reviewNext.addEventListener('click', function(){ reviewGo(reviewIndex + 1); reviewStop(); reviewPlaying = false; });
+    reviewSlideEls.forEach(function(el, i){
+      el.addEventListener('click', function(){ reviewGo(i); reviewStop(); reviewPlaying = false; });
+    });
+    reviewCarousel.addEventListener('mouseenter', reviewStop);
+    reviewCarousel.addEventListener('mouseleave', function(){ if(reviewPlaying) reviewStart(); });
+    reviewCarousel.addEventListener('focusin', reviewStop);
+    reviewCarousel.addEventListener('focusout', function(){ if(reviewPlaying) reviewStart(); });
+    window.addEventListener('resize', reviewRender);
+
+    reviewRender();
+    if(reviewPlaying) reviewStart();
+  }
+
   var yearEl = document.getElementById('year');
   if(yearEl) yearEl.textContent = new Date().getFullYear();
 
