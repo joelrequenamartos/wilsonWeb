@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  reviews: CollectionEntry<'reviews'>[];
+}
+
+const { reviews } = Astro.props;
+---
+<section class="section" id="resenas">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Lo dicen ellos, no nosotros</span>
+      <h2 class="section-title">Reseñas de viajeros reales</h2>
+    </div>
+
+    <div class="review-summary reveal">
+      <div class="review-score">4.9</div>
+      <div class="review-score-meta">
+        <span class="stars" style="font-size:1.1rem;">★★★★★</span>
+        <span style="font-size:.85rem; color:var(--ink-soft);">Basado en 546 reseñas · Google &amp; TripAdvisor</span>
+      </div>
+    </div>
+
+    <div class="grid grid-3">
+      {reviews.map((review) => (
+        <article class="review-card">
+          <div class="review-top">
+            <div class="avatar" style={`background:${review.data.avatarColor}`}>{review.data.initial}</div>
+            <div><div class="review-name">{review.data.name}</div><div class="review-source">{review.data.source} · {review.data.context}</div></div>
+          </div>
+          <span class="stars">★★★★★</span>
+          <p class="review-quote">"{review.data.quote}"</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  places: CollectionEntry<'places'>[];
+}
+
+const { places } = Astro.props;
+---
+<section class="section" id="lugares">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Puntos en la ruta</span>
+      <h2 class="section-title">Lugares que solo un local te muestra</h2>
+      <p class="section-sub">Cada parada de nuestros tours tiene una historia. Estas son algunas de las más pedidas.</p>
+    </div>
+    <div class="grid grid-3">
+      {places.map((place) => (
+        <div class="place-card">
+          <div class:list={['place-icon', place.data.art]}><svg class="icon"><use href={`#${place.data.icon}`} /></svg></div>
+          <div>
+            <h3>{place.data.name}</h3>
+            <p>{place.data.description}</p>
+            <a class="place-link" href="#tours">{place.data.tourLabel} <svg class="icon" style="width:13px;height:13px"><use href="#i-arrow" /></svg></a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

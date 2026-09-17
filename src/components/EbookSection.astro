@@ -1,0 +1,31 @@
+---
+const benefits = [
+  { icon: 'i-map', text: '12 rutas secretas fuera del circuito turístico habitual' },
+  { icon: 'i-pin', text: 'Mapa interactivo descargable con todos los puntos del libro' },
+  { icon: 'i-fork', text: 'Restaurantes locales recomendados, barrio por barrio' },
+  { icon: 'i-badge', text: 'Descuento exclusivo del 10% en tu próximo tour' }
+];
+---
+<section class="section ebook-section" id="ebook">
+  <div class="wrap ebook-grid">
+    <div class="ebook-cover" aria-hidden="true">
+      <span class="tag">Silver Tours NY</span>
+      <svg class="icon"><use href="#i-book" /></svg>
+      <h3>La Guía<br />Secreta de<br />Nueva York</h3>
+    </div>
+    <div>
+      <span class="eyebrow ebook-eyebrow">Para llevar en el bolsillo</span>
+      <h2 class="section-title">La guía secreta de NYC, escrita por Wilson</h2>
+      <p class="section-sub">Todo lo que un guía certificado no te cuenta en un tour de dos horas, en un ebook para explorar la ciudad por tu cuenta.</p>
+      <ul class="ebook-list">
+        {benefits.map((b) => (
+          <li><svg class="icon"><use href={`#${b.icon}`} /></svg>{b.text}</li>
+        ))}
+      </ul>
+      <div class="ebook-price-row">
+        <div class="ebook-price">$12.99 <small>$19.99</small></div>
+        <a class="btn btn-light" href="#contacto"><svg class="icon"><use href="#i-book" /></svg>Comprar ebook</a>
+      </div>
+    </div>
+  </div>
+</section>

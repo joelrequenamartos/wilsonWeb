@@ -1,0 +1,17 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  restaurant: CollectionEntry<'restaurants'>['data'];
+}
+
+const { restaurant } = Astro.props;
+---
+<article class="rest-card" data-cuisine={restaurant.cuisine}>
+  <div class:list={['rest-art', restaurant.art]}><svg class="icon"><use href="#i-fork" /></svg></div>
+  <div class="rest-body">
+    <div class="rest-top"><h3>{restaurant.name}</h3><span class="price-tag">{restaurant.price}</span></div>
+    <div class="rest-tags"><span>{restaurant.cuisineLabel}</span><span>{restaurant.neighborhood}</span><span>★ {restaurant.rating}</span></div>
+    <p class="rest-note">{restaurant.note}</p>
+  </div>
+</article>

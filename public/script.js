@@ -48,20 +48,50 @@
   var restTabs = restTabsEl ? restTabsEl.querySelectorAll('.map-tab') : [];
   var restCards = document.querySelectorAll('#restGrid .rest-card');
   var restEmpty = document.getElementById('restEmpty');
+  var restMoreBtn = document.getElementById('restMoreBtn');
+  var restLimit = 9;
+  var restExpanded = false;
+  var restFilter = 'all';
+
+  function applyRestFilter(){
+    var matches = [];
+    restCards.forEach(function(c){
+      var match = (restFilter === 'all' || c.getAttribute('data-cuisine') === restFilter);
+      if(match) matches.push(c);
+    });
+    var capped = restFilter === 'all' && !restExpanded;
+    var visibleCount = capped ? Math.min(restLimit, matches.length) : matches.length;
+    restCards.forEach(function(c){ c.style.display = 'none'; });
+    matches.slice(0, visibleCount).forEach(function(c){ c.style.display = ''; });
+    if(restEmpty) restEmpty.hidden = matches.length > 0;
+    if(restMoreBtn){
+      var hasMore = capped && matches.length > restLimit;
+      restMoreBtn.hidden = !(hasMore || (restFilter === 'all' && restExpanded && matches.length > restLimit));
+      restMoreBtn.textContent = restExpanded ? 'Ver menos restaurantes' : 'Ver más restaurantes';
+    }
+  }
+
   restTabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       restTabs.forEach(function(t){ t.setAttribute('aria-pressed','false'); });
       tab.setAttribute('aria-pressed','true');
-      var f = tab.getAttribute('data-filter');
-      var visible = 0;
-      restCards.forEach(function(c){
-        var match = (f === 'all' || c.getAttribute('data-cuisine') === f);
-        c.style.display = match ? '' : 'none';
-        if(match) visible++;
-      });
-      if(restEmpty) restEmpty.hidden = visible > 0;
+      restFilter = tab.getAttribute('data-filter');
+      applyRestFilter();
     });
   });
+
+  if(restMoreBtn){
+    restMoreBtn.addEventListener('click', function(){
+      restExpanded = !restExpanded;
+      applyRestFilter();
+      if(!restExpanded){
+        var restSection = document.getElementById('restaurantes');
+        if(restSection) restSection.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+      }
+    });
+  }
+
+  applyRestFilter();
 
   var adBanner = document.getElementById('adBanner');
   if(adBanner){

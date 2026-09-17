@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  restaurants: CollectionEntry<'restaurants'>[];
+}
+
+const { restaurants } = Astro.props;
+
+const featured = restaurants
+  .filter((r) => r.data.featuredRank)
+  .sort((a, b) => (a.data.featuredRank ?? 0) - (b.data.featuredRank ?? 0));
+---
+<section class="section section-alt" style="padding-bottom:0;">
+  <div class="wrap">
+    <span class="eyebrow">Publicidad · Recomendado por Silver Tours NY</span>
+    <div class="ad-banner reveal" id="adBanner" aria-roledescription="carrusel" aria-label="Top 3 restaurantes destacados" tabindex="0">
+      <div class="ad-track" id="adTrack">
+        {featured.map((restaurant) => (
+          <div class="ad-slide">
+            <div class:list={['ad-art', restaurant.data.art]} aria-hidden="true"><svg class="icon" style="width:30px;height:30px"><use href="#i-fork" /></svg></div>
+            <div class="ad-body">
+              <span class="ad-rank">Top 3 mejor valorados · Nº{restaurant.data.featuredRank}</span>
+              <h3>{restaurant.data.name}</h3>
+              <div class="rest-tags"><span>{restaurant.data.cuisineLabel}</span><span>{restaurant.data.neighborhood}</span><span>★ {restaurant.data.rating}</span></div>
+              <p class="rest-note">{restaurant.data.note}</p>
+            </div>
+            <a class="btn btn-primary btn-sm ad-cta" href="#restaurantes">Ver restaurantes</a>
+          </div>
+        ))}
+      </div>
+
+      <button class="ad-arrow ad-prev" id="adPrev" aria-label="Restaurante anterior">
+        <svg class="icon" style="width:18px;height:18px"><use href="#i-arrow" /></svg>
+      </button>
+      <button class="ad-arrow ad-next" id="adNext" aria-label="Restaurante siguiente">
+        <svg class="icon" style="width:18px;height:18px"><use href="#i-arrow" /></svg>
+      </button>
+
+      <div class="ad-bottom">
+        <div class="ad-dots" id="adDots">
+          {featured.map((_, i) => (
+            <button class="ad-dot" aria-current={i === 0 ? 'true' : 'false'} aria-label={`Ir al destacado ${i + 1}`}></button>
+          ))}
+        </div>
+        <button class="ad-pause" id="adPause" aria-label="Pausar rotación automática" aria-pressed="false">
+          <svg class="icon" id="adPauseIcon" style="width:13px;height:13px"><use href="#i-pause" /></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

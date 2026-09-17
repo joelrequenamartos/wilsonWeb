@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import ToursSection from '../components/ToursSection.astro';
+import AdBanner from '../components/AdBanner.astro';
+import RestaurantsSection from '../components/RestaurantsSection.astro';
+import PlacesSection from '../components/PlacesSection.astro';
+import MapSection from '../components/MapSection.astro';
+import ReviewsSection from '../components/ReviewsSection.astro';
+import EbookSection from '../components/EbookSection.astro';
+import GuideSection from '../components/GuideSection.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import Footer from '../components/Footer.astro';
+
+const tours = await getCollection('tours');
+const restaurants = await getCollection('restaurants');
+const places = await getCollection('places');
+const reviews = await getCollection('reviews');
+---
+<Layout>
+  <Header />
+  <main id="main">
+    <Hero />
+    <TrustStrip />
+    <ToursSection tours={tours} />
+    <AdBanner restaurants={restaurants} />
+    <RestaurantsSection restaurants={restaurants} />
+    <PlacesSection places={places} />
+    <MapSection tours={tours} restaurants={restaurants} places={places} />
+    <ReviewsSection reviews={reviews} />
+    <EbookSection />
+    <GuideSection />
+    <CtaBanner />
+  </main>
+  <Footer tours={tours} />
+</Layout>

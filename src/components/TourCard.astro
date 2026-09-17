@@ -1,0 +1,34 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  tour: CollectionEntry<'tours'>['data'];
+}
+
+const { tour } = Astro.props;
+const tagColor = tour.premium ? undefined : '#F4EEE3';
+---
+<article class:list={['tour-card', { premium: tour.premium }]}>
+  {tour.premium && (
+    <div class="premium-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Premium</div>
+  )}
+  <div class:list={['tour-art', tour.art]}>
+    <svg class="icon-big"><use href={`#${tour.icon}`} /></svg>
+    <span class="cat-tag" style={tagColor ? `color:${tagColor}` : undefined}>{tour.categoryLabel}</span>
+  </div>
+  <div class="tour-perf"><span class="notch notch-l"></span><span class="notch notch-r"></span></div>
+  <div class="tour-body">
+    <h3>{tour.name}</h3>
+    <p class="desc">{tour.description}</p>
+    <div class="tour-meta">
+      <span><svg class="icon"><use href="#i-clock" /></svg>{tour.duration}</span>
+      <span><svg class="icon"><use href="#i-pin" /></svg>{tour.location}</span>
+      <span><svg class="icon"><use href={`#${tour.levelIcon}`} /></svg>{tour.level}</span>
+    </div>
+    <div class="tour-foot">
+      <div class="rating-row"><span class="stars">★★★★★</span>{tour.rating.toFixed(1)} ({tour.reviewCount})</div>
+      <div class="tour-price">{tour.price}<small>{tour.priceNote}</small></div>
+    </div>
+    <a class="btn btn-outline" href="#contacto">Ver detalles <svg class="icon"><use href="#i-arrow" /></svg></a>
+  </div>
+</article>

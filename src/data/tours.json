@@ -1,0 +1,113 @@
+[
+  {
+    "id": "sports-tour-nyc",
+    "name": "Sports Tour NYC — Yankee Stadium Experience",
+    "category": "sports",
+    "categoryLabel": "Deportivo",
+    "premium": true,
+    "icon": "i-baseball",
+    "description": "Streetball en Holcombe Rucker Park, locaciones de cine urbano en el Bronx y un partido de MLB en vivo en Yankee Stadium. Exclusivo para huéspedes del Four Seasons New York.",
+    "duration": "5–6 h",
+    "location": "Harlem · Bronx",
+    "level": "Nivel moderado",
+    "rating": 4.9,
+    "reviewCount": 86,
+    "price": "$220",
+    "priceNote": "por persona",
+    "art": "art-premium",
+    "mapPosition": {
+      "top": "14%",
+      "left": "70%"
+    },
+    "shortName": "Sports Tour NYC",
+    "levelIcon": "i-badge"
+  },
+  {
+    "id": "bronx-gospel",
+    "name": "El Bronx y Misa Góspel en Harlem",
+    "category": "culture",
+    "categoryLabel": "Cultural",
+    "premium": false,
+    "icon": "i-music",
+    "description": "Historia, música en vivo y gastronomía local en un domingo distinto: de una misa góspel auténtica a los sabores del Bronx.",
+    "duration": "4 h",
+    "location": "Harlem",
+    "level": "Solo domingos",
+    "rating": 4.8,
+    "reviewCount": 142,
+    "price": "$85",
+    "priceNote": "por persona",
+    "art": "art-culture",
+    "mapPosition": {
+      "top": "30%",
+      "left": "38%"
+    },
+    "shortName": "Bronx & Góspel en Harlem",
+    "levelIcon": "i-flag"
+  },
+  {
+    "id": "tour-privado-espanol",
+    "name": "Tour Privado en Nueva York en Español",
+    "category": "custom",
+    "categoryLabel": "A tu medida",
+    "premium": false,
+    "icon": "i-chat",
+    "description": "Tú decides los intereses, el ritmo y el tiempo. Un recorrido 100% personalizado guiado en español, ideal para familias y grupos.",
+    "duration": "Flexible",
+    "location": "Toda la ciudad",
+    "level": "Hasta 6 personas",
+    "rating": 5.0,
+    "reviewCount": 61,
+    "price": "$150",
+    "priceNote": "grupo",
+    "art": "art-custom",
+    "shortName": "Tour privado en español",
+    "levelIcon": "i-family"
+  },
+  {
+    "id": "maraton-de-wilson",
+    "name": "La Maratón de Wilson",
+    "category": "sports",
+    "categoryLabel": "Día completo",
+    "premium": true,
+    "icon": "i-map",
+    "description": "La experiencia insignia: una ruta estratégica para recorrer lo mejor de Nueva York en un solo día, sin perder tiempo ni pisadas.",
+    "duration": "8–10 h",
+    "location": "Manhattan",
+    "level": "Nivel alto",
+    "rating": 4.9,
+    "reviewCount": 54,
+    "price": "$260",
+    "priceNote": "por persona",
+    "art": "art-premium",
+    "mapPosition": {
+      "top": "52%",
+      "left": "50%"
+    },
+    "shortName": "Maratón de Wilson",
+    "levelIcon": "i-badge"
+  },
+  {
+    "id": "free-tour-roosevelt",
+    "name": "Free Tour: Roosevelt Island hasta Manhattan",
+    "category": "free",
+    "categoryLabel": "Gratuito",
+    "premium": false,
+    "icon": "i-tram",
+    "description": "Historia, arquitectura y paisajes urbanos poco conocidos, cruzando en tranvía hacia Manhattan. Aporte a voluntad.",
+    "duration": "2.5 h",
+    "location": "Roosevelt Island",
+    "level": "Nivel fácil",
+    "rating": 4.7,
+    "reviewCount": 203,
+    "price": "Gratis",
+    "priceNote": "propina sugerida",
+    "art": "art-free",
+    "mapPosition": {
+      "top": "70%",
+      "left": "78%"
+    },
+    "shortName": "Free Tour Roosevelt Island",
+    "levelIcon": "i-badge"
+  }
+]

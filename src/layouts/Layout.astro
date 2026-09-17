@@ -1,0 +1,31 @@
+---
+import Icons from '../components/Icons.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Silver Tours NY',
+  description = 'Tours guiados en Nueva York con Silver Tours NY: deporte, cultura y rutas locales, más restaurantes, lugares de interés y mapa interactivo.'
+} = Astro.props;
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <Icons />
+  <slot />
+  <script src="/script.js" defer></script>
+</body>
+</html>

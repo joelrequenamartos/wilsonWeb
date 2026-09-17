@@ -1,0 +1,51 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import RestaurantCard from './RestaurantCard.astro';
+
+interface Props {
+  restaurants: CollectionEntry<'restaurants'>[];
+}
+
+const { restaurants } = Astro.props;
+
+const filterLabels: Record<string, string> = {
+  pizza: 'Pizza',
+  mexicana: 'Mexicana',
+  italiana: 'Italiana',
+  americana: 'Americana',
+  asiatica: 'Asiática'
+};
+
+const cuisineOrder = [...new Set(restaurants.map((r) => r.data.cuisine))];
+const tabs = cuisineOrder.map((cuisine) => ({
+  cuisine,
+  label: filterLabels[cuisine] ?? cuisine,
+  count: restaurants.filter((r) => r.data.cuisine === cuisine).length
+}));
+---
+<section class="section section-alt" id="restaurantes">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Comer como local</span>
+      <h2 class="section-title">{restaurants.length} restaurantes junto a cada ruta</h2>
+      <p class="section-sub">Seleccionados por cercanía a nuestros tours y por algo más importante: que valgan la parada. Filtra por tipo de cocina.</p>
+    </div>
+
+    <div class="map-tabs" role="group" aria-label="Filtrar restaurantes por cocina" id="restTabs">
+      <button class="map-tab" data-filter="all" aria-pressed="true">Todos <span class="tab-count">{restaurants.length}</span></button>
+      {tabs.map((tab) => (
+        <button class="map-tab" data-filter={tab.cuisine} aria-pressed="false">{tab.label} <span class="tab-count">{tab.count}</span></button>
+      ))}
+    </div>
+
+    <p class="rest-empty" id="restEmpty" hidden>No hay restaurantes de esta cocina todavía — prueba otro filtro.</p>
+
+    <div class="grid grid-3" id="restGrid">
+      {restaurants.map((restaurant) => <RestaurantCard restaurant={restaurant.data} />)}
+    </div>
+
+    <div class="rest-more-wrap">
+      <button class="btn btn-outline" id="restMoreBtn" hidden>Ver más restaurantes</button>
+    </div>
+  </div>
+</section>
