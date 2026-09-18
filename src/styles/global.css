@@ -129,7 +129,7 @@
     height:168px; border-radius:calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0 0; position:relative; overflow:hidden;
     display:flex; align-items:flex-end; padding:16px; color:#fff;
   }
-  .tour-card.premium .tour-art, .tour-card.free .tour-art{
+  .tour-card.premium .tour-art, .tour-card.free .tour-art, .tour-card.accent .tour-art{
     border-radius:calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) 0 0;
   }
   .tour-art::before{content:"";position:absolute; inset:0; background-image:radial-gradient(circle, rgba(255,255,255,.35) 1.5px, transparent 1.5px); background-size:16px 16px; opacity:.5;}
@@ -154,15 +154,18 @@
   .stars{color:var(--gold); font-size:.85rem; letter-spacing:1px;}
   .rating-row{display:flex; align-items:center; gap:8px; font-size:.8rem; color:var(--ink-mute);}
 
-  .tour-card.premium{background:var(--surface); border:2px solid var(--coral); color:var(--ink);}
+  .tour-card.premium{background:var(--surface); border:2px solid var(--gold); color:var(--ink);}
   .tour-card.premium .tour-body .desc{color:var(--ink-soft);}
   .tour-card.premium h3{color:var(--ink);}
   .tour-card.premium .tour-meta{color:var(--ink-mute);}
-  .tour-card.premium .btn-outline{border-color:var(--coral); color:var(--coral-dark);}
-  .tour-card.premium .btn-outline:hover{background:var(--coral); color:#fff;}
+  .tour-card.premium .btn-outline{border-color:var(--gold); color:color-mix(in srgb, var(--gold) 55%, black);}
+  .tour-card.premium .btn-outline:hover{background:var(--gold); color:#fff;}
   .tour-card.free{border:2px solid #178F4E;}
+  .tour-card.free .btn-outline{border-color:#178F4E; color:#178F4E;}
+  .tour-card.free .btn-outline:hover{background:#178F4E; color:#fff;}
+  .tour-card.accent{border:2px solid var(--coral);}
   .premium-badge{
-    position:absolute; top:14px; left:16px; z-index:1; background:var(--coral); color:#fff;
+    position:absolute; top:14px; left:16px; z-index:1; background:var(--gold); color:#fff;
     font-family:"Space Mono"; font-size:.66rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
     padding:5px 10px; border-radius:100px; display:flex; align-items:center; gap:5px;
   }

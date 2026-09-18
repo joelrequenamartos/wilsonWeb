@@ -7,8 +7,9 @@ interface Props {
 
 const { tour } = Astro.props;
 const isFree = !tour.premium && tour.category === 'free';
+const isAccent = tour.id === 'bronx-gospel';
 ---
-<article class:list={['tour-card', { premium: tour.premium, free: isFree }]}>
+<article class:list={['tour-card', { premium: tour.premium, free: isFree, accent: isAccent }]}>
   {tour.premium && (
     <div class="premium-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Premium</div>
   )}
