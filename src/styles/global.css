@@ -286,7 +286,14 @@
   @media (prefers-reduced-motion: reduce){.ad-track{transition:none;}}
 
   /* ---------- reviews ---------- */
-  .review-summary{display:flex; align-items:center; gap:22px; margin-bottom:32px; flex-wrap:wrap;}
+  .section-head-split{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:32px; flex-wrap:wrap;
+    margin-bottom:clamp(28px,4vw,44px);
+  }
+  .review-summary{display:flex; flex-direction:column; align-items:flex-start; gap:12px;}
+  .review-score-row{display:flex; align-items:center; gap:14px;}
+  .review-badges-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  @media (max-width:900px){.section-head-split{align-items:flex-start;}}
   .ta-badge{
     display:inline-flex; align-items:center; gap:8px; padding:9px 18px; border-radius:100px;
     background:var(--surface); border:1px solid var(--line); font-family:"Space Mono"; font-size:.86rem;

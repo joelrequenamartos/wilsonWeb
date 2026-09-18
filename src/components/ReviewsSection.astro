@@ -10,19 +10,25 @@ const { reviews } = Astro.props;
 ---
 <section class="section" id="resenas">
   <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Testimonios reales</span>
-      <h2 class="section-title">Lee lo que dicen las <span style="color:var(--coral);">personas</span> que confiaron en mí</h2>
-    </div>
-
-    <div class="review-summary reveal">
-      <div class="review-score">4.9</div>
-      <div class="review-score-meta">
-        <span class="stars" style="font-size:1.1rem;">★★★★★</span>
-        <span style="font-size:.85rem; color:var(--ink-soft);">Basado en 546 reseñas · Google &amp; TripAdvisor</span>
+    <div class="section-head-split reveal">
+      <div class="section-head" style="margin-bottom:0;">
+        <span class="eyebrow">Testimonios reales</span>
+        <h2 class="section-title">Lee lo que dicen las <span style="color:var(--coral);">personas</span> que confiaron en mí</h2>
       </div>
-      <a class="ta-badge" href="https://maps.app.goo.gl/3cYPLtHhAaEhvMwv7" target="_blank" rel="noopener"><img src="/images/brand/google.svg" alt="Google" />Google</a>
-      <a class="ta-badge" href="https://www.tripadvisor.es/Attraction_Review-g60763-d33009776-Reviews-Silvertoursny-New_York_City_New_York.html" target="_blank" rel="noopener"><img src="/images/brand/tripadvisor.svg" alt="TripAdvisor" />TripAdvisor</a>
+
+      <div class="review-summary">
+        <div class="review-score-row">
+          <div class="review-score">4.9</div>
+          <div class="review-score-meta">
+            <span class="stars" style="font-size:1.1rem;">★★★★★</span>
+            <span style="font-size:.85rem; color:var(--ink-soft);">Basado en +800 reseñas</span>
+          </div>
+        </div>
+        <div class="review-badges-row">
+          <a class="ta-badge" href="https://maps.app.goo.gl/3cYPLtHhAaEhvMwv7" target="_blank" rel="noopener"><img src="/images/brand/google.svg" alt="Google" />Google</a>
+          <a class="ta-badge" href="https://www.tripadvisor.es/Attraction_Review-g60763-d33009776-Reviews-Silvertoursny-New_York_City_New_York.html" target="_blank" rel="noopener"><img src="/images/brand/tripadvisor.svg" alt="TripAdvisor" />TripAdvisor</a>
+        </div>
+      </div>
     </div>
 
     <TourPhotosCarousel reviews={reviews} />
