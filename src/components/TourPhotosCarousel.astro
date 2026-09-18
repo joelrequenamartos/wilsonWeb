@@ -15,18 +15,31 @@ const photoOrder = [...priorityOrder, ...rest];
 const photos = photoOrder.map((n) => `/images/reviews/review-${String(n).padStart(2, '0')}.jpg`);
 
 const slides = photos.map((src, i) => ({ src, review: reviews[i % reviews.length]?.data }));
+
+// Clones a cada lado para que el carrusel sea cíclico de verdad: al pasar
+// del último al primero (o viceversa) se salta al instante sin cruzar
+// visualmente por todas las fotos intermedias.
+const CLONES = 2;
+const loopSlides = [...slides.slice(-CLONES), ...slides, ...slides.slice(0, CLONES)];
 ---
-<div class="review-carousel reveal" id="reviewCarousel" aria-roledescription="carrusel" aria-label="Reseñas de clientes con fotos de nuestros tours">
+<div
+  class="review-carousel reveal"
+  id="reviewCarousel"
+  aria-roledescription="carrusel"
+  aria-label="Reseñas de clientes con fotos de nuestros tours"
+  data-real-length={slides.length}
+  data-clones={CLONES}
+>
   <button class="review-nav-btn review-prev" id="reviewPrev" aria-label="Reseña anterior">
     <svg class="icon"><use href="#i-arrow" /></svg>
   </button>
 
   <div class="review-viewport">
     <div class="review-track" id="reviewTrack">
-      {slides.map((slide, i) => (
+      {loopSlides.map((slide, i) => (
         <div class="review-slide" data-index={i}>
           <div class="review-slide-photo">
-            <img src={slide.src} alt={`Clientes de Silver Tours NY en uno de nuestros tours — foto ${i + 1}`} loading="lazy" />
+            <img src={slide.src} alt={`Clientes de Silver Tours NY en uno de nuestros tours`} loading="lazy" />
           </div>
           {slide.review && (
             <div class="review-slide-quote">
@@ -46,6 +59,4 @@ const slides = photos.map((src, i) => ({ src, review: reviews[i % reviews.length
   <button class="review-nav-btn review-next" id="reviewNext" aria-label="Reseña siguiente">
     <svg class="icon"><use href="#i-arrow" /></svg>
   </button>
-
-  <div class="review-counter" id="reviewCounter">1 / {photoCount}</div>
 </div>
