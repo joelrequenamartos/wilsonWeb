@@ -39,7 +39,7 @@ const loopSlides = [...slides.slice(-CLONES), ...slides, ...slides.slice(0, CLON
       {loopSlides.map((slide, i) => (
         <div class="review-slide" data-index={i}>
           <div class="review-slide-photo">
-            <img src={slide.src} alt={`Clientes de Silver Tours NY en uno de nuestros tours`} loading="lazy" />
+            <img src={slide.src} alt={`Clientes de Silver Tours NY en uno de nuestros tours`} />
           </div>
           {slide.review && (
             <div class="review-slide-quote">
