@@ -1,5 +1,6 @@
 ---
 import Icons from '../components/Icons.astro';
+import WhatsAppBubble from '../components/WhatsAppBubble.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -44,6 +45,7 @@ const ogImageURL = new URL(image, Astro.site);
   <a class="skip-link" href="#main">Saltar al contenido</a>
   <Icons />
   <slot />
+  <WhatsAppBubble />
   <script src="/script.js" defer></script>
 </body>
 </html>
