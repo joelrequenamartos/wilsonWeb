@@ -164,6 +164,8 @@
   .tour-card.free .btn-outline{border-color:#178F4E; color:#178F4E;}
   .tour-card.free .btn-outline:hover{background:#178F4E; color:#fff;}
   .tour-card.accent{border:2px solid var(--coral);}
+  .tour-card.accent .btn-outline{border-color:var(--coral); color:var(--coral-dark);}
+  .tour-card.accent .btn-outline:hover{background:var(--coral); color:#fff;}
   .premium-badge{
     position:absolute; top:14px; left:16px; z-index:1; background:#D4AF37; color:#fff;
     font-family:"Space Mono"; font-size:.66rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
