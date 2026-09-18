@@ -14,7 +14,7 @@ const { tours } = Astro.props;
       <h2 class="section-title">Tours Disponibles</h2>
     </div>
 
-    <div class="grid grid-3">
+    <div class="grid grid-2 tours-grid">
       {tours.map((tour) => <TourCard tour={tour.data} />)}
     </div>
   </div>
