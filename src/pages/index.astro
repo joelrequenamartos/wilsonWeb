@@ -5,13 +5,14 @@ import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import ToursSection from '../components/ToursSection.astro';
 import ReviewsSection from '../components/ReviewsSection.astro';
-import CtaBanner from '../components/CtaBanner.astro';
+import AdBanner from '../components/AdBanner.astro';
 import Footer from '../components/Footer.astro';
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
 
 const tours = (await getCollection('tours')).sort(byOrder);
 const reviews = (await getCollection('reviews')).sort(byOrder);
+const restaurants = (await getCollection('restaurants')).sort(byOrder);
 ---
 <Layout>
   <Header />
@@ -19,7 +20,11 @@ const reviews = (await getCollection('reviews')).sort(byOrder);
     <Hero />
     <ToursSection tours={tours} />
     <ReviewsSection reviews={reviews} />
-    <CtaBanner />
+    <section class="section section-alt">
+      <div class="wrap">
+        <AdBanner restaurants={restaurants} />
+      </div>
+    </section>
   </main>
   <Footer tours={tours} />
 </Layout>
