@@ -22,7 +22,6 @@ const isFree = !tour.premium && tour.category === 'free';
   <div class="tour-body">
     <div class="tour-heading">
       <h3><a class="tour-title-link" href={`/tours/${tour.id}`}>{tour.name}</a></h3>
-      <div class="rating-row"><span class="stars">★★★★★</span>{tour.rating.toFixed(1)} ({tour.reviewCount})</div>
     </div>
     <p class="desc">{tour.description}</p>
     <div class="tour-meta">
