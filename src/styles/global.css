@@ -124,8 +124,11 @@
   }
   .tour-card:hover{transform:translateY(-6px);}
   .tour-art{
-    height:168px; border-radius:var(--radius-lg) var(--radius-lg) 0 0; position:relative; overflow:hidden;
+    height:168px; border-radius:calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0 0; position:relative; overflow:hidden;
     display:flex; align-items:flex-end; padding:16px; color:#fff;
+  }
+  .tour-card.premium .tour-art, .tour-card.free .tour-art{
+    border-radius:calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) 0 0;
   }
   .tour-art::before{content:"";position:absolute; inset:0; background-image:radial-gradient(circle, rgba(255,255,255,.35) 1.5px, transparent 1.5px); background-size:16px 16px; opacity:.5;}
   .tour-art-photo{background:none;}
@@ -136,9 +139,6 @@
     background:rgba(255,255,255,.22); padding:5px 10px; border-radius:100px; display:inline-flex; align-items:center; gap:6px; position:relative; z-index:1;
   }
   .cat-tag::before{content:"";width:7px;height:7px;border-radius:50%; background:currentColor;}
-  .tour-perf{position:relative; height:0; border-top:2px dashed var(--line);}
-  .tour-perf .notch{position:absolute; top:50%; transform:translateY(-50%); width:22px; height:22px; border-radius:50%; background:var(--bg-alt);}
-  .tour-perf .notch-l{left:-11px;} .tour-perf .notch-r{right:-11px;}
   .tour-body{padding:20px; display:flex; flex-direction:column; gap:12px; flex:1;}
   .tour-heading{display:flex; flex-direction:column; gap:6px;}
   .tour-body h3{font-size:1.22rem;}
