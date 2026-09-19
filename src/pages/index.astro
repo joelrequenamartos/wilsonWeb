@@ -15,12 +15,12 @@ const reviews = (await getCollection('reviews')).sort(byOrder);
 const restaurants = (await getCollection('restaurants')).sort(byOrder);
 ---
 <Layout>
-  <Header />
+  <Header transparent />
   <main id="main">
     <Hero />
     <ToursSection tours={tours} />
     <ReviewsSection reviews={reviews} />
-    <section class="section section-alt">
+    <section class="section">
       <div class="wrap">
         <AdBanner restaurants={restaurants} />
       </div>

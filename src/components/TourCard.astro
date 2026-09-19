@@ -10,24 +10,20 @@ const isFree = !tour.premium && tour.category === 'free';
 const isAccent = tour.id === 'bronx-gospel';
 ---
 <article class:list={['tour-card', { premium: tour.premium, free: isFree, accent: isAccent }]}>
-  {tour.premium && (
-    <div class="premium-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Premium</div>
-  )}
-  {isFree && (
-    <div class="premium-badge free-badge">Gratuito</div>
-  )}
-  <div class:list={['tour-art', tour.art, { 'tour-art-photo': tour.coverImage }]}>
-    {tour.coverImage && <img src={tour.coverImage} alt={tour.name} style={tour.coverPosition ? `object-position:${tour.coverPosition}` : undefined} />}
-  </div>
-  <div class="tour-body">
-    <div class="tour-heading">
-      <h3><a class="tour-title-link" href={`/tours/${tour.id}`}>{tour.name}</a></h3>
+  <a class="tour-card-link" href={`/tours/${tour.id}`}>
+    {tour.premium && (
+      <div class="premium-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Premium</div>
+    )}
+    {isFree && (
+      <div class="premium-badge free-badge">Gratuito</div>
+    )}
+    <div class:list={['tour-art', tour.art, { 'tour-art-photo': tour.coverImage }]}>
+      {tour.coverImage && <img src={tour.coverImage} alt="" style={tour.coverPosition ? `object-position:${tour.coverPosition}` : undefined} />}
     </div>
-    <p class="desc">{tour.description}</p>
-    <div class="tour-meta">
-      <span><svg class="icon"><use href="#i-clock" /></svg>{tour.duration}</span>
-      <span><svg class="icon"><use href="#i-pin" /></svg>{tour.location}</span>
+    <div class="tour-scrim" aria-hidden="true"></div>
+    <div class="tour-overlay">
+      <h3 class="tour-overlay-title">{tour.name}</h3>
+      <p class="tour-overlay-desc">{tour.description}</p>
     </div>
-    <a class="btn btn-outline tour-cta" href={`/tours/${tour.id}`}>Ver detalles <svg class="icon"><use href="#i-arrow" /></svg></a>
-  </div>
+  </a>
 </article>

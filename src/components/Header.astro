@@ -1,4 +1,9 @@
 ---
+interface Props {
+  transparent?: boolean;
+}
+const { transparent = false } = Astro.props;
+
 const navLinks = [
   { href: '/#tours', label: 'Tours' },
   { href: '/restaurantes', label: 'Restaurantes' },
@@ -7,10 +12,13 @@ const navLinks = [
   { href: '/sobre-wilson', label: 'Sobre Wilson' }
 ];
 ---
-<header class="site">
+<header class="site" data-transparent-hero={transparent ? 'true' : 'false'}>
   <div class="wrap nav">
     <a class="brand" href="#main">
-      <img class="brand-logo" src="/images/brand/logo-color.png" alt="Silver Tours NY" />
+      <span class="brand-logo-wrap">
+        <img class="brand-logo brand-logo-color" src="/images/brand/logo-color.png" alt="Silver Tours NY" />
+        <img class="brand-logo brand-logo-white" src="/images/brand/logo-white.png" alt="" aria-hidden="true" />
+      </span>
     </a>
     <nav>
       <ul class="nav-links" id="navLinks" data-open="false">

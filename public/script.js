@@ -1,4 +1,5 @@
 (function(){
+  var siteHeader = document.querySelector('header.site');
   var toggle = document.getElementById('navToggle');
   var links = document.getElementById('navLinks');
   var iconOpen = document.getElementById('navIconOpen');
@@ -10,6 +11,7 @@
       toggle.setAttribute('aria-expanded', String(!open));
       iconOpen.style.display = open ? '' : 'none';
       iconClose.style.display = open ? 'none' : '';
+      if(siteHeader && !open) siteHeader.setAttribute('data-hidden', 'false');
     });
     links.querySelectorAll('a').forEach(function(a){
       a.addEventListener('click', function(){
@@ -19,6 +21,132 @@
         iconClose.style.display = 'none';
       });
     });
+  }
+
+  if(siteHeader){
+    var headerLastScrollY = window.scrollY;
+    var headerTicking = false;
+    var HEADER_HIDE_AT = 120;
+    var HEADER_TOP_AT = 40;
+    var updateHeaderScroll = function(){
+      var scrollY = window.scrollY;
+      siteHeader.setAttribute('data-scrolled', scrollY > HEADER_TOP_AT ? 'true' : 'false');
+      var menuOpen = links && links.getAttribute('data-open') === 'true';
+      if(!menuOpen){
+        if(scrollY > headerLastScrollY && scrollY > HEADER_HIDE_AT){
+          siteHeader.setAttribute('data-hidden', 'true');
+        } else if(scrollY < headerLastScrollY){
+          siteHeader.setAttribute('data-hidden', 'false');
+        }
+      }
+      headerLastScrollY = scrollY;
+      headerTicking = false;
+    };
+    window.addEventListener('scroll', function(){
+      if(!headerTicking){
+        window.requestAnimationFrame(updateHeaderScroll);
+        headerTicking = true;
+      }
+    }, {passive: true});
+    updateHeaderScroll();
+  }
+
+  var toursScroll = document.getElementById('toursScroll');
+  if(toursScroll){
+    var toursTrack = document.getElementById('toursTrack');
+    var toursPrev = document.getElementById('toursPrev');
+    var toursNext = document.getElementById('toursNext');
+    var toursRealLength = parseInt(toursScroll.getAttribute('data-real-length'), 10) || 0;
+    var toursClones = parseInt(toursScroll.getAttribute('data-clones'), 10) || 0;
+    var toursLoop = toursClones > 0 && toursTrack.children.length === toursRealLength + toursClones * 2;
+
+    function toursStep(){
+      var card = toursScroll.querySelector('.tour-card');
+      return card ? card.getBoundingClientRect().width + 20 : toursScroll.clientWidth * 0.8;
+    }
+    // scrollLeft is local to the container, but offsetLeft is relative to <body> (no
+    // ancestor here is positioned), so the two aren't directly comparable — they're off
+    // by the container's own position on the page. This converts a card's position into
+    // the same "static content" coordinate space that scrollLeft actually uses.
+    function toursCardLeft(card){
+      return card.getBoundingClientRect().left - toursScroll.getBoundingClientRect().left + toursScroll.scrollLeft;
+    }
+    // The real tours sit between the cloned cards at each end; these are their pixel bounds.
+    function toursRealBounds(){
+      var cards = toursTrack.children;
+      return { start: toursCardLeft(cards[toursClones]), end: toursCardLeft(cards[toursClones + toursRealLength]) };
+    }
+    // Once a gesture (drag/wheel/button) settles inside the cloned zone, jump to the
+    // matching spot in the real one. The clone is pixel-identical, so nothing is seen to move.
+    function toursSettleLoop(){
+      if(!toursLoop) return;
+      var bounds = toursRealBounds();
+      var span = bounds.end - bounds.start;
+      if(toursScroll.scrollLeft >= bounds.end){
+        toursScroll.scrollLeft -= span;
+      } else if(toursScroll.scrollLeft < bounds.start - 2){
+        toursScroll.scrollLeft += span;
+      }
+    }
+    if(toursLoop) toursScroll.scrollLeft = toursRealBounds().start;
+
+    function toursUpdateNav(){
+      if(!toursPrev || !toursNext) return;
+      if(toursLoop){
+        toursPrev.disabled = false;
+        toursNext.disabled = false;
+        return;
+      }
+      var max = toursScroll.scrollWidth - toursScroll.clientWidth;
+      toursPrev.disabled = toursScroll.scrollLeft <= 4;
+      toursNext.disabled = toursScroll.scrollLeft >= max - 4;
+    }
+    if(toursPrev) toursPrev.addEventListener('click', function(){
+      toursScroll.scrollBy({ left: -toursStep(), behavior: 'smooth' });
+    });
+    if(toursNext) toursNext.addEventListener('click', function(){
+      toursScroll.scrollBy({ left: toursStep(), behavior: 'smooth' });
+    });
+    var toursSettleTimer = null;
+    toursScroll.addEventListener('scroll', function(){
+      toursUpdateNav();
+      if(toursLoop){
+        clearTimeout(toursSettleTimer);
+        toursSettleTimer = setTimeout(toursSettleLoop, 120);
+      }
+    }, { passive: true });
+    window.addEventListener('resize', toursUpdateNav);
+    toursUpdateNav();
+
+    // Click-and-drag with the mouse, like a touch swipe.
+    var toursDragging = false;
+    var toursDragMoved = false;
+    var toursDragStartX = 0;
+    var toursDragStartScroll = 0;
+    toursScroll.addEventListener('pointerdown', function(e){
+      if(e.pointerType === 'touch') return;
+      toursDragging = true;
+      toursDragMoved = false;
+      toursDragStartX = e.clientX;
+      toursDragStartScroll = toursScroll.scrollLeft;
+      toursScroll.classList.add('is-dragging');
+    });
+    window.addEventListener('pointermove', function(e){
+      if(!toursDragging) return;
+      var delta = e.clientX - toursDragStartX;
+      if(Math.abs(delta) > 4) toursDragMoved = true;
+      toursScroll.scrollLeft = toursDragStartScroll - delta;
+    });
+    window.addEventListener('pointerup', function(){
+      if(!toursDragging) return;
+      toursDragging = false;
+      // Re-enabling scroll-snap-type here is enough: the browser snaps to the
+      // nearest card on its own the moment it's active again.
+      toursScroll.classList.remove('is-dragging');
+    });
+    toursScroll.addEventListener('click', function(e){
+      if(toursDragMoved){ e.preventDefault(); e.stopPropagation(); toursDragMoved = false; }
+    }, true);
   }
 
   var search = document.getElementById('searchBar');
