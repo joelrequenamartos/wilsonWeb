@@ -186,7 +186,7 @@
   }
   .tours-scroll.is-dragging{cursor:grabbing; scroll-snap-type:none;}
   .tours-scroll::-webkit-scrollbar{display:none;}
-  .tours-track{display:flex; gap:16px; padding:4px 4px 14px;}
+  .tours-track{display:flex; gap:16px; padding:10px 4px 36px;}
   .tours-track .tour-card{flex:0 0 auto; width:80vw; scroll-snap-align:start;}
   @media (min-width:560px){.tours-track .tour-card{width:300px;}}
   @media (min-width:940px){.tours-track .tour-card{width:320px;}}

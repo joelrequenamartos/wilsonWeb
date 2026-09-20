@@ -7,15 +7,6 @@ interface Props {
 }
 
 const { tours } = Astro.props;
-
-// Clones a cada lado para que el carrusel sea cíclico de verdad, igual que
-// el de reseñas: al llegar al final se sigue deslizando hacia el principio
-// sin notarse el salto (ver toursSettleLoop en script.js). Se clona el set
-// completo (no solo un par de tarjetas): con tarjetas pequeñas caben varias
-// a la vez en pantallas anchas, y con pocos clones el scroll nativo no llega
-// a alcanzar físicamente el punto de reinicio del bucle.
-const CLONES = tours.length;
-const loopTours = [...tours, ...tours, ...tours];
 ---
 <section class="section" id="tours">
   <div class="wrap">
@@ -31,9 +22,9 @@ const loopTours = [...tours, ...tours, ...tours];
       </div>
     </div>
 
-    <div class="tours-scroll" id="toursScroll" data-real-length={tours.length} data-clones={CLONES}>
+    <div class="tours-scroll" id="toursScroll">
       <div class="tours-track" id="toursTrack">
-        {loopTours.map((tour) => <TourCard tour={tour.data} />)}
+        {tours.map((tour) => <TourCard tour={tour.data} />)}
       </div>
     </div>
   </div>

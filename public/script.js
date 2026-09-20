@@ -53,50 +53,15 @@
 
   var toursScroll = document.getElementById('toursScroll');
   if(toursScroll){
-    var toursTrack = document.getElementById('toursTrack');
     var toursPrev = document.getElementById('toursPrev');
     var toursNext = document.getElementById('toursNext');
-    var toursRealLength = parseInt(toursScroll.getAttribute('data-real-length'), 10) || 0;
-    var toursClones = parseInt(toursScroll.getAttribute('data-clones'), 10) || 0;
-    var toursLoop = toursClones > 0 && toursTrack.children.length === toursRealLength + toursClones * 2;
 
     function toursStep(){
       var card = toursScroll.querySelector('.tour-card');
       return card ? card.getBoundingClientRect().width + 20 : toursScroll.clientWidth * 0.8;
     }
-    // scrollLeft is local to the container, but offsetLeft is relative to <body> (no
-    // ancestor here is positioned), so the two aren't directly comparable — they're off
-    // by the container's own position on the page. This converts a card's position into
-    // the same "static content" coordinate space that scrollLeft actually uses.
-    function toursCardLeft(card){
-      return card.getBoundingClientRect().left - toursScroll.getBoundingClientRect().left + toursScroll.scrollLeft;
-    }
-    // The real tours sit between the cloned cards at each end; these are their pixel bounds.
-    function toursRealBounds(){
-      var cards = toursTrack.children;
-      return { start: toursCardLeft(cards[toursClones]), end: toursCardLeft(cards[toursClones + toursRealLength]) };
-    }
-    // Once a gesture (drag/wheel/button) settles inside the cloned zone, jump to the
-    // matching spot in the real one. The clone is pixel-identical, so nothing is seen to move.
-    function toursSettleLoop(){
-      if(!toursLoop) return;
-      var bounds = toursRealBounds();
-      var span = bounds.end - bounds.start;
-      if(toursScroll.scrollLeft >= bounds.end){
-        toursScroll.scrollLeft -= span;
-      } else if(toursScroll.scrollLeft < bounds.start - 2){
-        toursScroll.scrollLeft += span;
-      }
-    }
-    if(toursLoop) toursScroll.scrollLeft = toursRealBounds().start;
-
     function toursUpdateNav(){
       if(!toursPrev || !toursNext) return;
-      if(toursLoop){
-        toursPrev.disabled = false;
-        toursNext.disabled = false;
-        return;
-      }
       var max = toursScroll.scrollWidth - toursScroll.clientWidth;
       toursPrev.disabled = toursScroll.scrollLeft <= 4;
       toursNext.disabled = toursScroll.scrollLeft >= max - 4;
@@ -107,22 +72,7 @@
     if(toursNext) toursNext.addEventListener('click', function(){
       toursScroll.scrollBy({ left: toursStep(), behavior: 'smooth' });
     });
-    // 'scrollend' fires exactly when momentum/inertia scrolling has fully
-    // stopped, which touch swipes can take a while to do. Where it's not
-    // supported, fall back to a longer debounce so a still-decelerating
-    // mobile swipe doesn't get corrected mid-glide.
-    var toursHasScrollEnd = 'onscrollend' in window;
-    var toursSettleTimer = null;
-    toursScroll.addEventListener('scroll', function(){
-      toursUpdateNav();
-      if(toursLoop && !toursHasScrollEnd){
-        clearTimeout(toursSettleTimer);
-        toursSettleTimer = setTimeout(toursSettleLoop, 260);
-      }
-    }, { passive: true });
-    if(toursLoop && toursHasScrollEnd){
-      toursScroll.addEventListener('scrollend', toursSettleLoop, { passive: true });
-    }
+    toursScroll.addEventListener('scroll', toursUpdateNav, { passive: true });
     window.addEventListener('resize', toursUpdateNav);
     toursUpdateNav();
 
