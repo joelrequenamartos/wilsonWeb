@@ -333,6 +333,7 @@
   @media (max-width:640px){.ad-arrow{width:28px;height:28px;} .ad-prev{left:8px;} .ad-next{right:8px;}}
 
   .ad-bottom{position:absolute; right:18px; bottom:14px; display:flex; align-items:center; gap:10px; z-index:2;}
+  .ad-more-cta{display:flex; justify-content:center; margin-top:28px;}
   .ad-dots{display:flex; gap:6px;}
   .ad-dot{width:8px; height:8px; padding:0; border-radius:100px; border:none; background:rgba(255,255,255,.35); cursor:pointer; transition:width .2s ease, background .2s ease;}
   .ad-dot[aria-current="true"]{width:22px; background:#fff;}
