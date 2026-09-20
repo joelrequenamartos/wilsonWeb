@@ -107,14 +107,22 @@
     if(toursNext) toursNext.addEventListener('click', function(){
       toursScroll.scrollBy({ left: toursStep(), behavior: 'smooth' });
     });
+    // 'scrollend' fires exactly when momentum/inertia scrolling has fully
+    // stopped, which touch swipes can take a while to do. Where it's not
+    // supported, fall back to a longer debounce so a still-decelerating
+    // mobile swipe doesn't get corrected mid-glide.
+    var toursHasScrollEnd = 'onscrollend' in window;
     var toursSettleTimer = null;
     toursScroll.addEventListener('scroll', function(){
       toursUpdateNav();
-      if(toursLoop){
+      if(toursLoop && !toursHasScrollEnd){
         clearTimeout(toursSettleTimer);
-        toursSettleTimer = setTimeout(toursSettleLoop, 120);
+        toursSettleTimer = setTimeout(toursSettleLoop, 260);
       }
     }, { passive: true });
+    if(toursLoop && toursHasScrollEnd){
+      toursScroll.addEventListener('scrollend', toursSettleLoop, { passive: true });
+    }
     window.addEventListener('resize', toursUpdateNav);
     toursUpdateNav();
 
