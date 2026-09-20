@@ -20,7 +20,7 @@ const { reviews } = Astro.props;
         <div class="review-score-row">
           <div class="review-score">4.9</div>
           <div class="review-score-meta">
-            <span class="stars" style="font-size:1.1rem;">★★★★★</span>
+            <span class="stars" style="font-size:1.5rem;">★★★★★</span>
             <span style="font-size:.85rem; color:var(--ink-soft);">Basado en +800 reseñas</span>
           </div>
         </div>
@@ -31,6 +31,8 @@ const { reviews } = Astro.props;
       </div>
     </div>
 
+  </div>
+  <div class="wrap wrap-wide">
     <TourPhotosCarousel reviews={reviews} />
   </div>
 </section>
