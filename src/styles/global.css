@@ -648,7 +648,7 @@
 
   /* ---------- social section (home) ---------- */
   .reels-grid{
-    display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-top:8px;
+    display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-top:32px;
   }
   .reel-placeholder{
     aspect-ratio:9/16; border-radius:var(--radius-md); border:1.5px dashed var(--line);

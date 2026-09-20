@@ -23,6 +23,14 @@ const reels = [
       <p class="section-sub" style="margin-inline:auto;">Los últimos reels y todas nuestras redes, en un mismo sitio</p>
     </div>
 
+    <div class="social-icons-row reveal">
+      {socials.map((s) => (
+        <a class="social-icon-btn" href={s.href} aria-label={s.label} target="_blank" rel="noopener">
+          <svg class="icon" style="width:22px;height:22px"><use href={`#${s.icon}`} /></svg>
+        </a>
+      ))}
+    </div>
+
     <div class="reels-grid reveal">
       {reels.map((reel) => (
         reel ? (
@@ -43,14 +51,6 @@ const reels = [
             <span>Reel próximamente</span>
           </div>
         )
-      ))}
-    </div>
-
-    <div class="social-icons-row reveal">
-      {socials.map((s) => (
-        <a class="social-icon-btn" href={s.href} aria-label={s.label} target="_blank" rel="noopener">
-          <svg class="icon" style="width:22px;height:22px"><use href={`#${s.icon}`} /></svg>
-        </a>
       ))}
     </div>
   </div>
