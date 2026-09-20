@@ -444,4 +444,16 @@
   } else {
     document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
   }
+
+  document.querySelectorAll('.reel-video-card').forEach(function(card){
+    var video = card.querySelector('video');
+    if(!video) return;
+    function play(){ card.classList.add('is-playing'); video.play().catch(function(){}); }
+    function stop(){ card.classList.remove('is-playing'); video.pause(); video.currentTime = 0; }
+    card.addEventListener('mouseenter', play);
+    card.addEventListener('mouseleave', stop);
+    card.addEventListener('click', function(){
+      if(card.classList.contains('is-playing')) stop(); else play();
+    });
+  });
 })();

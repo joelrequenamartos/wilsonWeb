@@ -1,0 +1,57 @@
+---
+const socials = [
+  { icon: 'i-ig', label: 'Instagram', href: '#' },
+  { icon: 'i-tiktok', label: 'TikTok', href: '#' },
+  { icon: 'i-fb', label: 'Facebook', href: '#' },
+  { icon: 'i-yt', label: 'YouTube', href: '#' }
+];
+
+// Hasta que haya un feed automático de Instagram, los reels se cargan a mano
+// aquí (vídeo + portada). Los huecos sin vídeo se quedan como placeholder.
+const reels = [
+  { video: '/videos/roosevelt.mp4', poster: '/images/roosvelt.png' },
+  null,
+  null,
+  null,
+  null
+];
+---
+<section class="section section-alt" id="social">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-inline:auto; text-align:center;">
+      <h2 class="section-title">¿Quieres descubrir más cosas sobre Nueva York?</h2>
+      <p class="section-sub" style="margin-inline:auto;">Los últimos reels y todas nuestras redes, en un mismo sitio</p>
+    </div>
+
+    <div class="reels-grid reveal">
+      {reels.map((reel) => (
+        reel ? (
+          <div class="reel-video-card">
+            <video
+              src={reel.video}
+              poster={reel.poster}
+              muted
+              loop
+              playsinline
+              preload="metadata"
+            />
+            <span class="reel-play-hint"><svg class="icon" style="width:20px;height:20px"><use href="#i-play" /></svg></span>
+          </div>
+        ) : (
+          <div class="reel-placeholder">
+            <svg class="icon" style="width:26px;height:26px"><use href="#i-play" /></svg>
+            <span>Reel próximamente</span>
+          </div>
+        )
+      ))}
+    </div>
+
+    <div class="social-icons-row reveal">
+      {socials.map((s) => (
+        <a class="social-icon-btn" href={s.href} aria-label={s.label} target="_blank" rel="noopener">
+          <svg class="icon" style="width:22px;height:22px"><use href={`#${s.icon}`} /></svg>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
