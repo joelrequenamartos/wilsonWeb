@@ -84,8 +84,8 @@
   },
   {
     "id": "tour-privado-espanol",
-    "coverImage": "/images/actor.png",
-    "coverPosition": "center 35%",
+    "coverImage": "/images/tour-privado.png",
+    "coverPosition": "center",
     "name": "Tour Privado en Nueva York en Español",
     "category": "custom",
     "categoryLabel": "A tu medida",
