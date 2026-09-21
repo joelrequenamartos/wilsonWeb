@@ -6,6 +6,7 @@ import Hero from '../components/Hero.astro';
 import ToursSection from '../components/ToursSection.astro';
 import ReviewsSection from '../components/ReviewsSection.astro';
 import AdBanner from '../components/AdBanner.astro';
+import EventsSection from '../components/EventsSection.astro';
 import SocialSection from '../components/SocialSection.astro';
 import Footer from '../components/Footer.astro';
 
@@ -34,6 +35,7 @@ const restaurants = (await getCollection('restaurants')).sort(byOrder);
         </div>
       </div>
     </section>
+    <EventsSection />
     <SocialSection />
   </main>
   <Footer tours={tours} />

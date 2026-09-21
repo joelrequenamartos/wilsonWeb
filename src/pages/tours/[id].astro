@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import TourGallery from '../../components/TourGallery.astro';
+import { getTourBadge } from '../../lib/tourBadges';
 
 export async function getStaticPaths() {
   const tours = await getCollection('tours');
@@ -16,13 +17,15 @@ export async function getStaticPaths() {
 const { tour } = Astro.props;
 const t = tour.data;
 const allTours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+const otherTours = allTours.filter((other) => other.id !== t.id);
+const badge = getTourBadge(t);
 
 const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
 const waHref = `https://wa.me/16466297581?text=${waMessage}`;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
 ---
 <Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage}>
-  <Header />
+  <Header transparent={!!(t.coverImage || t.coverVideo)} />
   <main id="main">
     <section class:list={['tour-hero', { 'tour-hero-photo': t.coverImage || t.coverVideo }]}>
       {t.coverVideo ? (
@@ -41,19 +44,18 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
         </>
       )}
       <div class="wrap tour-hero-content">
-        <a class="tour-back" href="/#tours"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver a los tours</a>
-        <div class:list={['cat-tag', 'tour-hero-tag']}>{t.categoryLabel}</div>
+        <div class="tour-hero-top-row">
+          <div class:list={['cat-tag', 'tour-hero-tag', badge?.className]}>
+            {badge?.icon && <svg class="icon" style="width:12px;height:12px"><use href={`#${badge.icon}`} /></svg>}
+            {badge?.label ?? t.categoryLabel}
+          </div>
+        </div>
         <h1>{t.name}</h1>
         <p class="tour-hero-subtitle">{t.detail.subtitle}</p>
         <div class="tour-hero-meta">
           <span><svg class="icon"><use href="#i-clock" /></svg>{t.duration}</span>
           <span><svg class="icon"><use href={`#${t.levelIcon}`} /></svg>{t.level}</span>
           <span><svg class="icon"><use href="#i-pin" /></svg>{t.location}</span>
-          <span class="rating-row"><span class="stars">★★★★★</span>{t.rating.toFixed(1)} ({t.reviewCount})</span>
-        </div>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">Reservar por WhatsApp</a>
-          <a class="btn btn-outline" href="#faq">Ver preguntas frecuentes</a>
         </div>
       </div>
     </section>
@@ -61,25 +63,21 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
     <section class="section">
       <div class="wrap tour-detail-grid">
         <div class="tour-detail-main">
-          <p class="tour-intro">{t.detail.intro}</p>
+          <h2 class="tour-detail-h2">Descripción del Tour</h2>
+          <div class="tour-intro-wrap" id="tourIntro" data-expanded="false">
+            {t.detail.intro.split('\n\n').map((paragraph) => <p class="tour-intro">{paragraph}</p>)}
+          </div>
+          <button class="tour-intro-toggle" id="tourIntroToggle" aria-expanded="false" aria-controls="tourIntro">Leer más…</button>
 
           <h2 class="tour-detail-h2">Qué incluye</h2>
           <ul class="tour-check-list">
             {t.detail.includes.map((item) => (
-              <li><svg class="icon" style="color:var(--coral)"><use href="#i-badge" /></svg>{item}</li>
+              <li><svg class="icon icon-check"><use href="#i-check" /></svg>{item}</li>
+            ))}
+            {t.detail.notIncludes && t.detail.notIncludes.map((item) => (
+              <li><svg class="icon icon-cross"><use href="#i-close" /></svg>{item}</li>
             ))}
           </ul>
-
-          {t.detail.notIncludes && t.detail.notIncludes.length > 0 && (
-            <>
-              <h2 class="tour-detail-h2">No incluye</h2>
-              <ul class="tour-check-list tour-check-list-muted">
-                {t.detail.notIncludes.map((item) => (
-                  <li><svg class="icon"><use href="#i-close" /></svg>{item}</li>
-                ))}
-              </ul>
-            </>
-          )}
 
           <h2 class="tour-detail-h2">Lugares que visitarás</h2>
           <div class="tour-places-list">
@@ -101,7 +99,9 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
         <aside class="tour-detail-side">
           <div class="tour-info-card">
             <div class="tour-price">{t.price}<small>{t.priceNote}</small></div>
-            <p class="tour-price-detail">{t.detail.priceDetail}</p>
+            {t.detail.priceDetail !== `${t.price} ${t.priceNote}` && (
+              <p class="tour-price-detail">{t.detail.priceDetail}</p>
+            )}
             <dl class="tour-info-list">
               <div><dt><svg class="icon"><use href="#i-pin" /></svg>Punto de encuentro</dt><dd>{t.detail.meetingPoint}</dd></div>
               <div><dt><svg class="icon"><use href="#i-clock" /></svg>Duración</dt><dd>{t.duration}</dd></div>
@@ -109,8 +109,8 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
               <div><dt><svg class="icon"><use href="#i-tram" /></svg>Transporte</dt><dd>{t.detail.transport}</dd></div>
               <div><dt><svg class="icon"><use href="#i-badge" /></svg>Disponibilidad</dt><dd>{t.detail.availability}</dd></div>
             </dl>
-            <a class="btn btn-primary" style="width:100%; margin-top:6px;" href={waHref} target="_blank" rel="noopener">Reservar por WhatsApp</a>
-            <p class="tour-info-note">La reserva y el pago se gestionan directamente por WhatsApp, fuera de esta web.</p>
+            <a class="btn btn-primary" style="width:100%; margin-top:6px;" href={waHref} target="_blank" rel="noopener">Ver disponibilidad</a>
+            <p class="tour-info-note">Las reservas se gestionan fuera de esta web.</p>
           </div>
         </aside>
       </div>
@@ -118,7 +118,7 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
 
     {t.gallery && t.gallery.length > 0 && <TourGallery images={t.gallery} title={t.name} />}
 
-    <section class="section" id="faq">
+    <section class="section" id="faq" style="padding-bottom:24px;">
       <div class="wrap">
         <div class="section-head reveal">
           <span class="eyebrow">Antes de reservar</span>
@@ -135,15 +135,38 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
       </div>
     </section>
 
+    <section class="section section-alt" style="padding-top:12px;">
+      <div class="wrap">
+        <div class="section-head reveal" style="max-width:none;">
+          <span class="eyebrow">Sigue explorando</span>
+          <h2 class="section-title" style="white-space:nowrap;">Los turistas también suelen hacer...</h2>
+        </div>
+        <div class="related-tours-grid">
+          {otherTours.map((other) => (
+            <a class="related-tour-card" href={`/tours/${other.id}`}>
+              <div class="related-tour-photo">
+                {other.data.coverImage && <img src={other.data.coverImage} alt="" style={other.data.coverPosition ? `object-position:${other.data.coverPosition}` : undefined} />}
+              </div>
+              <div class="related-tour-body">
+                <span class="related-tour-location"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin" /></svg>{other.data.location}</span>
+                <h3>{other.data.name.replace(/^Free Tour:?\s*/i, '')}</h3>
+                <p class="desc">{other.data.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
     <section class="section cta-banner">
       <div class="wrap">
-        <span class="eyebrow">Reserva en menos de un minuto</span>
-        <h2>¿Listo para vivir {t.shortName}?</h2>
-        <p>Escríbenos por WhatsApp y confirmamos tu plaza al momento.</p>
+        <span class="eyebrow">Estamos para ayudarte</span>
+        <h2>¿Aún no te decides?</h2>
+        <p>Si tienes dudas contáctame por aquí</p>
         <div class="hero-cta">
-          <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">Reservar por WhatsApp</a>
-          <a class="btn btn-outline" href="/#tours">Ver otros tours</a>
+          <a class="btn btn-primary" href="mailto:info@silvertoursny.com">Contactar por email</a>
         </div>
+        <p class="tour-info-note">Las reservas se gestionan fuera de esta web.</p>
       </div>
     </section>
   </main>

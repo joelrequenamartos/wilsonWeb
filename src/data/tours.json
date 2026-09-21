@@ -1,8 +1,8 @@
 [
   {
     "id": "bronx-gospel",
-    "coverImage": "/images/bronx-gospel.jpg",
-    "coverPosition": "center",
+    "coverImage": "/images/bronxvertical.png",
+    "coverPosition": "center 42%",
     "name": "El Bronx y Misa Góspel en Harlem",
     "category": "culture",
     "categoryLabel": "Cultural",
@@ -10,7 +10,7 @@
     "icon": "i-music",
     "description": "Historia, música en vivo y gastronomía local en un domingo distinto: de una misa góspel auténtica a los sabores del Bronx.",
     "duration": "7 h",
-    "location": "Harlem",
+    "location": "Harlem, el Bronx",
     "level": "Solo domingos",
     "rating": 4.8,
     "reviewCount": 142,
@@ -25,18 +25,23 @@
     "levelIcon": "i-flag",
     "order": 1,
     "detail": {
-      "subtitle": "Misa góspel en Harlem y recorrido por el Bronx, en español",
-      "intro": "Vive una misa góspel auténtica en una iglesia bautista local y después cruza al Bronx para conocer Yankee Stadium, los grafitis de leyendas del hip-hop y las escaleras de Joker. Grupo reducido, guiado en español por un local con más de 15 años en el barrio.",
+      "subtitle": "Misa góspel en Harlem y recorrido por el Bronx",
+      "intro": "Quiero enseñarte Harlem y el Bronx como los conozco yo, recorriendo sus calles a pie y compartiendo contigo la historia, la música y la cultura que forman parte de estos barrios. Comenzaremos en Harlem viviendo una auténtica experiencia gospel en una iglesia bautista local y continuaremos hacia el Bronx para descubrir lugares como Yankee Stadium, los murales dedicados a leyendas del hip-hop y las famosas escaleras de Joker.\n\nLlevo más de 20 años recorriendo estos barrios y quiero que durante el tour no solo conozcas sus lugares más reconocibles, sino también algunos de esos rincones y detalles que hacen que Harlem y el Bronx sean únicos.",
       "meetingPoint": "214 W 42nd St, frente al New Amsterdam Theatre, a las 9:00 a.m.",
       "language": "Español",
       "priceDetail": "$65 por persona",
       "transport": "Caminando y en transporte público",
       "availability": "Solo domingos · plazas limitadas",
       "includes": [
-        "Entrada a la misa góspel en iglesia bautista local",
-        "Recorrido guiado por el Bronx y Harlem",
-        "Paradas en Yankee Stadium, Joker Stairs y grafitis de hip-hop",
-        "Grupo reducido"
+        "Wilson, guía local licenciado y certificado de habla hispana",
+        "Entrada incluida para experiencia góspel en iglesia bautista local",
+        "Recorrido guiado a pie y en transporte público",
+        "Visitas a puntos destacados del Bronx y Harlem",
+        "Detalles y sorpresas durante el recorrido",
+        "Reserva ahora y paga después"
+      ],
+      "notIncludes": [
+        "El pago de transporte público"
       ],
       "places": [
         {
@@ -45,34 +50,46 @@
           "image": "/images/gospel.png"
         },
         {
-          "name": "Yankee Stadium",
+          "name": "Escaleras del Joker",
+          "description": "Las escaleras que hizo famosas la película Joker, parada obligada para fotos."
+        },
+        {
+          "name": "Estadio de los Yankees",
           "description": "Parada en el estadio legendario de los Yankees, en el corazón del Bronx."
         },
         {
-          "name": "Grafitis de leyendas del hip-hop",
+          "name": "Graffitis de Hip-Hop",
           "description": "Murales y rincones que rinden homenaje a la cultura hip-hop nacida en el Bronx."
         },
         {
-          "name": "Joker Stairs",
-          "description": "Las escaleras que hizo famosas la película Joker, parada obligada para fotos."
+          "name": "Y más...",
+          "description": "Rincones y sorpresas que iremos descubriendo juntos durante el recorrido."
         }
       ],
       "faq": [
         {
-          "q": "¿Es apto para tu primera visita a Nueva York?",
-          "a": "Sí, es una de las mejores formas de tener una visión completa de la ciudad en poco tiempo."
+          "q": "¿Qué debo llevar?",
+          "a": "Calzado cómodo y ropa adecuada según la climatología (si hace mucho frío recuerda usar gorro y guantes)."
         },
         {
-          "q": "¿Es un tour privado?",
-          "a": "Es un tour premium en grupo reducido; también hay opción privada bajo consulta."
+          "q": "¿Qué pasa si llueve?",
+          "a": "El tour se realizará independientemente de las inclemencias del tiempo, siempre y cuando sea seguro para el grupo y siguiendo las recomendaciones de las autoridades locales. La ruta se adaptará todo lo posible para visitar las zonas más resguardadas. Si tienes dudas contacta directamente conmigo el día del tour y te podré dar información más precisa."
+        },
+        {
+          "q": "¿Se puede hacer el tour con niños?",
+          "a": "Sí, la edad no es un inconveniente, pero ten en cuenta que se aconseja el tour para niños que puedan desplazarse de manera independiente y caminar media o larga distancia. Los menores de 10 años no pagan."
         },
         {
           "q": "¿Se camina mucho?",
           "a": "Se camina bastante, pero el ritmo está equilibrado con pausas estratégicas."
         },
         {
-          "q": "¿Qué pasa si llueve?",
-          "a": "El tour se realiza igualmente incluso con lluvia ligera, adaptando el recorrido a zonas resguardadas."
+          "q": "¿Qué ocurre si llego tarde al punto de encuentro?",
+          "a": "En ese caso, ponte en contacto por WhatsApp conmigo (lo tienes disponible en la página web) y te mandaré instrucciones."
+        },
+        {
+          "q": "¿Cómo se realiza el pago?",
+          "a": "El pago se realiza en persona el día del tour. Se puede pagar en efectivo o con tarjeta, y en dólares o euros."
         }
       ]
     },
@@ -86,7 +103,7 @@
     "id": "tour-privado-espanol",
     "coverImage": "/images/tour-privado.png",
     "coverPosition": "center",
-    "name": "Tour Privado en Nueva York en Español",
+    "name": "Media Maratón de Wilson",
     "category": "custom",
     "categoryLabel": "A tu medida",
     "premium": true,
@@ -167,7 +184,7 @@
   },
   {
     "id": "maraton-de-wilson",
-    "coverImage": "/images/maraton.png",
+    "coverImage": "/images/estatua.png",
     "name": "La Maratón de Wilson",
     "category": "sports",
     "categoryLabel": "Día completo",

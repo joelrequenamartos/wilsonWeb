@@ -290,12 +290,14 @@
     var reviewSnapTimer = null;
     var reviewPlaying = !reviewReduceMotion;
 
+    var reviewOffset = 0;
     function reviewPosition(instant){
       var slide = reviewSlideEls[reviewIndex];
       var slideWidth = slide.offsetWidth;
       var viewportWidth = reviewViewport.offsetWidth;
       var slideCenter = slide.offsetLeft + slideWidth / 2;
       var offset = viewportWidth / 2 - slideCenter;
+      reviewOffset = offset;
       if(instant){
         reviewTrack.style.transition = 'none';
         reviewTrack.style.transform = 'translateX(' + offset + 'px)';
@@ -339,8 +341,55 @@
     reviewPrev.addEventListener('click', function(){ reviewGo(reviewIndex - 1); reviewStop(); reviewPlaying = false; });
     reviewNext.addEventListener('click', function(){ reviewGo(reviewIndex + 1); reviewStop(); reviewPlaying = false; });
     reviewSlideEls.forEach(function(el, i){
-      el.addEventListener('click', function(){ reviewGo(i); reviewStop(); reviewPlaying = false; });
+      el.addEventListener('click', function(){
+        if(reviewDragMoved){ reviewDragMoved = false; return; }
+        reviewGo(i); reviewStop(); reviewPlaying = false;
+      });
     });
+
+    // Drag / swipe support (mouse and touch, via Pointer Events).
+    var reviewDragging = false;
+    var reviewDragMoved = false;
+    var reviewDragStartX = 0;
+    var reviewDragBaseOffset = 0;
+    reviewViewport.style.touchAction = 'pan-y';
+    reviewViewport.addEventListener('pointerdown', function(e){
+      reviewDragging = true;
+      reviewDragMoved = false;
+      reviewDragStartX = e.clientX;
+      reviewDragBaseOffset = reviewOffset;
+      reviewTrack.style.transition = 'none';
+      reviewStop();
+      reviewPlaying = false;
+      if(reviewViewport.setPointerCapture){
+        try { reviewViewport.setPointerCapture(e.pointerId); } catch(err){}
+      }
+    });
+    reviewViewport.addEventListener('pointermove', function(e){
+      if(!reviewDragging) return;
+      var delta = e.clientX - reviewDragStartX;
+      if(Math.abs(delta) > 4) reviewDragMoved = true;
+      reviewTrack.style.transform = 'translateX(' + (reviewDragBaseOffset + delta) + 'px)';
+    });
+    function reviewEndDrag(e){
+      if(!reviewDragging) return;
+      reviewDragging = false;
+      reviewTrack.style.transition = '';
+      var endX = (e.clientX !== undefined ? e.clientX : reviewDragStartX);
+      var delta = endX - reviewDragStartX;
+      var slideWidth = reviewSlideEls[reviewIndex].offsetWidth;
+      var threshold = Math.min(60, slideWidth * 0.18);
+      if(delta <= -threshold){
+        reviewGo(reviewIndex + 1);
+      } else if(delta >= threshold){
+        reviewGo(reviewIndex - 1);
+      } else {
+        reviewPosition(false);
+      }
+    }
+    reviewViewport.addEventListener('pointerup', reviewEndDrag);
+    reviewViewport.addEventListener('pointercancel', reviewEndDrag);
+
     reviewCarousel.addEventListener('mouseenter', reviewStop);
     reviewCarousel.addEventListener('mouseleave', function(){ if(reviewPlaying) reviewStart(); });
     reviewCarousel.addEventListener('focusin', reviewStop);
@@ -406,4 +455,13 @@
       if(card.classList.contains('is-playing')) stop(); else play();
     });
   });
+
+  var tourIntro = document.getElementById('tourIntro');
+  var tourIntroToggle = document.getElementById('tourIntroToggle');
+  if(tourIntro && tourIntroToggle){
+    tourIntroToggle.addEventListener('click', function(){
+      tourIntro.setAttribute('data-expanded', 'true');
+      tourIntroToggle.setAttribute('aria-expanded', 'true');
+    });
+  }
 })();
