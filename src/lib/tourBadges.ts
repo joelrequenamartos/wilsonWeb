@@ -8,14 +8,14 @@ export interface TourBadge {
   className: string;
 }
 
-const CUSTOM_BADGES: Record<string, { label: string; icon?: string }> = {
-  'bronx-gospel': { label: 'Más Popular', icon: 'i-fire' },
-  'tour-privado-espanol': { label: 'Privado' }
+const CUSTOM_BADGES: Record<string, { label: string; icon?: string; className: string }> = {
+  'bronx-gospel': { label: 'Más Popular', icon: 'i-fire', className: 'badge-orange' },
+  'tour-privado-espanol': { label: 'Privado', className: 'badge-silver' }
 };
 
 export function getTourBadge(tour: Tour): TourBadge | null {
   const custom = CUSTOM_BADGES[tour.id];
-  if (custom) return { ...custom, className: 'badge-orange' };
+  if (custom) return custom;
 
   if (tour.premium) return { label: 'Premium', icon: 'i-star', className: 'badge-glow' };
 

@@ -5,20 +5,49 @@
   var iconOpen = document.getElementById('navIconOpen');
   var iconClose = document.getElementById('navIconClose');
   if(toggle){
+    var scrollLockY = 0;
+    function setMenuOpen(nextOpen){
+      links.setAttribute('data-open', String(nextOpen));
+      toggle.setAttribute('aria-expanded', String(nextOpen));
+      iconOpen.style.display = nextOpen ? 'none' : '';
+      iconClose.style.display = nextOpen ? '' : 'none';
+      if(siteHeader && nextOpen){
+        // Just opened: force the solid/white header regardless of scroll position,
+        // so the dropdown never sits under a transparent bar.
+        siteHeader.setAttribute('data-hidden', 'false');
+        siteHeader.setAttribute('data-scrolled', 'true');
+      }
+      // Lock the page behind the open dropdown so scrolling doesn't fight
+      // its position or reveal the hero underneath; restore the exact
+      // scroll position on close instead of snapping back to the top.
+      // This must happen BEFORE re-reading real scroll state below, since
+      // window.scrollY reports 0 as a side effect while the lock is active.
+      if(nextOpen){
+        scrollLockY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = (-scrollLockY) + 'px';
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+      } else {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        window.scrollTo(0, scrollLockY);
+      }
+      if(siteHeader && !nextOpen && typeof updateHeaderScroll === 'function'){
+        // Just closed and scroll position is restored: go back to whatever
+        // the real scroll position says.
+        updateHeaderScroll();
+      }
+    }
     toggle.addEventListener('click', function(){
       var open = links.getAttribute('data-open') === 'true';
-      links.setAttribute('data-open', String(!open));
-      toggle.setAttribute('aria-expanded', String(!open));
-      iconOpen.style.display = open ? '' : 'none';
-      iconClose.style.display = open ? 'none' : '';
-      if(siteHeader && !open) siteHeader.setAttribute('data-hidden', 'false');
+      setMenuOpen(!open);
     });
     links.querySelectorAll('a').forEach(function(a){
       a.addEventListener('click', function(){
-        links.setAttribute('data-open','false');
-        toggle.setAttribute('aria-expanded','false');
-        iconOpen.style.display = '';
-        iconClose.style.display = 'none';
+        setMenuOpen(false);
       });
     });
   }
@@ -30,16 +59,19 @@
     var HEADER_TOP_AT = 40;
     var updateHeaderScroll = function(){
       var scrollY = window.scrollY;
-      siteHeader.setAttribute('data-scrolled', scrollY > HEADER_TOP_AT ? 'true' : 'false');
       var menuOpen = links && links.getAttribute('data-open') === 'true';
+      // While the mobile menu is open, the scroll-lock trick (body made fixed,
+      // offset via top) makes window.scrollY briefly report 0 as a side effect,
+      // which would otherwise flip the header back to its transparent state.
       if(!menuOpen){
+        siteHeader.setAttribute('data-scrolled', scrollY > HEADER_TOP_AT ? 'true' : 'false');
         if(scrollY > headerLastScrollY && scrollY > HEADER_HIDE_AT){
           siteHeader.setAttribute('data-hidden', 'true');
         } else if(scrollY < headerLastScrollY){
           siteHeader.setAttribute('data-hidden', 'false');
         }
+        headerLastScrollY = scrollY;
       }
-      headerLastScrollY = scrollY;
       headerTicking = false;
     };
     window.addEventListener('scroll', function(){
@@ -462,6 +494,42 @@
     tourIntroToggle.addEventListener('click', function(){
       tourIntro.setAttribute('data-expanded', 'true');
       tourIntroToggle.setAttribute('aria-expanded', 'true');
+    });
+  }
+
+  var mobileStickyCta = document.getElementById('mobileStickyCta');
+  var tourInfoCard = document.getElementById('tourInfoCard');
+  var siteFooter = document.querySelector('footer.site');
+  var waBubble = document.getElementById('waBubble');
+  function updateWaBubblePosition(barVisible){
+    if(!waBubble) return;
+    if(barVisible && window.matchMedia('(max-width:880px)').matches){
+      var barHeight = mobileStickyCta.getBoundingClientRect().height;
+      waBubble.style.bottom = (barHeight + 14) + 'px';
+    } else {
+      waBubble.style.bottom = '';
+    }
+  }
+  if(mobileStickyCta && tourInfoCard && 'IntersectionObserver' in window){
+    // Hidden whenever the price card OR the footer is on screen (own CTA / end of page);
+    // visible the rest of the time, including over the closing "¿Aún no te decides?" section.
+    var stickyHideTargets = {};
+    function refreshStickyVisibility(){
+      var shouldHide = Object.keys(stickyHideTargets).some(function(key){ return stickyHideTargets[key]; });
+      var barVisible = !shouldHide;
+      mobileStickyCta.setAttribute('data-hidden', barVisible ? 'false' : 'true');
+      updateWaBubblePosition(barVisible);
+    }
+    var stickyObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        stickyHideTargets[entry.target.id || 'footer'] = entry.isIntersecting;
+      });
+      refreshStickyVisibility();
+    }, { threshold: 0.05 });
+    stickyObserver.observe(tourInfoCard);
+    if(siteFooter) stickyObserver.observe(siteFooter);
+    window.addEventListener('resize', function(){
+      updateWaBubblePosition(mobileStickyCta.getAttribute('data-hidden') === 'false');
     });
   }
 })();

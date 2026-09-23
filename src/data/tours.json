@@ -1,7 +1,7 @@
 [
   {
     "id": "bronx-gospel",
-    "coverImage": "/images/bronxvertical.png",
+    "coverImage": "/images/bronxnew.png",
     "coverPosition": "center 42%",
     "name": "El Bronx y Misa Góspel en Harlem",
     "category": "culture",
@@ -25,7 +25,7 @@
     "levelIcon": "i-flag",
     "order": 1,
     "detail": {
-      "subtitle": "Misa góspel en Harlem y recorrido por el Bronx",
+      "subtitle": "",
       "intro": "Quiero enseñarte Harlem y el Bronx como los conozco yo, recorriendo sus calles a pie y compartiendo contigo la historia, la música y la cultura que forman parte de estos barrios. Comenzaremos en Harlem viviendo una auténtica experiencia gospel en una iglesia bautista local y continuaremos hacia el Bronx para descubrir lugares como Yankee Stadium, los murales dedicados a leyendas del hip-hop y las famosas escaleras de Joker.\n\nLlevo más de 20 años recorriendo estos barrios y quiero que durante el tour no solo conozcas sus lugares más reconocibles, sino también algunos de esos rincones y detalles que hacen que Harlem y el Bronx sean únicos.",
       "meetingPoint": "214 W 42nd St, frente al New Amsterdam Theatre, a las 9:00 a.m.",
       "language": "Español",
@@ -51,19 +51,23 @@
         },
         {
           "name": "Escaleras del Joker",
-          "description": "Las escaleras que hizo famosas la película Joker, parada obligada para fotos."
+          "description": "Las escaleras que hizo famosas la película Joker, parada obligada para fotos.",
+          "image": "/images/imagenesbronx/escaleras.jpg"
         },
         {
           "name": "Estadio de los Yankees",
-          "description": "Parada en el estadio legendario de los Yankees, en el corazón del Bronx."
+          "description": "Parada en el estadio legendario de los Yankees, en el corazón del Bronx.",
+          "image": "/images/imagenesbronx/yankeestad.jpg"
         },
         {
           "name": "Graffitis de Hip-Hop",
-          "description": "Murales y rincones que rinden homenaje a la cultura hip-hop nacida en el Bronx."
+          "description": "Murales y rincones que rinden homenaje a la cultura hip-hop nacida en el Bronx.",
+          "image": "/images/imagenesbronx/grafitti.jpg"
         },
         {
           "name": "Y más...",
-          "description": "Rincones y sorpresas que iremos descubriendo juntos durante el recorrido."
+          "description": "Rincones y sorpresas que iremos descubriendo juntos durante el recorrido.",
+          "image": "/images/imagenesbronx/ymas.jpg"
         }
       ],
       "faq": [
@@ -94,16 +98,17 @@
       ]
     },
     "gallery": [
-      "placeholder",
-      "placeholder",
-      "placeholder"
+      "/images/imagenesbronx/escaleras.jpg",
+      "/images/imagenesbronx/yankeestad.jpg",
+      "/images/imagenesbronx/grafitti.jpg",
+      "/images/imagenesbronx/ymas.jpg"
     ]
   },
   {
     "id": "tour-privado-espanol",
     "coverImage": "/images/tour-privado.png",
     "coverPosition": "center",
-    "name": "Media Maratón de Wilson",
+    "name": "La Media Maratón de Wilson",
     "category": "custom",
     "categoryLabel": "A tu medida",
     "premium": true,
@@ -117,7 +122,7 @@
     "price": "$500",
     "priceNote": "grupo (hasta 4)",
     "art": "art-custom",
-    "shortName": "Tour privado en español",
+    "shortName": "Media Maratón de Wilson",
     "levelIcon": "i-family",
     "order": 3,
     "detail": {
@@ -257,7 +262,7 @@
   },
   {
     "id": "free-tour-roosevelt",
-    "coverImage": "/images/roosvelt2.png",
+    "coverImage": "/images/roosvelt3.png",
     "coverVideo": "/videos/roosevelt.mp4",
     "coverVideoPoster": "/videos/roosevelt-poster.jpg",
     "name": "Free Tour: Roosevelt Island hasta Manhattan",

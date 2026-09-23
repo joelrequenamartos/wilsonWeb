@@ -27,7 +27,7 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
 <Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage}>
   <Header transparent={!!(t.coverImage || t.coverVideo)} />
   <main id="main">
-    <section class:list={['tour-hero', { 'tour-hero-photo': t.coverImage || t.coverVideo }]}>
+    <section class:list={['tour-hero', `tour-hero-${t.id}`, { 'tour-hero-photo': t.coverImage || t.coverVideo }]}>
       {t.coverVideo ? (
         <>
           <div class="tour-hero-media">
@@ -43,6 +43,11 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
           <div class="tour-hero-scrim"></div>
         </>
       )}
+      {(t.coverImage || t.coverVideo) && (
+        <svg class="hero-cover-curve" viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,15 L0,11 C 30,11 60,1 100,1 L100,15 Z" />
+        </svg>
+      )}
       <div class="wrap tour-hero-content">
         <div class="tour-hero-top-row">
           <div class:list={['cat-tag', 'tour-hero-tag', badge?.className]}>
@@ -51,18 +56,18 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
           </div>
         </div>
         <h1>{t.name}</h1>
-        <p class="tour-hero-subtitle">{t.detail.subtitle}</p>
-        <div class="tour-hero-meta">
-          <span><svg class="icon"><use href="#i-clock" /></svg>{t.duration}</span>
-          <span><svg class="icon"><use href={`#${t.levelIcon}`} /></svg>{t.level}</span>
-          <span><svg class="icon"><use href="#i-pin" /></svg>{t.location}</span>
-        </div>
+        {t.detail.subtitle && <p class="tour-hero-subtitle">{t.detail.subtitle}</p>}
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" style="padding-top:32px;">
       <div class="wrap tour-detail-grid">
         <div class="tour-detail-main">
+          <div class="tour-hero-meta">
+            <span><svg class="icon"><use href="#i-clock" /></svg>{t.duration}</span>
+            <span><svg class="icon"><use href={`#${t.levelIcon}`} /></svg>{t.level}</span>
+            <span><svg class="icon"><use href="#i-pin" /></svg>{t.location}</span>
+          </div>
           <h2 class="tour-detail-h2">Descripción del Tour</h2>
           <div class="tour-intro-wrap" id="tourIntro" data-expanded="false">
             {t.detail.intro.split('\n\n').map((paragraph) => <p class="tour-intro">{paragraph}</p>)}
@@ -97,7 +102,7 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
         </div>
 
         <aside class="tour-detail-side">
-          <div class="tour-info-card">
+          <div class="tour-info-card" id="tourInfoCard">
             <div class="tour-price">{t.price}<small>{t.priceNote}</small></div>
             {t.detail.priceDetail !== `${t.price} ${t.priceNote}` && (
               <p class="tour-price-detail">{t.detail.priceDetail}</p>
@@ -139,13 +144,21 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
       <div class="wrap">
         <div class="section-head reveal" style="max-width:none;">
           <span class="eyebrow">Sigue explorando</span>
-          <h2 class="section-title" style="white-space:nowrap;">Los turistas también suelen hacer...</h2>
+          <h2 class="section-title related-tours-title">También te pueden interesar…</h2>
         </div>
         <div class="related-tours-grid">
-          {otherTours.map((other) => (
+          {otherTours.map((other) => {
+            const otherBadge = getTourBadge(other.data);
+            return (
             <a class="related-tour-card" href={`/tours/${other.id}`}>
               <div class="related-tour-photo">
                 {other.data.coverImage && <img src={other.data.coverImage} alt="" style={other.data.coverPosition ? `object-position:${other.data.coverPosition}` : undefined} />}
+                {otherBadge && (
+                  <div class:list={['premium-badge', otherBadge.className]}>
+                    {otherBadge.icon && <svg class="icon" style="width:12px;height:12px"><use href={`#${otherBadge.icon}`} /></svg>}
+                    {otherBadge.label}
+                  </div>
+                )}
               </div>
               <div class="related-tour-body">
                 <span class="related-tour-location"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin" /></svg>{other.data.location}</span>
@@ -153,7 +166,8 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
                 <p class="desc">{other.data.description}</p>
               </div>
             </a>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -170,5 +184,11 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
       </div>
     </section>
   </main>
+
+  <div class="mobile-sticky-cta" id="mobileStickyCta">
+    <div class="mobile-sticky-price">{t.price}<small>{t.priceNote}</small></div>
+    <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">Ver disponibilidad</a>
+  </div>
+
   <Footer tours={allTours} />
 </Layout>
