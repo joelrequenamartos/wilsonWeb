@@ -233,10 +233,24 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
     // content, and every command ends up applying to the very beginning.
     editorToolbar.addEventListener('mousedown', (e) => e.preventDefault());
 
+    // Tracks the last-clicked image so the align buttons can target it
+    // directly — execCommand's justify commands set text-align on the
+    // nearest block, which doesn't reliably move a standalone <img>.
+    let selectedImage: HTMLImageElement | null = null;
+    const IMAGE_ALIGN_STYLES: Record<string, Partial<CSSStyleDeclaration>> = {
+      justifyLeft: { display: 'block', marginLeft: '0', marginRight: 'auto' },
+      justifyCenter: { display: 'block', marginLeft: 'auto', marginRight: 'auto' },
+      justifyRight: { display: 'block', marginLeft: 'auto', marginRight: '0' }
+    };
+
     document.querySelectorAll('.editor-toolbar button[data-cmd]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const cmd = btn.getAttribute('data-cmd');
         if (!cmd) return;
+        if (selectedImage && IMAGE_ALIGN_STYLES[cmd]) {
+          Object.assign(selectedImage.style, IMAGE_ALIGN_STYLES[cmd]);
+          return;
+        }
         if (cmd === 'createLink') {
           const url = prompt('URL del enlace:', 'https://');
           if (url) document.execCommand(cmd, false, url);
@@ -275,14 +289,19 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
       reader.readAsDataURL(file);
     });
 
-    // Click an inserted image to set an exact pixel width. The value is
-    // stored as an inline style on the <img>, so it travels with the HTML
-    // and will render at that same size wherever the content ends up —
-    // not just here in the editor preview.
+    // Click an inserted image to select it (so the align buttons above can
+    // target it) and set an exact pixel width. The value is stored as an
+    // inline style on the <img>, so it travels with the HTML and will
+    // render at that same size wherever the content ends up — not just
+    // here in the editor preview.
     fContent.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      if (target.tagName !== 'IMG') return;
+      if (target.tagName !== 'IMG') {
+        selectedImage = null;
+        return;
+      }
       const img = target as HTMLImageElement;
+      selectedImage = img;
       const currentWidth = img.style.width ? parseInt(img.style.width, 10) : Math.round(img.getBoundingClientRect().width);
       const value = prompt('Ancho de la imagen en píxeles (déjalo vacío para que se ajuste automáticamente):', String(currentWidth));
       if (value === null) return;
