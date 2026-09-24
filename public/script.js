@@ -14,7 +14,8 @@
       if(siteHeader && nextOpen){
         // Just opened: force the solid/white header regardless of scroll position,
         // so the dropdown never sits under a transparent bar.
-        siteHeader.setAttribute('data-hidden', 'false');
+        headerOffset = 0;
+        siteHeader.style.transform = 'translateY(0px)';
         siteHeader.setAttribute('data-scrolled', 'true');
       }
       // Lock the page behind the open dropdown so scrolling doesn't fight
@@ -53,23 +54,26 @@
   }
 
   if(siteHeader){
+    var headerOffset = 0;
+    var headerHeight = siteHeader.offsetHeight;
     var headerLastScrollY = window.scrollY;
     var headerTicking = false;
-    var HEADER_HIDE_AT = 120;
     var HEADER_TOP_AT = 40;
     var updateHeaderScroll = function(){
-      var scrollY = window.scrollY;
+      var scrollY = Math.max(window.scrollY, 0);
       var menuOpen = links && links.getAttribute('data-open') === 'true';
       // While the mobile menu is open, the scroll-lock trick (body made fixed,
       // offset via top) makes window.scrollY briefly report 0 as a side effect,
       // which would otherwise flip the header back to its transparent state.
       if(!menuOpen){
         siteHeader.setAttribute('data-scrolled', scrollY > HEADER_TOP_AT ? 'true' : 'false');
-        if(scrollY > headerLastScrollY && scrollY > HEADER_HIDE_AT){
-          siteHeader.setAttribute('data-hidden', 'true');
-        } else if(scrollY < headerLastScrollY){
-          siteHeader.setAttribute('data-hidden', 'false');
-        }
+        // Track the scroll delta 1:1: the header moves with the page while
+        // scrolling down (no threshold, no easing, feels "static"/attached
+        // to the content) and slides back in at the same rate on the way up.
+        var delta = scrollY - headerLastScrollY;
+        headerOffset = Math.min(0, Math.max(-headerHeight, headerOffset - delta));
+        if(scrollY <= 0){ headerOffset = 0; }
+        siteHeader.style.transform = 'translateY(' + headerOffset + 'px)';
         headerLastScrollY = scrollY;
       }
       headerTicking = false;
@@ -80,6 +84,9 @@
         headerTicking = true;
       }
     }, {passive: true});
+    window.addEventListener('resize', function(){
+      headerHeight = siteHeader.offsetHeight;
+    });
     updateHeaderScroll();
   }
 
@@ -305,6 +312,34 @@
 
     galleryRender();
     gallerySetPlaying(galleryPlaying);
+
+    var galleryLightbox = document.getElementById('galleryLightbox');
+    var galleryLightboxImg = document.getElementById('galleryLightboxImg');
+    var galleryLightboxClose = document.getElementById('galleryLightboxClose');
+    if(galleryLightbox && galleryLightboxImg){
+      var openLightbox = function(src, alt){
+        galleryLightboxImg.src = src;
+        galleryLightboxImg.alt = alt;
+        galleryLightbox.setAttribute('data-open', 'true');
+        galleryLightbox.setAttribute('aria-hidden', 'false');
+        gallerySetPlaying(false);
+      };
+      var closeLightbox = function(){
+        galleryLightbox.setAttribute('data-open', 'false');
+        galleryLightbox.setAttribute('aria-hidden', 'true');
+        galleryLightboxImg.src = '';
+      };
+      Array.prototype.forEach.call(galleryTrack.querySelectorAll('.gallery-zoomable'), function(img){
+        img.addEventListener('click', function(){ openLightbox(img.src, img.alt); });
+      });
+      galleryLightboxClose.addEventListener('click', closeLightbox);
+      galleryLightbox.addEventListener('click', function(e){
+        if(e.target === galleryLightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape') closeLightbox();
+      });
+    }
   }
 
   var reviewCarousel = document.getElementById('reviewCarousel');

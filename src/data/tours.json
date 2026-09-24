@@ -27,11 +27,11 @@
     "detail": {
       "subtitle": "",
       "intro": "Quiero enseñarte Harlem y el Bronx como los conozco yo, recorriendo sus calles a pie y compartiendo contigo la historia, la música y la cultura que forman parte de estos barrios. Comenzaremos en Harlem viviendo una auténtica experiencia gospel en una iglesia bautista local y continuaremos hacia el Bronx para descubrir lugares como Yankee Stadium, los murales dedicados a leyendas del hip-hop y las famosas escaleras de Joker.\n\nLlevo más de 20 años recorriendo estos barrios y quiero que durante el tour no solo conozcas sus lugares más reconocibles, sino también algunos de esos rincones y detalles que hacen que Harlem y el Bronx sean únicos.",
-      "meetingPoint": "214 W 42nd St, frente al New Amsterdam Theatre, a las 9:00 a.m.",
+      "meetingPoint": "214 W 42nd St, New Amsterdam Theatre, a las 9:00 a.m.",
       "language": "Español",
       "priceDetail": "$65 por persona",
-      "transport": "Caminando y en transporte público",
-      "availability": "Solo domingos · plazas limitadas",
+      "transport": "A pié y en transporte público",
+      "availability": "Solo domingos · Plazas Limitadas",
       "includes": [
         "Wilson, guía local licenciado y certificado de habla hispana",
         "Entrada incluida para experiencia góspel en iglesia bautista local",
@@ -122,7 +122,7 @@
     "price": "$500",
     "priceNote": "grupo (hasta 4)",
     "art": "art-custom",
-    "shortName": "Media Maratón de Wilson",
+    "shortName": "La Media Maratón de Wilson",
     "levelIcon": "i-family",
     "order": 3,
     "detail": {
@@ -189,7 +189,7 @@
   },
   {
     "id": "maraton-de-wilson",
-    "coverImage": "/images/estatua.png",
+    "coverImage": "/images/parque1.jpg",
     "name": "La Maratón de Wilson",
     "category": "sports",
     "categoryLabel": "Día completo",
@@ -208,7 +208,7 @@
       "top": "52%",
       "left": "50%"
     },
-    "shortName": "Maratón de Wilson",
+    "shortName": "La Maratón de Wilson",
     "levelIcon": "i-badge",
     "order": 4,
     "detail": {

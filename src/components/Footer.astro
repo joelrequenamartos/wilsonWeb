@@ -35,29 +35,25 @@ const socials = [
     </div>
 
     <div class="footer-accordions">
-      <details class="footer-accordion">
+      <details class="footer-accordion" name="footer-accordion">
         <summary>Tours<svg class="icon footer-accordion-icon"><use href="#i-plus" /></svg></summary>
         <ul>
-          {tours.map((tour) => <li><a href="/#tours">{tour.data.shortName}</a></li>)}
+          {tours.map((tour) => <li><a href={`/tours/${tour.id}`}>{tour.data.name.replace(/^Free Tour:?\s*/i, '')}</a></li>)}
         </ul>
       </details>
-      <details class="footer-accordion">
+      <details class="footer-accordion" name="footer-accordion">
         <summary>Explorar<svg class="icon footer-accordion-icon"><use href="#i-plus" /></svg></summary>
         <ul>
           {exploreLinks.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
         </ul>
       </details>
-      <details class="footer-accordion">
+      <details class="footer-accordion" name="footer-accordion">
         <summary>Contacto<svg class="icon footer-accordion-icon"><use href="#i-plus" /></svg></summary>
         <ul class="footer-contact">
           <li><svg class="icon"><use href="#i-pin" /></svg>99 Wall Street, Suite 3255, New York, NY 10005</li>
           <li><svg class="icon"><use href="#i-phone" /></svg>+1 (646) 629-7581</li>
           <li><svg class="icon"><use href="#i-mail" /></svg>info@silvertoursny.com</li>
         </ul>
-        <div class="footer-news">
-          <input type="email" placeholder="Tu email" aria-label="Tu email" />
-          <a class="btn btn-primary btn-sm" href="#" style="flex:none;">Unirme</a>
-        </div>
       </details>
     </div>
   </div>

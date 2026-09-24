@@ -21,7 +21,7 @@ const multi = images.length > 1;
             <div class="gallery-slide">
               {src === 'placeholder'
                 ? <div class="gallery-placeholder"><span class="hero-placeholder-badge">📷 Foto pendiente {i + 1}</span></div>
-                : <img src={src} alt={`${title} — foto ${i + 1}`} loading="lazy" />
+                : <img src={src} alt={`${title} — foto ${i + 1}`} loading="lazy" class="gallery-zoomable" />
               }
             </div>
           ))}
@@ -51,5 +51,12 @@ const multi = images.length > 1;
         </div>
       )}
     </div>
+  </div>
+
+  <div class="gallery-lightbox" id="galleryLightbox" aria-hidden="true">
+    <button class="gallery-lightbox-close" id="galleryLightboxClose" aria-label="Cerrar imagen">
+      <svg class="icon"><use href="#i-close" /></svg>
+    </button>
+    <img id="galleryLightboxImg" src="" alt="" />
   </div>
 </section>
