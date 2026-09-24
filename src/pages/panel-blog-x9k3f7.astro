@@ -1,0 +1,323 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Panel de blog — Silver Tours NY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" />
+</head>
+<body>
+  <div class="panel-wrap">
+    <header class="panel-header">
+      <h1>Panel de blog</h1>
+      <p class="panel-warning">⚠️ Esto todavía no guarda nada de verdad. Es solo la interfaz — falta conectar un backend para que crear, editar y borrar persistan.</p>
+    </header>
+
+    <section class="panel-toolbar">
+      <button class="btn-panel btn-panel-primary" id="newPostBtn">+ Nueva entrada</button>
+    </section>
+
+    <section class="panel-form" id="postForm" hidden>
+      <h2 id="formTitle">Nueva entrada</h2>
+      <div class="field-row">
+        <label>
+          Título
+          <input type="text" id="fTitle" placeholder="Título de la entrada" />
+        </label>
+        <label>
+          Fecha
+          <input type="date" id="fDate" />
+        </label>
+      </div>
+      <div class="field-row">
+        <label>
+          Autor
+          <input type="text" id="fAuthor" value="Wilson Silver" />
+        </label>
+        <label>
+          Tiempo de lectura
+          <input type="text" id="fReadTime" value="4 min de lectura" />
+        </label>
+      </div>
+      <label class="field-block">
+        Extracto
+        <textarea id="fExcerpt" rows="2" placeholder="Resumen corto para la tarjeta del blog"></textarea>
+      </label>
+      <div class="field-block">
+        <span class="field-label-text">Contenido</span>
+        <div class="editor-toolbar">
+          <button type="button" data-cmd="bold" title="Negrita"><b>B</b></button>
+          <button type="button" data-cmd="italic" title="Cursiva"><i>I</i></button>
+          <button type="button" data-cmd="underline" title="Subrayado"><u>U</u></button>
+          <span class="editor-sep"></span>
+          <button type="button" data-cmd="formatBlock" data-value="H2" title="Título grande">H2</button>
+          <button type="button" data-cmd="formatBlock" data-value="H3" title="Título mediano">H3</button>
+          <button type="button" data-cmd="formatBlock" data-value="P" title="Párrafo normal">P</button>
+          <button type="button" data-cmd="formatBlock" data-value="BLOCKQUOTE" title="Cita">❝ Cita</button>
+          <span class="editor-sep"></span>
+          <button type="button" data-cmd="justifyLeft" title="Alinear izquierda">⟵</button>
+          <button type="button" data-cmd="justifyCenter" title="Centrar">↔</button>
+          <button type="button" data-cmd="justifyRight" title="Alinear derecha">⟶</button>
+          <button type="button" data-cmd="justifyFull" title="Justificar">☰</button>
+          <span class="editor-sep"></span>
+          <button type="button" data-cmd="insertUnorderedList" title="Lista con viñetas">• Lista</button>
+          <button type="button" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+          <span class="editor-sep"></span>
+          <button type="button" data-cmd="createLink" title="Enlace">🔗 Enlace</button>
+          <button type="button" id="insertImageBtn" title="Insertar imagen">🖼️ Imagen</button>
+          <button type="button" data-cmd="removeFormat" title="Quitar formato">Limpiar</button>
+        </div>
+        <input type="file" id="imageFileInput" accept="image/*" hidden />
+        <div class="editor-content" id="fContent" contenteditable="true"></div>
+      </div>
+      <div class="field-actions">
+        <button class="btn-panel btn-panel-primary" id="saveBtn">Guardar entrada</button>
+        <button class="btn-panel" id="cancelBtn">Cancelar</button>
+      </div>
+      <p class="save-note" id="saveNote" hidden>Guardado simulado — todavía no hay backend conectado, así que este cambio no persiste.</p>
+    </section>
+
+    <section class="panel-list">
+      <h2>Entradas existentes</h2>
+      <ul id="postList">
+        {posts.map((post) => (
+          <li class="post-row" data-title={post.data.title} data-excerpt={post.data.excerpt} data-author={post.data.author} data-read-time={post.data.readTime} data-date={post.data.date.toISOString().slice(0, 10)}>
+            <div class="post-row-info">
+              <strong>{post.data.title}</strong>
+              <span class="post-row-meta">{post.data.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })} · {post.data.author}</span>
+            </div>
+            <div class="post-row-actions">
+              <button class="btn-panel btn-sm-panel edit-post-btn">Editar</button>
+              <button class="btn-panel btn-sm-panel btn-panel-danger delete-post-btn">Eliminar</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+
+  <style>
+    :root{
+      --bg:#0d0b09; --surface:#17140f; --line:#2b271f; --ink:#f4f1ea; --ink-soft:#c9c3b6;
+      --coral:#e0703a; --coral-dark:#c25a26; --danger:#c0392b;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0; background:var(--bg); color:var(--ink); font-family:"Poppins",sans-serif; padding:32px 20px 80px;}
+    .panel-wrap{max-width:820px; margin:0 auto;}
+    .panel-header h1{font-size:1.6rem; margin:0 0 10px;}
+    .panel-warning{background:rgba(224,112,58,.12); border:1px solid var(--coral); color:var(--ink); padding:10px 14px; border-radius:10px; font-size:.85rem; margin:0 0 24px;}
+    .panel-toolbar{margin-bottom:20px;}
+    .btn-panel{
+      font-family:inherit; font-size:.9rem; font-weight:600; cursor:pointer;
+      background:var(--surface); color:var(--ink); border:1px solid var(--line);
+      padding:10px 18px; border-radius:8px;
+    }
+    .btn-panel:hover{border-color:var(--coral);}
+    .btn-panel-primary{background:var(--coral); border-color:var(--coral); color:#fff;}
+    .btn-panel-primary:hover{background:var(--coral-dark);}
+    .btn-panel-danger{color:var(--danger); border-color:var(--danger);}
+    .btn-panel-danger:hover{background:var(--danger); color:#fff;}
+    .btn-sm-panel{padding:6px 12px; font-size:.8rem;}
+
+    .panel-form{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px; margin-bottom:32px;}
+    .panel-form h2{margin-top:0; font-size:1.1rem;}
+    .field-row{display:flex; gap:16px; margin-bottom:14px;}
+    .field-row label{flex:1;}
+    label{display:flex; flex-direction:column; gap:6px; font-size:.82rem; color:var(--ink-soft); font-weight:600; margin-bottom:14px;}
+    .field-block{margin-bottom:14px; display:flex; flex-direction:column; gap:6px;}
+    .field-label-text{font-size:.82rem; color:var(--ink-soft); font-weight:600;}
+    input[type="text"], input[type="date"], textarea{
+      font-family:inherit; font-size:.92rem; color:var(--ink); background:#0d0b09;
+      border:1px solid var(--line); border-radius:8px; padding:9px 12px; resize:vertical;
+    }
+    input:focus, textarea:focus, .editor-content:focus{outline:2px solid var(--coral); outline-offset:1px;}
+    .editor-toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:8px;}
+    .editor-toolbar button{
+      font-family:inherit; font-size:.8rem; background:#0d0b09; color:var(--ink);
+      border:1px solid var(--line); border-radius:6px; padding:6px 10px; cursor:pointer;
+    }
+    .editor-toolbar button:hover{border-color:var(--coral);}
+    .editor-sep{width:1px; height:20px; background:var(--line); margin:0 2px;}
+    .editor-content{
+      min-height:280px; background:#0d0b09; border:1px solid var(--line); border-radius:8px;
+      padding:14px; font-size:.95rem; line-height:1.6; font-weight:400; color:var(--ink);
+    }
+    /*
+      The content inside #fContent is created at runtime by execCommand()
+      (formatBlock, insertImage, insertUnorderedList…), so it never gets
+      Astro's scoped data-astro-cid attribute. Plain scoped selectors like
+      ".editor-content img" silently never match that content — hence :global().
+    */
+    .editor-content :global(h2){font-size:1.2rem; margin:.6em 0 .3em;}
+    .editor-content :global(h3){font-size:1.05rem; margin:.6em 0 .3em;}
+    .editor-content :global(blockquote){
+      margin:.6em 0; padding:8px 16px; border-left:3px solid var(--coral); color:var(--ink-soft); font-style:italic;
+    }
+    .editor-content :global(img){max-width:100%; height:auto; border-radius:8px; margin:.6em 0; display:block; cursor:pointer;}
+    .editor-content :global(ul), .editor-content :global(ol){padding-left:1.4em;}
+    .editor-content :global(a){color:var(--coral);}
+    .field-actions{display:flex; gap:12px; margin-top:10px;}
+    .save-note{margin-top:14px; font-size:.82rem; color:var(--coral);}
+
+    .panel-list h2{font-size:1.1rem;}
+    #postList{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;}
+    .post-row{
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+    }
+    .post-row-info{display:flex; flex-direction:column; gap:4px;}
+    .post-row-meta{font-size:.78rem; color:var(--ink-soft); font-weight:400;}
+    .post-row-actions{display:flex; gap:8px; flex:none;}
+    @media (max-width:640px){
+      .field-row{flex-direction:column; gap:0;}
+      .post-row{flex-direction:column; align-items:flex-start;}
+    }
+  </style>
+
+  <script>
+    const form = document.getElementById('postForm') as HTMLElement;
+    const formTitle = document.getElementById('formTitle') as HTMLElement;
+    const newPostBtn = document.getElementById('newPostBtn') as HTMLButtonElement;
+    const cancelBtn = document.getElementById('cancelBtn') as HTMLButtonElement;
+    const saveBtn = document.getElementById('saveBtn') as HTMLButtonElement;
+    const saveNote = document.getElementById('saveNote') as HTMLElement;
+    const postList = document.getElementById('postList') as HTMLElement;
+
+    const fTitle = document.getElementById('fTitle') as HTMLInputElement;
+    const fDate = document.getElementById('fDate') as HTMLInputElement;
+    const fAuthor = document.getElementById('fAuthor') as HTMLInputElement;
+    const fReadTime = document.getElementById('fReadTime') as HTMLInputElement;
+    const fExcerpt = document.getElementById('fExcerpt') as HTMLTextAreaElement;
+    const fContent = document.getElementById('fContent') as HTMLElement;
+
+    function resetForm(){
+      fTitle.value = '';
+      fDate.value = new Date().toISOString().slice(0, 10);
+      fAuthor.value = 'Wilson Silver';
+      fReadTime.value = '4 min de lectura';
+      fExcerpt.value = '';
+      fContent.innerHTML = '';
+      saveNote.hidden = true;
+    }
+
+    function openForm(title: string){
+      formTitle.textContent = title;
+      form.hidden = false;
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    newPostBtn.addEventListener('click', () => {
+      resetForm();
+      openForm('Nueva entrada');
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      form.hidden = true;
+    });
+
+    saveBtn.addEventListener('click', () => {
+      saveNote.hidden = false;
+    });
+
+    const editorToolbar = document.querySelector('.editor-toolbar') as HTMLElement;
+    // Keep focus (and the current text selection) inside the editor when a
+    // toolbar button is pressed — otherwise the browser moves focus to the
+    // button on mousedown, the selection collapses to the start of the
+    // content, and every command ends up applying to the very beginning.
+    editorToolbar.addEventListener('mousedown', (e) => e.preventDefault());
+
+    document.querySelectorAll('.editor-toolbar button[data-cmd]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cmd = btn.getAttribute('data-cmd');
+        if (!cmd) return;
+        if (cmd === 'createLink') {
+          const url = prompt('URL del enlace:', 'https://');
+          if (url) document.execCommand(cmd, false, url);
+        } else if (cmd === 'formatBlock') {
+          document.execCommand(cmd, false, btn.getAttribute('data-value') || 'P');
+        } else {
+          document.execCommand(cmd, false);
+        }
+      });
+    });
+
+    const insertImageBtn = document.getElementById('insertImageBtn') as HTMLButtonElement;
+    const imageFileInput = document.getElementById('imageFileInput') as HTMLInputElement;
+    let savedRange: Range | null = null;
+
+    insertImageBtn.addEventListener('click', () => {
+      const sel = window.getSelection();
+      savedRange = sel && sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+      imageFileInput.click();
+    });
+
+    imageFileInput.addEventListener('change', () => {
+      const file = imageFileInput.files && imageFileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        fContent.focus();
+        const sel = window.getSelection();
+        if (sel && savedRange) {
+          sel.removeAllRanges();
+          sel.addRange(savedRange);
+        }
+        document.execCommand('insertImage', false, reader.result as string);
+        imageFileInput.value = '';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Click an inserted image to set an exact pixel width. The value is
+    // stored as an inline style on the <img>, so it travels with the HTML
+    // and will render at that same size wherever the content ends up —
+    // not just here in the editor preview.
+    fContent.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName !== 'IMG') return;
+      const img = target as HTMLImageElement;
+      const currentWidth = img.style.width ? parseInt(img.style.width, 10) : Math.round(img.getBoundingClientRect().width);
+      const value = prompt('Ancho de la imagen en píxeles (déjalo vacío para que se ajuste automáticamente):', String(currentWidth));
+      if (value === null) return;
+      if (value.trim() === '') {
+        img.style.width = '';
+        img.style.height = '';
+      } else {
+        const px = parseInt(value, 10);
+        if (!isNaN(px) && px > 0) {
+          img.style.width = px + 'px';
+          img.style.height = 'auto';
+        }
+      }
+    });
+
+    postList.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const row = target.closest('.post-row') as HTMLElement | null;
+      if (!row) return;
+
+      if (target.classList.contains('edit-post-btn')) {
+        fTitle.value = row.dataset.title || '';
+        fDate.value = row.dataset.date || '';
+        fAuthor.value = row.dataset.author || '';
+        fReadTime.value = row.dataset.readTime || '';
+        fExcerpt.value = row.dataset.excerpt || '';
+        fContent.innerHTML = '';
+        openForm(`Editando: ${row.dataset.title}`);
+      }
+
+      if (target.classList.contains('delete-post-btn')) {
+        const ok = confirm(`¿Eliminar "${row.dataset.title}"? (esto todavía no borra el archivo real, solo lo quita de esta lista)`);
+        if (ok) row.remove();
+      }
+    });
+  </script>
+</body>
+</html>

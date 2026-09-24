@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Disallow: /panel-blog-x9k3f7

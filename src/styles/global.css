@@ -236,12 +236,12 @@
   .free-badge{background:#178F4E;}
   .badge-orange{background:var(--coral);}
   .badge-silver{
-    background:linear-gradient(135deg,#f4f6f7 0%,#c9ced2 18%,#8d949a 34%,#eef1f2 50%,#7d848b 66%,#d4d9dc 82%,#f7f9fa 100%);
+    background-image:url('/images/silver-texture.jpg'); background-size:cover; background-position:center;
     color:#2b2e31; text-shadow:0 1px 0 rgba(255,255,255,.5);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 1px rgba(0,0,0,.25);
   }
   .badge-glow{
-    background:linear-gradient(135deg,#fff6d8 0%,#d4af37 18%,#8a6b1a 34%,#fff3c4 50%,#a67c1e 66%,#e8c975 82%,#fff8e1 100%);
+    background-image:url('/images/gold-texture.jpg'); background-size:cover; background-position:center;
     color:#3a2c05; text-shadow:0 1px 0 rgba(255,255,255,.5);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 1px rgba(0,0,0,.25);
     animation:premiumGlow 3s ease-in-out infinite;
@@ -526,12 +526,12 @@
   .tour-back .icon{width:16px;height:16px;}
   .tour-hero-tag{position:static; display:flex; width:fit-content; color:#fff; background:var(--coral);}
   .tour-hero-tag.badge-silver{
-    background:linear-gradient(135deg,#f4f6f7 0%,#c9ced2 18%,#8d949a 34%,#eef1f2 50%,#7d848b 66%,#d4d9dc 82%,#f7f9fa 100%);
+    background-image:url('/images/silver-texture.jpg'); background-size:cover; background-position:center;
     color:#2b2e31; text-shadow:0 1px 0 rgba(255,255,255,.5);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 1px rgba(0,0,0,.25);
   }
   .tour-hero-tag.badge-glow{
-    background:linear-gradient(135deg,#fff6d8 0%,#d4af37 18%,#8a6b1a 34%,#fff3c4 50%,#a67c1e 66%,#e8c975 82%,#fff8e1 100%);
+    background-image:url('/images/gold-texture.jpg'); background-size:cover; background-position:center;
     color:#3a2c05; text-shadow:0 1px 0 rgba(255,255,255,.5);
   }
   .tour-hero-tag::before{display:none;}
