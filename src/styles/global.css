@@ -111,11 +111,11 @@
   @media (max-width:880px){
     .nav-links-wrap{
       position:absolute; top:calc(100% - 2px); left:0; right:0; max-height:80vh;
+      filter:drop-shadow(0 14px 8px rgba(13,11,9,0));
+      transition:filter .25s ease;
     }
-    .nav-links-wrap::after{
-      content:""; position:absolute; left:0; right:0; top:100%; height:36px;
-      background:linear-gradient(rgba(13,11,9,.22), rgba(13,11,9,0));
-      pointer-events:none;
+    .nav-links-wrap:has(.nav-links[data-open="true"]){
+      filter:drop-shadow(0 14px 8px rgba(13,11,9,.4));
     }
     .nav-links{
       background:var(--bg); flex-direction:column; align-items:flex-start;
