@@ -38,7 +38,7 @@ const socials = [
       <details class="footer-accordion" name="footer-accordion">
         <summary>Tours<svg class="icon footer-accordion-icon"><use href="#i-plus" /></svg></summary>
         <ul>
-          {tours.map((tour) => <li><a href={`/tours/${tour.id}`}>{tour.data.name.replace(/^Free Tour:?\s*/i, '')}</a></li>)}
+          {tours.map((tour) => <li><a href={`/tours/${tour.id}`}>{tour.data.cardTitle}</a></li>)}
         </ul>
       </details>
       <details class="footer-accordion" name="footer-accordion">

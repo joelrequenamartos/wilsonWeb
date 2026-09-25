@@ -48,6 +48,8 @@ const tours = defineCollection({
     order: z.number(),
     name: z.string(),
     shortName: z.string(),
+    cardEyebrow: z.string(),
+    cardTitle: z.string(),
     category: z.enum(['sports', 'culture', 'custom', 'free']),
     categoryLabel: z.string(),
     premium: z.boolean().default(false),

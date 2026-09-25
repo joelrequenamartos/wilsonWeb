@@ -9,7 +9,6 @@ interface Props {
 const { tour } = Astro.props;
 const isFree = !tour.premium && tour.category === 'free';
 const isAccent = tour.id === 'bronx-gospel';
-const cardTitle = tour.name.replace(/^Free Tour:?\s*/i, '');
 const badge = getTourBadge(tour);
 ---
 <article class:list={['tour-card', { premium: tour.premium, free: isFree, accent: isAccent }]}>
@@ -25,7 +24,8 @@ const badge = getTourBadge(tour);
     </div>
     <div class="tour-scrim" aria-hidden="true"></div>
     <div class="tour-overlay">
-      <h3 class="tour-overlay-title">{cardTitle}</h3>
+      <span class="tour-overlay-eyebrow">{tour.cardEyebrow}</span>
+      <h3 class="tour-overlay-title">{tour.cardTitle}</h3>
     </div>
   </a>
 </article>
