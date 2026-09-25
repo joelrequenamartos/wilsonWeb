@@ -168,7 +168,7 @@
     position:absolute; left:0; right:0; bottom:0; z-index:1; width:100%;
     height:clamp(36px,7vw,68px); fill:var(--bg); pointer-events:none;
   }
-  .hero-cover-content{position:relative; z-index:2; padding-block:40px; text-align:center; margin-inline:auto;}
+  .hero-cover-content{position:relative; z-index:2; padding-block:40px; text-align:center; margin-inline:auto; transform:translateY(40px);}
   .hero-cover-content .eyebrow{color:#fff; margin-bottom:6px;}
   .hero-cover-content .eyebrow::before{display:none;}
   @media (min-width:881px){.hero-cover-content .eyebrow{font-size:1.15rem;}}
