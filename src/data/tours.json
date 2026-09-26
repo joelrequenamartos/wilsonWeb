@@ -134,7 +134,6 @@
       "subtitle": "",
       "intro": "No quiero que simplemente veas Nueva York: quiero que la vivas. Iré adaptando el recorrido a tus intereses, tu ritmo y el tiempo disponible, con la libertad que ofrece un tour privado y mi experiencia como guía local. Una auténtica vista express de Nueva York, pensada para llevarte una primera impresión completa de la ciudad y ayudarte a disfrutarla desde el primer momento.",
       "meetingPoint": "Recogida en tu hotel (solo Manhattan)",
-      "endPoint": "Grand Central Station",
       "language": "Español",
       "priceDetail": "$500 hasta 4 personas · +$100 por persona adicional",
       "transport": "A pie y en transporte público",
@@ -224,7 +223,7 @@
     "rating": 4.9,
     "reviewCount": 54,
     "price": "$1,099",
-    "priceNote": "grupo de 4",
+    "priceNote": "grupo privado",
     "art": "art-premium",
     "mapPosition": {
       "top": "52%",
@@ -239,9 +238,8 @@
       "subtitle": "",
       "intro": "Una maratón en un tour privado completamente personalizado, pensado para descubrir la ciudad de una forma que no encontrarás en un itinerario convencional. Tú decides qué te interesa, el ritmo y cómo quieres vivir la experiencia. Yo aporto el conocimiento, la experiencia y la planificación necesarias para crear una ruta única, cuidada hasta el último detalle. Con total flexibilidad y sin renunciar a nada de lo que realmente merece la pena, aprovecharemos cada momento para descubrir todo lo que un día puede ofrecer en esta increíble ciudad.",
       "meetingPoint": "Recogida en tu hotel (solo Manhattan)",
-      "endPoint": "Grand Central Station",
       "language": "Español",
-      "priceDetail": "$1,099 para grupos de hasta 4 personas · +$150 por persona a partir de la 5ª",
+      "priceDetail": "$1,099 hasta 4 personas · +$150 por persona adicional",
       "transport": "A pie y en transporte público",
       "availability": "Bajo reserva, cualquier día",
       "notIncludes": [

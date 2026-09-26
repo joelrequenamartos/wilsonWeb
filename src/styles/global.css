@@ -113,7 +113,9 @@
       position:absolute; top:calc(100% - 2px); left:0; right:0; max-height:80vh;
       filter:drop-shadow(0 14px 8px rgba(13,11,9,0));
       transition:filter .25s ease;
+      pointer-events:none; /* cerrado es invisible, pero sin esto tapaba los clics bajo el header */
     }
+    .nav-links[data-open="true"]{pointer-events:auto;}
     .nav-links-wrap:has(.nav-links[data-open="true"]){
       filter:drop-shadow(0 14px 8px rgba(13,11,9,.4));
     }

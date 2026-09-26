@@ -56,7 +56,7 @@ const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 
             {badge?.label ?? t.categoryLabel}
           </div>
         </div>
-        <h1>{t.name}</h1>
+        <h1>{/^free tour/i.test(t.name) ? t.name : `Tour ${t.name}`}</h1>
         {t.detail.subtitle && <p class="tour-hero-subtitle">{t.detail.subtitle}</p>}
       </div>
     </section>
