@@ -1,12 +1,14 @@
 ---
 // De momento inventados; ordenados por fecha. Cuando haya eventos reales,
 // esto puede pasar a ser una content collection como tours/restaurants.
-const rawEvents = [
+// "Leer más" solo aparece si el evento tiene `href`.
+type EventItem = { date: string; title: string; image: string; description: string; href?: string };
+const rawEvents: EventItem[] = [
   { date: '2026-09-24', title: 'Noche de jazz en Harlem', image: '/images/wilson-guide.jpg', description: 'Una velada íntima con música en vivo en uno de los clubs con más historia de Harlem.' },
-  { date: '2026-09-27', title: 'Mercadillo de otoño en Brooklyn', image: '/images/actor.png', description: 'Puestos locales de artesanía, comida y vinilos en pleno corazón de Williamsburg.' },
-  { date: '2026-10-03', title: 'Maratón fotográfico por Manhattan', image: '/images/estatua.png', description: 'Recorrido guiado por los rincones más fotogénicos de la isla, cámara en mano.' },
-  { date: '2026-10-10', title: 'Tour gastronómico por el Bronx', image: '/images/bronxvertical.png', description: 'Ruta de sabores por los puestos y restaurantes que hacen grande al Bronx.' },
-  { date: '2026-10-17', title: 'Atardecer en Roosevelt Island', image: '/images/roosvelt2.png', description: 'Vistas de Manhattan al caer el sol desde el teleférico más famoso de Nueva York.' }
+  { date: '2026-09-27', title: 'Mercadillo de otoño en Brooklyn', image: '/images/actor.jpg', description: 'Puestos locales de artesanía, comida y vinilos en pleno corazón de Williamsburg.' },
+  { date: '2026-10-03', title: 'Maratón fotográfico por Manhattan', image: '/images/estatua.jpg', description: 'Recorrido guiado por los rincones más fotogénicos de la isla, cámara en mano.' },
+  { date: '2026-10-10', title: 'Tour gastronómico por el Bronx', image: '/images/bronxvertical.jpg', description: 'Ruta de sabores por los puestos y restaurantes que hacen grande al Bronx.' },
+  { date: '2026-10-17', title: 'Atardecer en Roosevelt Island', image: '/images/roosvelt2.jpg', description: 'Vistas de Manhattan al caer el sol desde el teleférico más famoso de Nueva York.' }
 ].sort((a, b) => a.date.localeCompare(b.date));
 
 const dateFormatter = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -31,7 +33,7 @@ const events = rawEvents.map((event) => ({
             <span class="blog-date">{event.label}</span>
             <h3>{event.title}</h3>
             <p class="desc">{event.description}</p>
-            <a class="blog-read-more" href="#">Leer más <svg class="icon"><use href="#i-arrow" /></svg></a>
+            {event.href && <a class="blog-read-more" href={event.href} target={event.href.startsWith('http') ? '_blank' : undefined} rel={event.href.startsWith('http') ? 'noopener' : undefined}>Leer más <svg class="icon"><use href="#i-arrow" /></svg></a>}
           </div>
         </div>
       ))}

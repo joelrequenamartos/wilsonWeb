@@ -4,16 +4,15 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import GuideSection from '../components/GuideSection.astro';
+import PressMarquee from '../components/PressMarquee.astro';
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
 ---
 <Layout title="Sobre Wilson — Silver Tours NY" description="Conoce a Wilson, guía certificado y neoyorquino de toda la vida detrás de Silver Tours NY.">
   <Header />
   <main id="main">
-    <div class="wrap" style="padding-top:28px;">
-      <a class="tour-back" href="/"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al inicio</a>
-    </div>
     <GuideSection />
+    <PressMarquee />
   </main>
   <Footer tours={tours} />
 </Layout>

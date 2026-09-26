@@ -1,0 +1,23 @@
+---
+// Marcas y webs donde ha aparecido Wilson. De momento son huecos vacíos:
+// añade { src, alt } a cada uno cuando estén los logos.
+const logos: ({ src: string; alt: string } | null)[] = Array(8).fill(null);
+---
+<section class="section press-section">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-inline:auto; text-align:center;">
+      <h2 class="section-title">Puede que me hayas visto en...</h2>
+    </div>
+  </div>
+  <div class="press-marquee reveal">
+    {[0, 1].map((copy) => (
+      <ul class="press-track" aria-hidden={copy === 1 ? 'true' : undefined}>
+        {logos.map((logo) => (
+          <li class="press-item">
+            {logo && <img src={logo.src} alt={copy === 0 ? logo.alt : ''} loading="lazy" />}
+          </li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</section>

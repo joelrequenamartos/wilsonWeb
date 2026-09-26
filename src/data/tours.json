@@ -1,7 +1,7 @@
 [
   {
     "id": "bronx-gospel",
-    "coverImage": "/images/bronxnew.png",
+    "coverImage": "/images/bronxnew.jpg",
     "coverPosition": "center 42%",
     "name": "El Bronx y Misa Góspel en Harlem",
     "category": "culture",
@@ -50,7 +50,7 @@
         {
           "name": "Misa góspel en Harlem",
           "description": "Vive la espiritualidad y la fuerza de la música góspel en vivo dentro de una iglesia bautista local.",
-          "image": "/images/gospel.png"
+          "image": "/images/gospel.jpg"
         },
         {
           "name": "Escaleras del Joker",
@@ -109,7 +109,7 @@
   },
   {
     "id": "tour-privado-espanol",
-    "coverImage": "/images/tour-privado.png",
+    "coverImage": "/images/tour-privado.jpg",
     "coverPosition": "center",
     "name": "La Media Maratón de Wilson",
     "category": "custom",
@@ -157,22 +157,22 @@
         {
           "name": "Barrios locales famosos",
           "description": "Una mirada más cercana a la ciudad, recorriendo barrios emblemáticos y rincones locales a tu medida.",
-          "image": "/images/imagenesmedia/barrioslocales.png"
+          "image": "/images/imagenesmedia/barrioslocales.jpg"
         },
         {
           "name": "Cine y localizaciones icónicas",
           "description": "Recorre los escenarios de tus películas y series favoritas rodadas en Nueva York.",
-          "image": "/images/imagenesmedia/cines.png"
+          "image": "/images/imagenesmedia/cines.jpg"
         },
         {
           "name": "Historia, cultura y tradición",
           "description": "Te cuento la historia de la ciudad desde mi propia experiencia, como alguien que la vive y la descubre cada día.",
-          "image": "/images/imagenesmedia/historiacultura.png"
+          "image": "/images/imagenesmedia/historiacultura.jpg"
         },
         {
           "name": "Gastronomía local",
           "description": "Descubre dónde comen los locales y déjate sorprender por una gastronomía tan diversa como la propia ciudad.",
-          "image": "/images/imagenesmedia/gastronomia.png"
+          "image": "/images/imagenesmedia/gastronomia.jpg"
         }
       ],
       "faq": [
@@ -203,10 +203,10 @@
       ]
     },
     "gallery": [
-      "/images/imagenesmedia/barrioslocales.png",
-      "/images/imagenesmedia/cines.png",
-      "/images/imagenesmedia/historiacultura.png",
-      "/images/imagenesmedia/gastronomia.png"
+      "/images/imagenesmedia/barrioslocales.jpg",
+      "/images/imagenesmedia/cines.jpg",
+      "/images/imagenesmedia/historiacultura.jpg",
+      "/images/imagenesmedia/gastronomia.jpg"
     ]
   },
   {
@@ -262,22 +262,22 @@
         {
           "name": "Distrito Financiero",
           "description": "El Manhattan de los grandes rascacielos, la historia y las finanzas.",
-          "image": "/images/imagenesmaraton/financiero.png"
+          "image": "/images/imagenesmaraton/financiero.jpg"
         },
         {
           "name": "Miradores Escondidos",
           "description": "Vistas únicas desde rincones que pocos conocen.",
-          "image": "/images/imagenesmaraton/mirador.png"
+          "image": "/images/imagenesmaraton/mirador.jpg"
         },
         {
           "name": "Barrios de Manhattan: SoHo, Little Italy y Chinatown",
           "description": "Tres barrios con carácter propio, tres formas diferentes de descubrir la ciudad.",
-          "image": "/images/imagenesmaraton/barrios.png"
+          "image": "/images/imagenesmaraton/barrios.jpg"
         },
         {
           "name": "Gastronomía Local",
           "description": "Pizza estilo Nueva York, dumplings auténticos en Chinatown, clásicos de Little Italy y las hamburguesas más famosas, todo incluido en la ruta.",
-          "image": "/images/imagenesmaraton/gastro.png"
+          "image": "/images/imagenesmaraton/gastro.jpg"
         }
       ],
       "faq": [
@@ -312,15 +312,15 @@
       ]
     },
     "gallery": [
-      "/images/imagenesmaraton/financiero.png",
-      "/images/imagenesmaraton/mirador.png",
-      "/images/imagenesmaraton/barrios.png",
-      "/images/imagenesmaraton/gastro.png"
+      "/images/imagenesmaraton/financiero.jpg",
+      "/images/imagenesmaraton/mirador.jpg",
+      "/images/imagenesmaraton/barrios.jpg",
+      "/images/imagenesmaraton/gastro.jpg"
     ]
   },
   {
     "id": "free-tour-roosevelt",
-    "coverImage": "/images/roosvelt3.png",
+    "coverImage": "/images/roosvelt3.jpg",
     "coverPosition": "center 30%",
     "name": "Free Tour: Roosevelt Island hasta Manhattan",
     "category": "free",
