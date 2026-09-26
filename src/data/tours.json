@@ -97,6 +97,10 @@
         {
           "q": "¿Cómo se realiza el pago?",
           "a": "El pago se realiza en persona el día del tour. Se puede pagar en efectivo o con tarjeta, y en dólares o euros."
+        },
+        {
+          "q": "¿Es apto para todos los públicos?",
+          "a": "Sí, el tour es apto para todas las edades. Sin embargo, debido a algunos tramos y accesos sin ascensor, el recorrido no es accesible para personas con movilidad reducida."
         }
       ]
     },
@@ -111,7 +115,7 @@
     "id": "tour-privado-espanol",
     "coverImage": "/images/tour-privado.jpg",
     "coverPosition": "center",
-    "name": "La Media Maratón de Wilson",
+    "name": "La Media Maratón",
     "category": "custom",
     "categoryLabel": "A tu medida",
     "premium": true,
@@ -125,7 +129,7 @@
     "price": "$500",
     "priceNote": "grupo privado",
     "art": "art-custom",
-    "shortName": "La Media Maratón de Wilson",
+    "shortName": "La Media Maratón",
     "cardEyebrow": "Visita express",
     "cardTitle": "Media Maratón",
     "levelIcon": "i-family",
@@ -414,6 +418,10 @@
         {
           "q": "¿Es realmente gratis?",
           "a": "Sí. No tiene un precio fijo; al finalizar, cada persona puede aportar al guía una propina con la cantidad que considere adecuada según su experiencia."
+        },
+        {
+          "q": "¿Es apto para todos los públicos?",
+          "a": "Sí, el tour es apto para todas las edades. Sin embargo, debido a algunos tramos y accesos sin ascensor, el recorrido no es accesible para personas con movilidad reducida."
         }
       ]
     },

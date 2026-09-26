@@ -137,7 +137,7 @@ const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour $
         </div>
         <div class="tour-faq-list">
           {t.detail.faq.map((item) => (
-            <details class="tour-faq-item">
+            <details class="tour-faq-item" name="tour-faq">
               <summary>{item.q}</summary>
               <p>{item.a}</p>
             </details>
