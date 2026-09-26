@@ -76,6 +76,7 @@ const tours = defineCollection({
       meetingPoint: z.string(),
       language: z.string(),
       priceDetail: z.string(),
+      endPoint: z.string().optional(),
       transport: z.string(),
       availability: z.string(),
       includes: z.array(z.string()),

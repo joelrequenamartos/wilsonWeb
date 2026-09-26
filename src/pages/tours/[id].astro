@@ -23,6 +23,7 @@ const badge = getTourBadge(t);
 const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
 const waHref = `https://wa.me/16466297581?text=${waMessage}`;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
+const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
 ---
 <Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage}>
   <Header transparent={!!(t.coverImage || t.coverVideo)} />
@@ -110,11 +111,14 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
             <dl class="tour-info-list">
               <div><dt><svg class="icon"><use href="#i-pin" /></svg>Punto de encuentro</dt><dd>{t.detail.meetingPoint}</dd></div>
               <div><dt><svg class="icon"><use href="#i-clock" /></svg>Duración</dt><dd>{t.duration}</dd></div>
+              {t.detail.endPoint && (
+                <div><dt><svg class="icon"><use href="#i-flag" /></svg>Punto de finalización</dt><dd>{t.detail.endPoint}</dd></div>
+              )}
               <div><dt><svg class="icon"><use href="#i-chat" /></svg>Idioma</dt><dd>{t.detail.language}</dd></div>
               <div><dt><svg class="icon"><use href="#i-tram" /></svg>Transporte</dt><dd>{t.detail.transport}</dd></div>
-              <div><dt><svg class="icon"><use href="#i-badge" /></svg>Disponibilidad</dt><dd>{t.detail.availability}</dd></div>
+              <div><dt><svg class="icon"><use href="#i-badge" /></svg>Días del tour</dt><dd>{t.detail.availability}</dd></div>
             </dl>
-            <a class="btn btn-primary" style="width:100%; margin-top:20px;" href={waHref} target="_blank" rel="noopener">Ver disponibilidad</a>
+            <a class="btn btn-primary" style="width:100%; margin-top:20px;" href={waHref} target="_blank" rel="noopener">{ctaLabel}</a>
             <p class="tour-info-note">Las reservas se gestionan fuera de esta web.</p>
           </div>
         </aside>
@@ -187,7 +191,7 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
 
   <div class="mobile-sticky-cta" id="mobileStickyCta">
     <div class="mobile-sticky-price">{t.price}<small>{t.priceNote}</small></div>
-    <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">Ver disponibilidad</a>
+    <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">{ctaLabel}</a>
   </div>
 
   <Footer tours={allTours} />

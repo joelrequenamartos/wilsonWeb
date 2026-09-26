@@ -169,7 +169,7 @@
     height:clamp(36px,7vw,68px); fill:var(--bg); pointer-events:none;
   }
   .hero-cover-content{position:relative; z-index:2; padding-block:40px; text-align:center; margin-inline:auto; transform:translateY(40px);}
-  .hero-cover-content .eyebrow{color:#fff; margin-bottom:6px;}
+  .hero-cover-content .eyebrow{color:#fff; margin-bottom:6px; letter-spacing:.05em;}
   .hero-cover-content .eyebrow::before{display:none;}
   @media (min-width:881px){.hero-cover-content .eyebrow{font-size:1.15rem;}}
   .hero-cover h1{color:#fff; font-size:clamp(2.1rem,4vw + 1rem,3.6rem); letter-spacing:-.01em; line-height:1.08;}
@@ -199,7 +199,7 @@
   @media (max-width:640px){.tours-nav-btn{width:34px; height:34px;}}
   .tours-scroll{
     overflow-x:auto; overflow-y:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch; cursor:grab;
-    scroll-snap-type:x mandatory;
+    scroll-snap-type:x mandatory; padding-bottom:26px; margin-bottom:-26px;
   }
   .tours-scroll.is-dragging{cursor:grabbing; scroll-snap-type:none;}
   .tours-scroll::-webkit-scrollbar{display:none;}
@@ -854,7 +854,8 @@
     position:relative; aspect-ratio:9/16; border-radius:var(--radius-md); overflow:hidden;
     background:var(--ink); cursor:pointer; box-shadow:var(--shadow);
   }
-  .reel-video-card video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  .reel-video-card{display:block;}
+  .reel-video-card video, .reel-video-card img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
   .reel-play-hint{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff;
     background:rgba(13,11,9,.18); transition:opacity .2s ease; pointer-events:none;
@@ -866,10 +867,14 @@
     display:flex; align-items:center; justify-content:center; color:var(--ink); transition:transform .15s ease, background .15s ease, color .15s ease;
   }
   .social-icon-btn:hover{transform:translateY(-3px); background:var(--coral); color:#fff; border-color:var(--coral);}
+  /* móvil/tablet: carrusel horizontal con scroll-snap en lugar de grid */
   @media (max-width:900px){
-    .reels-grid{grid-template-columns:repeat(3,1fr);}
-  }
-  @media (max-width:560px){
-    .reels-grid{grid-template-columns:repeat(2,1fr); gap:10px;}
+    .reels-grid{
+      display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-x:contain;
+      margin-inline:calc(-1 * clamp(18px,4vw,32px)); margin-bottom:-30px; padding:6px clamp(18px,4vw,32px) 44px;
+      scroll-padding-inline:clamp(18px,4vw,32px); scrollbar-width:none; -webkit-overflow-scrolling:touch;
+    }
+    .reels-grid::-webkit-scrollbar{display:none;}
+    .reels-grid > *{flex:0 0 clamp(170px,50vw,220px); scroll-snap-align:center;}
     .reel-placeholder{font-size:.72rem;}
   }

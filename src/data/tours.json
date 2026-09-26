@@ -9,7 +9,7 @@
     "premium": false,
     "icon": "i-music",
     "description": "Historia, música en vivo y gastronomía local en un domingo distinto: de una misa góspel auténtica a los sabores del Bronx.",
-    "duration": "7 h",
+    "duration": "7h aprox.",
     "location": "Harlem, el Bronx",
     "level": "Solo domingos",
     "rating": 4.8,
@@ -22,7 +22,7 @@
       "left": "38%"
     },
     "shortName": "Bronx & Góspel en Harlem",
-    "cardEyebrow": "Cultura de barrio.",
+    "cardEyebrow": "Cultura de barrio",
     "cardTitle": "Bronx & Harlem",
     "levelIcon": "i-flag",
     "order": 1,
@@ -30,6 +30,7 @@
       "subtitle": "",
       "intro": "Quiero enseñarte Harlem y el Bronx como los conozco yo, recorriendo sus calles a pie y compartiendo contigo la historia, la música y la cultura que forman parte de estos barrios. Comenzaremos en Harlem viviendo una auténtica experiencia gospel en una iglesia bautista local y continuaremos hacia el Bronx para descubrir lugares como Yankee Stadium, los murales dedicados a leyendas del hip-hop y las famosas escaleras de Joker.\n\nLlevo más de 20 años recorriendo estos barrios y quiero que durante el tour no solo conozcas sus lugares más reconocibles, sino también algunos de esos rincones y detalles que hacen que Harlem y el Bronx sean únicos.",
       "meetingPoint": "214 W 42nd St, New Amsterdam Theatre, a las 9:00 a.m.",
+      "endPoint": "Grand Central Station",
       "language": "Español",
       "priceDetail": "$65 por persona",
       "transport": "A pié y en transporte público",
@@ -118,77 +119,94 @@
     "description": "Tú decides los intereses, el ritmo y el tiempo. Un recorrido 100% personalizado guiado en español, ideal para familias y grupos.",
     "duration": "4h 15min",
     "location": "Toda la ciudad",
-    "level": "Hasta 4 personas",
+    "level": "Grupo privado",
     "rating": 5.0,
     "reviewCount": 61,
     "price": "$500",
-    "priceNote": "grupo (hasta 4)",
+    "priceNote": "grupo privado",
     "art": "art-custom",
     "shortName": "La Media Maratón de Wilson",
-    "cardEyebrow": "Visita express.",
+    "cardEyebrow": "Visita express",
     "cardTitle": "Media Maratón",
     "levelIcon": "i-family",
     "order": 3,
     "detail": {
-      "subtitle": "Tu ruta, a tu ritmo, diseñada desde cero para tu grupo",
-      "intro": "Nada de rutas cerradas: diseñamos el recorrido según tus intereses, tu ritmo y el tiempo del que dispongas, con un guía certificado que se adapta sobre la marcha.",
+      "subtitle": "",
+      "intro": "No quiero que simplemente veas Nueva York: quiero que la vivas. Iré adaptando el recorrido a tus intereses, tu ritmo y el tiempo disponible, con la libertad que ofrece un tour privado y mi experiencia como guía local. Una auténtica vista express de Nueva York, pensada para llevarte una primera impresión completa de la ciudad y ayudarte a disfrutarla desde el primer momento.",
       "meetingPoint": "Recogida en tu hotel (solo Manhattan)",
+      "endPoint": "Grand Central Station",
       "language": "Español",
       "priceDetail": "$500 hasta 4 personas · +$100 por persona adicional",
       "transport": "A pie y en transporte público",
       "availability": "Bajo reserva, cualquier día",
       "includes": [
-        "Guía certificado en español",
-        "Diseño 100% personalizado del recorrido",
+        "Wilson, guía local licenciado y certificado de habla hispana",
         "Gestión completa del itinerario",
-        "Fotos y vídeos del recorrido",
-        "Pequeños obsequios"
+        "Diseño 100% personalizado del recorrido",
+        "Degustación gastronómica incluida",
+        "Visita de los principales puntos de interés",
+        "Recorrido guiado a pie y en transporte público",
+        "Detalles y sorpresas durante el recorrido",
+        "Reserva ahora y paga después"
       ],
       "notIncludes": [
-        "Transporte privado (Uber/Taxi)",
-        "Propinas"
+        "El pago de transporte público/privado",
+        "Entradas a museos o edificios"
       ],
       "places": [
         {
-          "name": "Barrios famosos y locales",
-          "description": "De Midtown a los rincones que solo conoce un local, según lo que más te interese."
+          "name": "Barrios locales famosos",
+          "description": "Una mirada más cercana a la ciudad, recorriendo barrios emblemáticos y rincones locales a tu medida.",
+          "image": "/images/imagenesmedia/barrioslocales.png"
         },
         {
           "name": "Cine y localizaciones icónicas",
-          "description": "Recorre los escenarios de tus películas y series favoritas rodadas en Nueva York."
+          "description": "Recorre los escenarios de tus películas y series favoritas rodadas en Nueva York.",
+          "image": "/images/imagenesmedia/cines.png"
         },
         {
-          "name": "Historia y memoria urbana",
-          "description": "El pasado de la ciudad contado por alguien que la vive cada día."
+          "name": "Historia, cultura y tradición",
+          "description": "Te cuento la historia de la ciudad desde mi propia experiencia, como alguien que la vive y la descubre cada día.",
+          "image": "/images/imagenesmedia/historiacultura.png"
         },
         {
           "name": "Gastronomía local",
-          "description": "Las paradas que un local recomendaría, no las de la guía turística."
+          "description": "Descubre dónde comen los locales y déjate sorprender por una gastronomía tan diversa como la propia ciudad.",
+          "image": "/images/imagenesmedia/gastronomia.png"
         }
       ],
       "faq": [
         {
+          "q": "¿Con cuánto tiempo de antelación tengo que reservar?",
+          "a": "Se aconseja reservar con una antelación de al menos un mes para garantizar disponibilidad, especialmente en meses de temporada alta."
+        },
+        {
           "q": "¿Es completamente privado?",
-          "a": "Sí, el tour es exclusivo para ti y tu grupo."
+          "a": "Sí, el tour es exclusivo para ti y tu grupo. Adaptado a tus necesidades y preferencias."
         },
         {
-          "q": "¿Todos siguen la misma ruta?",
-          "a": "No, se diseña según tus preferencias y puede ajustarse durante el propio recorrido."
-        },
-        {
-          "q": "¿Es buena opción si es tu primera vez en la ciudad?",
-          "a": "Sí, es una de las mejores opciones si quieres una introducción clara y adaptada a tus intereses."
+          "q": "¿Qué pasa si llueve?",
+          "a": "El tour se realizará independientemente de las inclemencias del tiempo, siempre y cuando sea seguro para el grupo y siguiendo las recomendaciones de las autoridades locales. La ruta se adaptará todo lo posible para visitar las zonas más resguardadas. Si tienes dudas contacta directamente conmigo el día del tour y te podré dar información más precisa."
         },
         {
           "q": "¿Se camina mucho?",
-          "a": "Se combina caminata con transporte público, adaptando el ritmo al grupo. Lleva calzado cómodo."
+          "a": "Se combinan tramos a pie y con transporte público. Adaptando el ritmo al grupo. Se recomienda calzado cómodo."
+        },
+        {
+          "q": "¿Cómo se realiza el pago?",
+          "a": "El pago se realiza en persona el día del tour. Se puede pagar en efectivo o con tarjeta, y en dólares o euros."
+        },
+        {
+          "q": "¿Puedo cancelar o modificar mi reserva?",
+          "a": "Sí, siendo aconsejable cancelar/modificar al menos con una antelación de 24 horas."
         }
       ]
     },
     "gallery": [
-      "placeholder",
-      "placeholder",
-      "placeholder"
+      "/images/imagenesmedia/barrioslocales.png",
+      "/images/imagenesmedia/cines.png",
+      "/images/imagenesmedia/historiacultura.png",
+      "/images/imagenesmedia/gastronomia.png"
     ]
   },
   {
@@ -202,7 +220,7 @@
     "description": "La experiencia insignia: una ruta estratégica para recorrer lo mejor de Nueva York en un solo día, sin perder tiempo ni pisadas.",
     "duration": "8–10 h",
     "location": "Toda la ciudad",
-    "level": "Nivel alto",
+    "level": "Grupo Privado",
     "rating": 4.9,
     "reviewCount": 54,
     "price": "$1,099",
@@ -213,64 +231,97 @@
       "left": "50%"
     },
     "shortName": "La Maratón de Wilson",
-    "cardEyebrow": "Todo y más.",
+    "cardEyebrow": "Todo y más",
     "cardTitle": "La Maratón",
     "levelIcon": "i-badge",
     "order": 4,
     "detail": {
-      "subtitle": "Nueva York de principio a fin, en un solo día",
-      "intro": "Una experiencia premium pensada para descubrir la ciudad de principio a fin en un solo día, con una ruta creada estratégicamente y guiada en tiempo real: sin prisas y sin perder tiempo en lo irrelevante. Se ajusta sobre la marcha según el clima, el tráfico y el ambiente.",
+      "subtitle": "",
+      "intro": "Una maratón en un tour privado completamente personalizado, pensado para descubrir la ciudad de una forma que no encontrarás en un itinerario convencional. Tú decides qué te interesa, el ritmo y cómo quieres vivir la experiencia. Yo aporto el conocimiento, la experiencia y la planificación necesarias para crear una ruta única, cuidada hasta el último detalle. Con total flexibilidad y sin renunciar a nada de lo que realmente merece la pena, aprovecharemos cada momento para descubrir todo lo que un día puede ofrecer en esta increíble ciudad.",
       "meetingPoint": "Recogida en tu hotel (solo Manhattan)",
+      "endPoint": "Grand Central Station",
       "language": "Español",
       "priceDetail": "$1,099 para grupos de hasta 4 personas · +$150 por persona a partir de la 5ª",
       "transport": "A pie y en transporte público",
       "availability": "Bajo reserva, cualquier día",
+      "notIncludes": [
+        "El pago de transporte público/privado",
+        "Entradas a museos o edificios"
+      ],
       "includes": [
-        "Ruta estratégica de un día completo, de la mañana a la noche",
-        "Banquete callejero incluido: pizza al estilo NY, dumplings en Chinatown, clásicos de Little Italy, hamburguesas y snacks típicos",
-        "Un billete de $2 auténtico y una moneda de 50 centavos de recuerdo",
-        "Guía certificado en español"
+        "Wilson, guía local licenciado y certificado de habla hispana",
+        "Gestión completa del itinerario",
+        "Diseño 100% personalizado del recorrido",
+        "Degustación gastronómica incluida",
+        "Un billete de $2 y moneda de 50 cts. de recuerdo",
+        "Recorrido guiado a pie y en transporte público",
+        "Detalles y sorpresas durante el recorrido",
+        "Reserva ahora y paga después"
       ],
       "places": [
         {
-          "name": "Banquete callejero por la ciudad",
-          "description": "Pizza estilo Nueva York, dumplings auténticos en Chinatown, clásicos de Little Italy y las hamburguesas más famosas, todo incluido en la ruta."
+          "name": "Distrito Financiero",
+          "description": "El Manhattan de los grandes rascacielos, la historia y las finanzas.",
+          "image": "/images/imagenesmaraton/financiero.png"
         },
         {
-          "name": "Lo mejor de Manhattan en un día",
-          "description": "Una ruta pensada para no perder tiempo en desplazamientos ni colas, cubriendo los imprescindibles de la ciudad."
+          "name": "Miradores Escondidos",
+          "description": "Vistas únicas desde rincones que pocos conocen.",
+          "image": "/images/imagenesmaraton/mirador.png"
+        },
+        {
+          "name": "Barrios de Manhattan: SoHo, Little Italy y Chinatown",
+          "description": "Tres barrios con carácter propio, tres formas diferentes de descubrir la ciudad.",
+          "image": "/images/imagenesmaraton/barrios.png"
+        },
+        {
+          "name": "Gastronomía Local",
+          "description": "Pizza estilo Nueva York, dumplings auténticos en Chinatown, clásicos de Little Italy y las hamburguesas más famosas, todo incluido en la ruta.",
+          "image": "/images/imagenesmaraton/gastro.png"
         }
       ],
       "faq": [
         {
-          "q": "¿Es apto para tu primera visita?",
-          "a": "Sí, es una de las mejores formas de tener una visión completa de la ciudad en poco tiempo."
+          "q": "¿En qué se diferencia el tour Media Maratón del tour Maratón?",
+          "a": "Tour Media Maratón: una experiencia más dinámica y concentrada, donde seleccionamos lo esencial para aprovechar al máximo unas pocas horas sin perder lo que realmente quieres conocer. Tour Maratón: una experiencia pausada y completa para descubrir Nueva York en profundidad, combinando imprescindibles, lugares especiales y tus propios intereses."
         },
         {
-          "q": "¿Es un tour privado?",
-          "a": "Es un tour premium con ruta diseñada y grupo reducido; también hay opciones totalmente personalizadas."
+          "q": "¿Con cuánto tiempo de antelación tengo que reservar?",
+          "a": "Se aconseja reservar con una antelación de al menos un mes para garantizar disponibilidad, especialmente en meses de temporada alta."
+        },
+        {
+          "q": "¿Es completamente privado?",
+          "a": "Sí, el tour es exclusivo para ti y tu grupo. Adaptado a tus necesidades y preferencias."
+        },
+        {
+          "q": "¿Qué pasa si llueve?",
+          "a": "El tour se realizará independientemente de las inclemencias del tiempo, siempre y cuando sea seguro para el grupo y siguiendo las recomendaciones de las autoridades locales. La ruta se adaptará todo lo posible para visitar las zonas más resguardadas. Si tienes dudas contacta directamente conmigo el día del tour y te podré dar información más precisa."
         },
         {
           "q": "¿Se camina mucho?",
-          "a": "Se camina bastante, pero el ritmo está equilibrado con pausas estratégicas."
+          "a": "Se combinan tramos a pie y con transporte público. Adaptando el ritmo al grupo. Se recomienda calzado cómodo."
         },
         {
-          "q": "¿Y si llueve?",
-          "a": "El recorrido se ajusta para que la experiencia siga siendo óptima pase lo que pase."
+          "q": "¿Cómo se realiza el pago?",
+          "a": "El pago se realiza en persona el día del tour. Se puede pagar en efectivo o con tarjeta, y en dólares o euros."
+        },
+        {
+          "q": "¿Puedo cancelar o modificar mi reserva?",
+          "a": "Sí, siendo aconsejable cancelar/modificar al menos con una antelación de 24 horas."
         }
       ]
     },
     "gallery": [
-      "placeholder",
-      "placeholder",
-      "placeholder"
+      "/images/imagenesmaraton/financiero.png",
+      "/images/imagenesmaraton/mirador.png",
+      "/images/imagenesmaraton/barrios.png",
+      "/images/imagenesmaraton/gastro.png"
     ]
   },
   {
     "id": "free-tour-roosevelt",
     "coverImage": "/images/roosvelt3.png",
-    "coverVideo": "/videos/roosevelt.mp4",
-    "coverVideoPoster": "/videos/roosevelt-poster.jpg",
+    "coverPosition": "center 30%",
     "name": "Free Tour: Roosevelt Island hasta Manhattan",
     "category": "free",
     "categoryLabel": "Gratuito",
@@ -290,18 +341,22 @@
       "left": "78%"
     },
     "shortName": "Free Tour Roosevelt Island",
-    "cardEyebrow": "Nueva York diferente.",
+    "cardEyebrow": "Nueva York diferente",
     "cardTitle": "Roosevelt Island",
     "levelIcon": "i-badge",
     "order": 5,
     "detail": {
-      "subtitle": "Roosevelt Island y el Midtown que el 90% de los turistas se pierde",
+      "subtitle": "",
       "intro": "El 90% de la gente que visita Nueva York se pierde esto. Un free tour que mezcla Roosevelt Island con el Midtown más oculto: pasajes peatonales, edificios icónicos y pequeños oasis urbanos que no salen en las guías.",
       "meetingPoint": "Bloomberg Tower, 731 Lexington Avenue",
+      "endPoint": "Placeholder",
       "language": "Español",
       "priceDetail": "Gratis (a propina) · solo se paga el tranvía/metro, unos $3",
       "transport": "A pie y en transporte público",
       "availability": "Todos los días · plazas limitadas",
+      "notIncludes": [
+        "Placeholder"
+      ],
       "includes": [
         "Cruce en el Roosevelt Island Tramway sobre el East River",
         "Recorrido por Four Freedoms Park y las ruinas del Smallpox Hospital",

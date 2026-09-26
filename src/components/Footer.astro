@@ -1,4 +1,5 @@
 ---
+import { socials } from '../data/socials';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -15,12 +16,6 @@ const exploreLinks = [
   { href: '/sobre-wilson', label: 'Sobre Wilson' }
 ];
 
-const socials = [
-  { icon: 'i-ig', label: 'Instagram' },
-  { icon: 'i-tiktok', label: 'TikTok' },
-  { icon: 'i-fb', label: 'Facebook' },
-  { icon: 'i-yt', label: 'YouTube' }
-];
 ---
 <footer class="site" id="contacto">
   <div class="wrap footer-columns">
@@ -29,7 +24,7 @@ const socials = [
       <p class="footer-desc">Tours guiados por un local, pensados como rutas con historia: deporte, cultura, gastronomía y los rincones que Nueva York no enseña en las postales.</p>
       <div class="social-row">
         {socials.map((s) => (
-          <a href="#" aria-label={s.label}><svg class="icon"><use href={`#${s.icon}`} /></svg></a>
+          <a href={s.href} aria-label={s.label} target="_blank" rel="noopener"><svg class="icon"><use href={`#${s.icon}`} /></svg></a>
         ))}
       </div>
     </div>
