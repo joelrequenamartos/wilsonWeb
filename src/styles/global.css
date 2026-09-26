@@ -414,7 +414,8 @@
 
   /* ---------- ebook ---------- */
   .ebook-section{background:var(--bg); color:var(--ink); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
-  .ebook-grid{display:grid; grid-template-columns:.8fr 1.2fr; gap:clamp(30px,5vw,60px); align-items:center;}
+  /* zoom: todo el bloque del ebook (textos, portada, contador, precio) un poco más pequeño y en la misma proporción */
+  .ebook-grid{display:grid; grid-template-columns:.8fr 1.2fr; gap:clamp(30px,5vw,60px); align-items:center; zoom:.88;}
   @media (max-width:820px){.ebook-grid{grid-template-columns:1fr;}}
   .ebook-cover{max-width:360px; margin-inline:auto;}
   .ebook-cover img{width:100%; height:auto; display:block; filter:drop-shadow(0 30px 40px rgba(26,21,18,.35));}
@@ -447,6 +448,14 @@
   .ebook-price small::after{
     content:""; position:absolute; left:-6%; right:-6%; top:52%; height:2px; background:#D62828;
     transform:rotate(-14deg);
+  }
+  /* móvil: portada más pequeña y botón en la misma línea que el precio */
+  @media (max-width:820px){
+    .ebook-cover{max-width:clamp(170px,55vw,230px);}
+    .ebook-price-row{flex-wrap:nowrap; gap:clamp(10px,3vw,18px); justify-content:center;}
+    .ebook-price{font-size:clamp(1.5rem,7vw,2.2rem); white-space:nowrap;}
+    .ebook-price small{font-size:.64em; margin-left:.25em;}
+    .ebook-price-row .btn{padding:clamp(12px,3.4vw,15px) clamp(16px,4.8vw,28px); font-size:clamp(.9rem,4vw,1.05rem);}
   }
 
   /* ---------- guide ---------- */
