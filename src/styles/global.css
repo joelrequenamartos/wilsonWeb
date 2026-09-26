@@ -114,6 +114,7 @@
       filter:drop-shadow(0 14px 8px rgba(13,11,9,0));
       transition:filter .25s ease;
       pointer-events:none; /* cerrado es invisible, pero sin esto tapaba los clics bajo el header */
+      overflow:hidden; /* el menú baja desde debajo del header: oculto mientras está recogido arriba */
     }
     .nav-links[data-open="true"]{pointer-events:auto;}
     .nav-links-wrap:has(.nav-links[data-open="true"]){
@@ -121,11 +122,11 @@
     }
     .nav-links{
       background:var(--bg); flex-direction:column; align-items:flex-start;
-      padding:24px clamp(18px,5vw,32px) 40px; gap:20px; transform:translateX(100%); transition:transform .25s ease;
+      padding:24px clamp(18px,5vw,32px) 40px; gap:20px; transform:translateY(-100%); transition:transform .3s ease;
       clip-path:url(#navWaveClip);
     }
     header.site:has(.nav-links[data-open="true"]){border-bottom-color:transparent !important;}
-    .nav-links[data-open="true"]{transform:translateX(0);}
+    .nav-links[data-open="true"]{transform:translateY(0);}
     .nav-links a{font-size:1.15rem;}
     .nav-toggle{display:inline-flex;}
     .nav-whatsapp{display:none;}
