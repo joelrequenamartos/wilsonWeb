@@ -51,6 +51,16 @@
         setMenuOpen(false);
       });
     });
+    // Tap outside the open menu closes it. Captured and swallowed so the tap
+    // doesn't also trigger whatever link/button sits underneath. The scroll
+    // lock stays as is while the menu is open.
+    document.addEventListener('click', function(e){
+      if(links.getAttribute('data-open') !== 'true') return;
+      if(links.contains(e.target) || toggle.contains(e.target)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      setMenuOpen(false);
+    }, true);
   }
 
   if(siteHeader){
