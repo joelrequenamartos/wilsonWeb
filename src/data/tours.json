@@ -9,7 +9,7 @@
     "premium": false,
     "icon": "i-music",
     "description": "Historia, música en vivo y gastronomía local en un domingo distinto: de una misa góspel auténtica a los sabores del Bronx.",
-    "duration": "7h aprox.",
+    "duration": "7h",
     "location": "Harlem, el Bronx",
     "level": "Solo domingos",
     "rating": 4.8,
@@ -326,13 +326,13 @@
     "premium": false,
     "icon": "i-tram",
     "description": "Historia, arquitectura y paisajes urbanos poco conocidos, cruzando en tranvía hacia Manhattan. Aporte a voluntad.",
-    "duration": "2.5 h",
+    "duration": "3.5h",
     "location": "Roosevelt Island",
-    "level": "Nivel fácil",
+    "level": "Lunes y jueves",
     "rating": 4.7,
     "reviewCount": 203,
     "price": "Gratis",
-    "priceNote": "propina sugerida",
+    "priceNote": "Tour de pago libre basado en propinas",
     "art": "art-free",
     "mapPosition": {
       "top": "70%",
@@ -345,63 +345,83 @@
     "order": 5,
     "detail": {
       "subtitle": "",
-      "intro": "El 90% de la gente que visita Nueva York se pierde esto. Un free tour que mezcla Roosevelt Island con el Midtown más oculto: pasajes peatonales, edificios icónicos y pequeños oasis urbanos que no salen en las guías.",
+      "intro": "Descubre una Nueva York diferente en un recorrido que combina la tranquilidad de Roosevelt Island con la energía de Manhattan. Pasearemos por sus espacios verdes, disfrutaremos de increíbles vistas del skyline y conoceremos lugares llenos de historia y encanto. Un tour perfecto para descubrir rincones especiales y disfrutar de la ciudad desde una perspectiva única.",
       "meetingPoint": "Bloomberg Tower, 731 Lexington Avenue",
-      "endPoint": "Placeholder",
+      "endPoint": "Lexington Avenue–53rd Street station",
       "language": "Español",
-      "priceDetail": "Gratis (a propina) · solo se paga el tranvía/metro, unos $3",
+      "priceDetail": "Tour de pago libre basado en propinas",
       "transport": "A pie y en transporte público",
-      "availability": "Todos los días · plazas limitadas",
+      "availability": "Lunes y jueves · plazas limitadas",
       "notIncludes": [
-        "Placeholder"
+        "El pago de transporte público",
+        "Entradas a museos o edificios"
       ],
       "includes": [
-        "Cruce en el Roosevelt Island Tramway sobre el East River",
-        "Recorrido por Four Freedoms Park y las ruinas del Smallpox Hospital",
-        "Vuelta a Midtown Manhattan por su lado más oculto",
-        "Las mejores historias sobre la cultura neoyorquina y los mejores sitios para foto"
+        "Wilson, guía local licenciado y certificado de habla hispana",
+        "Recorrido guiado por Roosevelt Island y Manhattan",
+        "Visita a lugares históricos y puntos de interés de Roosevelt Island",
+        "Vistas panorámicas del skyline de Manhattan y del East River",
+        "Paradas en algunos de los rincones más fotogénicos de la ciudad",
+        "Tour de pago libre: tú decides al final cuánto quieres aportar según tu experiencia"
       ],
       "places": [
         {
-          "name": "Roosevelt Island Tramway",
-          "description": "El teleférico que cruza el East River conectando Manhattan con Roosevelt Island, con vistas panorámicas por el camino."
+          "name": "Roosevelt Island Tram",
+          "description": "El teleférico que conecta con la Isla, con vistas panorámicas del East River durante todo el trayecto.",
+          "image": "/images/imagenesfreetour/tram.jpg"
         },
         {
-          "name": "Four Freedoms Park y Smallpox Hospital",
-          "description": "Un parque conmemorativo y las ruinas de un hospital histórico, en el extremo sur de la isla."
+          "name": "Four Freedoms Park",
+          "description": "Un parque conmemorativo con vistas increíbles de Manhattan y el río East.",
+          "image": "/images/imagenesfreetour/fourfreedoms.jpg"
         },
         {
-          "name": "Midtown oculto",
-          "description": "Pasajes peatonales, curiosidades arquitectónicas y pequeños oasis urbanos que la mayoría de turistas nunca ve."
+          "name": "Oasis urbanos",
+          "description": "Espacios ocultos llenos de tranquilidad que ofrecen un respiro entre los rascacielos y el ritmo de la ciudad.",
+          "image": "/images/imagenesfreetour/oasis.jpg"
         },
         {
-          "name": "Citigroup Center",
-          "description": "Punto final del recorrido, en una zona perfectamente conectada con transporte público."
+          "name": "Iglesias anglicanas",
+          "description": "Templos llenos de historia, arquitectura y tradición que forman parte del patrimonio cultural de la ciudad.",
+          "image": "/images/imagenesfreetour/iglesias.jpg"
         }
       ],
       "faq": [
         {
-          "q": "¿Es gratis de verdad?",
-          "a": "Sí, la reserva es completamente gratuita. Funciona con el modelo de propina libre: al terminar, cada persona aporta lo que considere."
+          "q": "¿Qué debo llevar?",
+          "a": "Calzado cómodo, agua y, según la época del año, protección solar o ropa de abrigo."
         },
         {
-          "q": "¿En qué idioma se hace?",
-          "a": "El free tour se realiza íntegramente en español."
+          "q": "¿Qué pasa si llueve?",
+          "a": "El tour se realizará independientemente de las inclemencias del tiempo, siempre y cuando sea seguro para el grupo y siguiendo las recomendaciones de las autoridades locales. La ruta se adaptará todo lo posible para visitar las zonas más resguardadas. Si tienes dudas contacta directamente conmigo el día del tour y te podré dar información más precisa."
         },
         {
-          "q": "¿Dónde es el punto de encuentro?",
-          "a": "En el edificio Bloomberg Tower, 731 Lexington Avenue."
+          "q": "¿Puedo hacer el tour si tengo movilidad reducida?",
+          "a": "Este tour no es apto para personas con movilidad reducida debido a la poca accesibilidad de algunas estaciones. Si necesitas más información contáctame personalmente."
         },
         {
-          "q": "¿Qué lugares se visitan?",
-          "a": "Los rincones más sorprendentes de Manhattan y Roosevelt Island: el teleférico, la isla completa y curiosidades de la Quinta Avenida hasta llegar al Citigroup Center."
+          "q": "¿Se camina mucho?",
+          "a": "Se camina bastante, pero el ritmo está equilibrado con pausas estratégicas."
+        },
+        {
+          "q": "¿Qué ocurre si llego tarde al punto de encuentro?",
+          "a": "En ese caso, ponte en contacto por WhatsApp conmigo (lo tienes disponible en la página web) y te mandaré instrucciones."
+        },
+        {
+          "q": "¿Puedo cancelar o modificar mi reserva?",
+          "a": "Sí, siendo aconsejable cancelar/modificar al menos con una antelación de 24 horas."
+        },
+        {
+          "q": "¿Es realmente gratis?",
+          "a": "Sí. No tiene un precio fijo; al finalizar, cada persona puede aportar al guía una propina con la cantidad que considere adecuada según su experiencia."
         }
       ]
     },
     "gallery": [
-      "placeholder",
-      "placeholder",
-      "placeholder"
+      "/images/imagenesfreetour/tram.jpg",
+      "/images/imagenesfreetour/fourfreedoms.jpg",
+      "/images/imagenesfreetour/oasis.jpg",
+      "/images/imagenesfreetour/iglesias.jpg"
     ]
   }
 ]

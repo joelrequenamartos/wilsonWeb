@@ -24,6 +24,8 @@ const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
 const waHref = `https://wa.me/16466297581?text=${waMessage}`;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
 const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
+// "Tour " delante del título, salvo si ya empieza por "Free Tour" (evita "Tour Free Tour")
+const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour ${title}`);
 ---
 <Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage}>
   <Header transparent={!!(t.coverImage || t.coverVideo)} />
@@ -56,7 +58,7 @@ const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 
             {badge?.label ?? t.categoryLabel}
           </div>
         </div>
-        <h1>{/^free tour/i.test(t.name) ? t.name : `Tour ${t.name}`}</h1>
+        <h1>{withTour(t.name)}</h1>
         {t.detail.subtitle && <p class="tour-hero-subtitle">{t.detail.subtitle}</p>}
       </div>
     </section>
@@ -105,12 +107,12 @@ const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 
         <aside class="tour-detail-side">
           <div class="tour-info-card" id="tourInfoCard">
             <div class="tour-price">{t.price}<small>{t.priceNote}</small></div>
-            {t.detail.priceDetail !== `${t.price} ${t.priceNote}` && (
+            {![`${t.price} ${t.priceNote}`, t.priceNote].includes(t.detail.priceDetail) && (
               <p class="tour-price-detail">{t.detail.priceDetail}</p>
             )}
             <dl class="tour-info-list">
               <div><dt><svg class="icon"><use href="#i-pin" /></svg>Punto de encuentro</dt><dd>{t.detail.meetingPoint}</dd></div>
-              <div><dt><svg class="icon"><use href="#i-clock" /></svg>Duración</dt><dd>{t.duration}</dd></div>
+              <div><dt><svg class="icon"><use href="#i-clock" /></svg>Duración</dt><dd>{t.duration} aprox.</dd></div>
               {t.detail.endPoint && (
                 <div><dt><svg class="icon"><use href="#i-flag" /></svg>Punto de finalización</dt><dd>{t.detail.endPoint}</dd></div>
               )}
@@ -166,7 +168,7 @@ const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 
               </div>
               <div class="related-tour-body">
                 <span class="related-tour-location"><svg class="icon" style="width:13px;height:13px"><use href="#i-pin" /></svg>{other.data.location}</span>
-                <h3>{other.data.cardTitle}</h3>
+                <h3>{withTour(other.data.cardTitle)}</h3>
                 <p class="desc">{other.data.description}</p>
               </div>
             </a>

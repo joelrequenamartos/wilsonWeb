@@ -585,6 +585,7 @@
     background-image:url('/images/gold-texture.jpg'); background-size:cover; background-position:center;
     color:#3a2c05; text-shadow:0 1px 0 rgba(255,255,255,.5);
   }
+  .tour-hero-tag.free-badge{background:#178F4E;}
   .tour-hero-tag::before{display:none;}
   .tour-hero h1{font-size:clamp(1.9rem,3vw + 1rem,3rem); max-width:22ch;}
   @media (min-width:881px){.tour-hero h1{max-width:none; white-space:nowrap;}}
@@ -642,6 +643,12 @@
   .tour-check-list li .icon-check{color:#178F4E;}
   .tour-check-list li .icon-cross{color:#C0392B;}
   .tour-places-list{display:flex; flex-direction:column; gap:14px;}
+  /* móvil: la foto ocupa todo el alto de la tarjeta, así que todas las tarjetas miden lo mismo
+     (la más alta manda) para que las fotos sean iguales sea cual sea el largo de la descripción */
+  @media (max-width:640px){
+    .tour-places-list{display:grid; grid-auto-rows:1fr;}
+    .tour-places-list .place-card > div:not(.place-icon){align-self:center;}
+  }
 
   .tour-detail-side{position:sticky; top:calc(env(safe-area-inset-top,0px) + 92px);}
   .tour-info-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:26px;}
@@ -663,7 +670,7 @@
     font-family:"Poppins"; font-weight:800; font-size:clamp(1.05rem,5.3vw,1.3rem); color:var(--ink);
     flex:0 0 auto; white-space:nowrap;
   }
-  .mobile-sticky-price small{display:block; font-family:"Space Mono"; font-weight:400; font-size:clamp(.58rem,2.7vw,.66rem); color:var(--ink-mute); text-transform:uppercase; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .mobile-sticky-price small{display:block; font-family:"Space Mono"; font-weight:400; font-size:clamp(.58rem,2.7vw,.66rem); color:var(--ink-mute); text-transform:uppercase; max-width:18ch; line-height:1.3; white-space:normal;} /* textos largos (p. ej. Free Tour) bajan a 2 líneas en vez de empujar el botón */
   /* precio y botón escalan juntos con el ancho (vw) para que en móviles pequeños quepan sin cambiar su proporción; a partir de ~390px se quedan en su tamaño máximo.
      El precio nunca se recorta: en pantallas muy estrechas precio y botón bajan juntos, con la misma proporción. */
   .mobile-sticky-cta .btn{white-space:nowrap; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; text-align:center; padding:clamp(8px,2.8vw,11px) clamp(8px,4vw,16px); font-size:clamp(.85rem,4.3vw,1.05rem); border-radius:100px;}
