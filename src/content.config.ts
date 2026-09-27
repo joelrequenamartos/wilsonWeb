@@ -26,6 +26,8 @@ async function loadReviews() {
           name: r.author_name ?? 'Cliente de Google',
           initial: (r.author_name ?? '?').trim().charAt(0).toUpperCase(),
           avatarColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
+          avatar: r.profile_photo_url,
+          rating: r.rating,
           source: 'Google',
           context: 'Reseña verificada',
           quote: r.text ?? ''
@@ -127,6 +129,9 @@ const reviews = defineCollection({
     name: z.string(),
     initial: z.string(),
     avatarColor: z.string(),
+    // foto real del autor de la reseña; si no hay, se muestra la inicial sobre avatarColor
+    avatar: z.string().optional(),
+    rating: z.number().min(1).max(5).default(5),
     source: z.string(),
     context: z.string(),
     quote: z.string()

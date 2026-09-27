@@ -1,12 +1,14 @@
 [
   {
-    "id": "marta-g",
-    "name": "Marta G.",
-    "initial": "M",
+    "id": "google-anna-peris",
+    "name": "Anna Peris",
+    "initial": "A",
     "avatarColor": "var(--coral)",
+    "avatar": "/images/reviews/avatars/anna-peris.jpg",
+    "rating": 5,
     "source": "Google",
-    "context": "Sports Tour NYC",
-    "quote": "Vimos streetball en Rucker Park y dos horas después estábamos en las gradas de Yankee Stadium. Wilson conoce cada esquina.",
+    "context": "Free Tour",
+    "quote": "Hoy hemos hecho un free tour por Nueva York con Wilson y ha sido, sencillamente, una experiencia diferente.\n\nNo ha sido la típica visita guiada llena de datos y lugares “imprescindibles”. Con él hemos descubierto rincones que probablemente no habríamos visto nunca, historias escondidas y pequeños secretos que dan vida real a la ciudad.\n\nLo que más nos ha gustado es cómo lo vive: lo explica con pasión, con energía y con un amor por su trabajo que se nota en cada palabra. Además, hace el tour muy participativo, te hace sentir parte del grupo desde el primer momento y consigue que todo sea muy ameno y divertido.\nGracias, Wilson, por enseñarnos una Nueva York diferente, más auténtica y llena de historias. Sin duda, una experiencia que recomendaremos\n\nSi buscáis algo más que una visita típica, este tour es un acierto total!!!",
     "order": 1
   },
   {

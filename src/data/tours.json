@@ -23,7 +23,7 @@
     },
     "shortName": "Bronx & Góspel en Harlem",
     "cardEyebrow": "Cultura de barrio",
-    "cardTitle": "Bronx & Harlem",
+    "cardTitle": "El Bronx & Harlem",
     "levelIcon": "i-flag",
     "order": 1,
     "detail": {
@@ -131,7 +131,7 @@
     "art": "art-custom",
     "shortName": "La Media Maratón",
     "cardEyebrow": "Visita express",
-    "cardTitle": "Media Maratón",
+    "cardTitle": "La Media Maratón",
     "levelIcon": "i-family",
     "order": 3,
     "detail": {
@@ -215,7 +215,7 @@
   {
     "id": "maraton-de-wilson",
     "coverImage": "/images/parque1.jpg",
-    "name": "La Maratón de Wilson",
+    "name": "La Maratón",
     "category": "sports",
     "categoryLabel": "Día completo",
     "premium": true,
@@ -233,7 +233,7 @@
       "top": "52%",
       "left": "50%"
     },
-    "shortName": "La Maratón de Wilson",
+    "shortName": "La Maratón",
     "cardEyebrow": "Todo y más",
     "cardTitle": "La Maratón",
     "levelIcon": "i-badge",
@@ -324,7 +324,7 @@
     "id": "free-tour-roosevelt",
     "coverImage": "/images/roosvelt3.jpg",
     "coverPosition": "center 30%",
-    "name": "Free Tour: Roosevelt Island hasta Manhattan",
+    "name": "Free Tour: Roosevelt Island",
     "category": "free",
     "categoryLabel": "Gratuito",
     "premium": false,

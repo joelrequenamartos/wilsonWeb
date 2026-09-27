@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import TourGallery from '../../components/TourGallery.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
 import { getTourBadge } from '../../lib/tourBadges';
 
 export async function getStaticPaths() {
@@ -17,7 +18,16 @@ export async function getStaticPaths() {
 const { tour } = Astro.props;
 const t = tour.data;
 const allTours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
-const otherTours = allTours.filter((other) => other.id !== t.id);
+// Qué tours mostrar en "También te pueden interesar…" para cada tour.
+const relatedIds: Record<string, string[]> = {
+  'bronx-gospel': ['tour-privado-espanol', 'maraton-de-wilson', 'free-tour-roosevelt'],
+  'free-tour-roosevelt': ['bronx-gospel', 'tour-privado-espanol', 'maraton-de-wilson'],
+  'tour-privado-espanol': ['maraton-de-wilson', 'bronx-gospel'],
+  'maraton-de-wilson': ['tour-privado-espanol', 'bronx-gospel']
+};
+const otherTours = (relatedIds[t.id] ?? allTours.filter((other) => other.id !== t.id).map((other) => other.id))
+  .map((id) => allTours.find((other) => other.id === id))
+  .filter((other): other is (typeof allTours)[number] => Boolean(other));
 const badge = getTourBadge(t);
 
 const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
@@ -178,17 +188,7 @@ const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour $
       </div>
     </section>
 
-    <section class="section cta-banner">
-      <div class="wrap">
-        <span class="eyebrow">Estoy para ayudarte</span>
-        <h2>¿Aún no te decides?</h2>
-        <p>Si tienes dudas contáctame por aquí</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="mailto:info@silvertoursny.com">Contactar por email</a>
-        </div>
-        <p class="tour-info-note">Las reservas se gestionan fuera de esta web.</p>
-      </div>
-    </section>
+    <CtaBanner />
   </main>
 
   <div class="mobile-sticky-cta" id="mobileStickyCta">

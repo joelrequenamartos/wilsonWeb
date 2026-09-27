@@ -424,6 +424,61 @@
       });
     });
 
+    // Reseña completa en una ventana modal, sin agrandar la tarjeta del carrusel.
+    // "Leer más" solo se muestra cuando el texto no cabe en las líneas visibles.
+    var reviewLightbox = document.getElementById('reviewLightbox');
+    var reviewLightboxTop = document.getElementById('reviewLightboxTop');
+    var reviewLightboxStars = document.getElementById('reviewLightboxStars');
+    var reviewLightboxQuote = document.getElementById('reviewLightboxQuote');
+    var reviewLightboxClose = document.getElementById('reviewLightboxClose');
+    function openReviewLightbox(slideEl){
+      if(!reviewLightbox) return;
+      var top = slideEl.querySelector('.review-top');
+      var starsEl = slideEl.querySelector('.stars');
+      var quoteEl = slideEl.querySelector('.review-quote');
+      reviewLightboxTop.innerHTML = top ? top.innerHTML : '';
+      reviewLightboxStars.innerHTML = starsEl ? starsEl.innerHTML : '';
+      if(starsEl && starsEl.hasAttribute('aria-label')){
+        reviewLightboxStars.setAttribute('aria-label', starsEl.getAttribute('aria-label'));
+      }
+      reviewLightboxQuote.textContent = quoteEl ? quoteEl.textContent : '';
+      reviewLightbox.setAttribute('data-open', 'true');
+      reviewLightbox.setAttribute('aria-hidden', 'false');
+      reviewStop();
+      reviewPlaying = false;
+    }
+    function closeReviewLightbox(){
+      if(!reviewLightbox) return;
+      reviewLightbox.setAttribute('data-open', 'false');
+      reviewLightbox.setAttribute('aria-hidden', 'true');
+    }
+    if(reviewLightbox){
+      reviewLightboxClose.addEventListener('click', closeReviewLightbox);
+      reviewLightbox.addEventListener('click', function(e){
+        if(e.target === reviewLightbox) closeReviewLightbox();
+      });
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape') closeReviewLightbox();
+      });
+    }
+    Array.prototype.forEach.call(reviewTrack.querySelectorAll('.review-quote-wrap'), function(wrap){
+      var quoteEl = wrap.querySelector('.review-quote');
+      var btn = wrap.querySelector('.review-readmore');
+      if(!quoteEl || !btn) return;
+      if(quoteEl.scrollHeight > quoteEl.clientHeight + 1){
+        btn.hidden = false;
+        // El viewport captura el puntero en pointerdown para el drag (setPointerCapture),
+        // lo que redirige también el click resultante al viewport y nunca llega al botón.
+        // Cortando la propagación aquí, antes de que suba al viewport, el botón recibe
+        // su click con normalidad y no empieza un arrastre.
+        btn.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          openReviewLightbox(wrap.closest('.review-slide'));
+        });
+      }
+    });
+
     // Drag / swipe support (mouse and touch, via Pointer Events).
     var reviewDragging = false;
     var reviewDragMoved = false;

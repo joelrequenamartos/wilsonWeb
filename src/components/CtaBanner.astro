@@ -1,0 +1,18 @@
+---
+interface Props {
+  note?: string;
+}
+
+const { note = 'Las reservas se gestionan fuera de esta web.' } = Astro.props;
+---
+<section class="section cta-banner">
+  <div class="wrap">
+    <span class="eyebrow">Estoy para ayudarte</span>
+    <h2>¿Aún no te decides?</h2>
+    <p>Si tienes dudas contáctame por aquí</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="mailto:info@silvertoursny.com">Contactar por email</a>
+    </div>
+    <p class="tour-info-note">{note}</p>
+  </div>
+</section>

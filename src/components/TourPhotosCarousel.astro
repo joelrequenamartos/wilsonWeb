@@ -44,11 +44,18 @@ const loopSlides = [...slides.slice(-CLONES), ...slides, ...slides.slice(0, CLON
           {slide.review && (
             <div class="review-slide-quote">
               <div class="review-top">
-                <div class="avatar" style={`background:${slide.review.avatarColor}`}>{slide.review.initial}</div>
+                {slide.review.avatar
+                  ? <img class="avatar avatar-photo" src={slide.review.avatar} alt={slide.review.name} loading="lazy" />
+                  : <div class="avatar" style={`background:${slide.review.avatarColor}`}>{slide.review.initial}</div>
+                }
                 <div><div class="review-name">{slide.review.name}</div><div class="review-source">{slide.review.source} · {slide.review.context}</div></div>
               </div>
-              <span class="stars">★★★★★</span>
-              <p class="review-quote">"{slide.review.quote}"</p>
+              <span class="stars" aria-label={`${slide.review.rating} de 5 estrellas`}>{'★'.repeat(slide.review.rating)}{'☆'.repeat(5 - slide.review.rating)}</span>
+              <div class="review-quote-wrap">
+                <p class="review-quote">"{slide.review.quote}"</p>
+                {/* Solo se muestra (vía JS) cuando el texto no cabe en las líneas visibles */}
+                <button type="button" class="review-readmore" hidden>Leer más</button>
+              </div>
             </div>
           )}
         </div>
@@ -59,4 +66,15 @@ const loopSlides = [...slides.slice(-CLONES), ...slides, ...slides.slice(0, CLON
   <button class="review-nav-btn review-next" id="reviewNext" aria-label="Reseña siguiente">
     <svg class="icon"><use href="#i-arrow" /></svg>
   </button>
+</div>
+
+<div class="review-lightbox" id="reviewLightbox" aria-hidden="true">
+  <div class="review-lightbox-card" role="dialog" aria-modal="true" aria-label="Reseña completa">
+    <button class="review-lightbox-close" id="reviewLightboxClose" aria-label="Cerrar reseña">
+      <svg class="icon"><use href="#i-close" /></svg>
+    </button>
+    <div class="review-top" id="reviewLightboxTop"></div>
+    <span class="stars" id="reviewLightboxStars"></span>
+    <p class="review-lightbox-quote" id="reviewLightboxQuote"></p>
+  </div>
 </div>
