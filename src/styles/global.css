@@ -91,7 +91,8 @@
   .nav-cta{display:flex; align-items:center; gap:14px;}
   .nav-whatsapp{
     display:flex; align-items:center; justify-content:center; flex:none; width:40px; height:40px;
-    border-radius:50%; background:#fff; box-shadow:0 6px 14px -8px rgba(0,0,0,.4); transition:transform .15s ease;
+    border-radius:50%; background:transparent; box-shadow:none;
+    transition:transform .15s ease, background .25s ease, box-shadow .25s ease;
   }
   .nav-whatsapp img{width:24px;height:24px; display:block;}
   .nav-whatsapp:hover{transform:scale(1.08);}
@@ -143,6 +144,12 @@
   header.site[data-transparent-hero="true"] .nav-toggle{color:#fff;}
   header.site[data-transparent-hero="true"] .brand-logo-color{opacity:0;}
   header.site[data-transparent-hero="true"] .brand-logo-white{opacity:1;}
+  /* sobre la foto del hero el icono de WhatsApp necesita el círculo blanco para
+     verse bien; en cuanto el header pasa a blanco (o en páginas sin hero), el
+     círculo sobra porque ya está sobre fondo blanco */
+  header.site[data-transparent-hero="true"]:not([data-scrolled="true"]) .nav-whatsapp{
+    background:#fff; box-shadow:0 6px 14px -8px rgba(0,0,0,.4);
+  }
   header.site[data-transparent-hero="true"][data-scrolled="true"]{border-color:var(--line);}
   header.site[data-transparent-hero="true"][data-scrolled="true"]::before{opacity:1;}
   header.site[data-transparent-hero="true"][data-scrolled="true"] .nav-links a{color:var(--ink-soft);}

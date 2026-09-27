@@ -7,7 +7,9 @@ interface Props {
 
 const { reviews } = Astro.props;
 
-const photoCount = 12;
+// Como máximo tantas fotos como reseñas: si hubiera más fotos que reseñas, la última
+// reseña se repetiría al volver a la primera (dos tarjetas iguales seguidas en el bucle).
+const photoCount = Math.min(12, reviews.length);
 // Orden pedido: 06, 03, 02, 09 primero; el resto da igual el orden.
 const priorityOrder = [6, 3, 2, 9];
 const rest = Array.from({ length: photoCount }, (_, i) => i + 1).filter((n) => !priorityOrder.includes(n));
