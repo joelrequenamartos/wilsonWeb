@@ -36,6 +36,8 @@ const shareImage = t.coverVideoPoster ?? t.coverImage;
 const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
 // "Tour " delante del título, salvo si ya empieza por "Free Tour" (evita "Tour Free Tour")
 const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour ${title}`);
+// El H1 del tour Bronx usa el nombre corto ("El Bronx & Harlem"); el resto sigue con el nombre completo.
+const heroTitle = t.id === 'bronx-gospel' ? t.cardTitle : t.name;
 ---
 <Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage}>
   <Header transparent={!!(t.coverImage || t.coverVideo)} />
@@ -68,7 +70,7 @@ const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour $
             {badge?.label ?? t.categoryLabel}
           </div>
         </div>
-        <h1>{withTour(t.name)}</h1>
+        <h1>{withTour(heroTitle)}</h1>
         {t.detail.subtitle && <p class="tour-hero-subtitle">{t.detail.subtitle}</p>}
       </div>
     </section>
