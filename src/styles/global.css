@@ -165,7 +165,7 @@
   @media (min-width:881px){.hero-cover-media img{object-position:center 45% !important;}}
   .hero-cover-scrim{
     position:absolute; inset:0;
-    background:linear-gradient(0deg, rgba(13,11,9,.5) 0%, rgba(13,11,9,.15) 45%, rgba(13,11,9,.2) 100%);
+    background:linear-gradient(0deg, rgba(13,11,9,.35) 0%, rgba(13,11,9,.08) 45%, rgba(13,11,9,.12) 100%);
   }
   .hero-cover-curve{
     position:absolute; left:0; right:0; bottom:0; z-index:1; width:100%;
