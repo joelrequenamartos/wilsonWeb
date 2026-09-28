@@ -12,7 +12,9 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
   <Header />
   <main id="main">
     <GuideSection />
+    {/* Oculto de momento: no borrar, se reactivará más adelante.
     <PressMarquee />
+    */}
   </main>
   <Footer tours={tours} />
 </Layout>

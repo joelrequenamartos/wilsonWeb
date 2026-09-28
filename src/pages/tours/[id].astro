@@ -20,10 +20,10 @@ const t = tour.data;
 const allTours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
 // Qué tours mostrar en "También te pueden interesar…" para cada tour.
 const relatedIds: Record<string, string[]> = {
-  'bronx-gospel': ['tour-privado-espanol', 'maraton-de-wilson', 'free-tour-roosevelt'],
-  'free-tour-roosevelt': ['bronx-gospel', 'tour-privado-espanol', 'maraton-de-wilson'],
-  'tour-privado-espanol': ['maraton-de-wilson', 'bronx-gospel'],
-  'maraton-de-wilson': ['tour-privado-espanol', 'bronx-gospel']
+  'bronx-gospel': ['la-media-maraton', 'maraton-de-wilson', 'free-tour-roosevelt'],
+  'free-tour-roosevelt': ['bronx-gospel', 'la-media-maraton', 'maraton-de-wilson'],
+  'la-media-maraton': ['maraton-de-wilson', 'bronx-gospel'],
+  'maraton-de-wilson': ['la-media-maraton', 'bronx-gospel']
 };
 const otherTours = (relatedIds[t.id] ?? allTours.filter((other) => other.id !== t.id).map((other) => other.id))
   .map((id) => allTours.find((other) => other.id === id))
@@ -32,8 +32,10 @@ const badge = getTourBadge(t);
 
 const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
 const waHref = `https://wa.me/16466297581?text=${waMessage}`;
+// El Free Tour de Roosevelt reserva por Calendly en vez de WhatsApp.
+const bookingHref = t.id === 'free-tour-roosevelt' ? 'https://calendly.com/silvertoursny/free-tour-roosevelt-manhattan-express' : waHref;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
-const ctaLabel = ['tour-privado-espanol', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
+const ctaLabel = ['la-media-maraton', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
 // "Tour " delante del título, salvo si ya empieza por "Free Tour" (evita "Tour Free Tour")
 const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour ${title}`);
 // El H1 del tour Bronx usa el nombre corto ("El Bronx & Harlem"); el resto sigue con el nombre completo.
@@ -132,7 +134,7 @@ const heroTitle = t.id === 'bronx-gospel' ? t.cardTitle : t.name;
               <div><dt><svg class="icon"><use href="#i-tram" /></svg>Transporte</dt><dd>{t.detail.transport}</dd></div>
               <div><dt><svg class="icon"><use href="#i-badge" /></svg>Días del tour</dt><dd>{t.detail.availability}</dd></div>
             </dl>
-            <a class="btn btn-primary" style="width:100%; margin-top:20px;" href={waHref} target="_blank" rel="noopener">{ctaLabel}</a>
+            <a class="btn btn-primary" style="width:100%; margin-top:20px;" href={bookingHref} target="_blank" rel="noopener">{ctaLabel}</a>
             <p class="tour-info-note">Las reservas se gestionan fuera de esta web.</p>
           </div>
         </aside>
@@ -195,7 +197,7 @@ const heroTitle = t.id === 'bronx-gospel' ? t.cardTitle : t.name;
 
   <div class="mobile-sticky-cta" id="mobileStickyCta">
     <div class="mobile-sticky-price">{t.price}<small>{t.priceNote}</small></div>
-    <a class="btn btn-primary" href={waHref} target="_blank" rel="noopener">{ctaLabel}</a>
+    <a class="btn btn-primary" href={bookingHref} target="_blank" rel="noopener">{ctaLabel}</a>
   </div>
 
   <Footer tours={allTours} />

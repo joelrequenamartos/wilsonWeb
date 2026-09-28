@@ -10,7 +10,7 @@ export interface TourBadge {
 
 const CUSTOM_BADGES: Record<string, { label: string; icon?: string; className: string }> = {
   'bronx-gospel': { label: 'Más Popular', icon: 'i-fire', className: 'badge-orange' },
-  'tour-privado-espanol': { label: 'Privado', className: 'badge-silver' }
+  'la-media-maraton': { label: 'Privado', className: 'badge-silver' }
 };
 
 export function getTourBadge(tour: Tour): TourBadge | null {

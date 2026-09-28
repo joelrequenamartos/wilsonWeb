@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/tours/tour-privado-espanol", "destination": "/tours/la-media-maraton", "permanent": true }
+  ]
+}

@@ -8,11 +8,12 @@ interface Props {
 
 const { tours } = Astro.props;
 
+// Ocultos de momento (no borrar): se reactivarán más adelante quitando el comentario.
 const exploreLinks = [
-  { href: '/restaurantes', label: 'Restaurantes' },
+  // { href: '/restaurantes', label: 'Restaurantes' },
   { href: '/#resenas', label: 'Reseñas' },
   { href: '/ebook', label: 'Ebook' },
-  { href: '/blog', label: 'Blog' },
+  // { href: '/blog', label: 'Blog' },
   { href: '/sobre-wilson', label: 'Sobre Wilson' }
 ];
 
@@ -54,7 +55,7 @@ const exploreLinks = [
   </div>
 
   <div class="wrap footer-bottom">
-    <span>&copy; <span id="year"></span> Silver Tours NY. Mockup de diseño — todos los precios son ilustrativos.</span>
+    <span>&copy; <span id="year"></span> Silver Tours NY. Algunas imágenes pueden estar editadas con IA (color, luz, retoque).</span>
     <span>Hecho por un neoyorquino, para el mundo.</span>
   </div>
 </footer>
