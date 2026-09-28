@@ -32,8 +32,12 @@ const badge = getTourBadge(t);
 
 const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
 const waHref = `https://wa.me/16466297581?text=${waMessage}`;
-// El Free Tour de Roosevelt reserva por Calendly en vez de WhatsApp.
-const bookingHref = t.id === 'free-tour-roosevelt' ? 'https://calendly.com/silvertoursny/free-tour-roosevelt-manhattan-express' : waHref;
+// Algunos tours reservan por Calendly en vez de WhatsApp.
+const CALENDLY_LINKS: Record<string, string> = {
+  'free-tour-roosevelt': 'https://calendly.com/silvertoursny/free-tour-roosevelt-manhattan-express',
+  'bronx-gospel': 'https://calendly.com/silvertoursny/tour-gosspel-bronx?month=2026-10'
+};
+const bookingHref = CALENDLY_LINKS[t.id] ?? waHref;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
 const ctaLabel = ['la-media-maraton', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
 // "Tour " delante del título, salvo si ya empieza por "Free Tour" (evita "Tour Free Tour")

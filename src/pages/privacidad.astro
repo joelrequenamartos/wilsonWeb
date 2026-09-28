@@ -1,0 +1,156 @@
+---
+// Política de privacidad, términos y condiciones y cookies.
+// Solo se enlaza desde el footer (no aparece en el menú).
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+---
+<Layout title="Privacidad, términos y cookies — Silver Tours NY" description="Política de privacidad, términos y condiciones y política de cookies de Silver Tours NY, LLC.">
+  <Header />
+  <main id="main">
+    <section class="section">
+      <div class="wrap blog-post-wrap">
+        <span class="blog-date">Última actualización: 28 de septiembre de 2026</span>
+        <h1 class="blog-post-title">Privacidad, términos y cookies</h1>
+        <div class="blog-prose legal-prose">
+          <p>Aquí te explicamos quiénes somos, qué datos tratamos cuando visitas esta web, nos escribes o reservas un tour, y las condiciones de nuestros servicios.</p>
+          <ol>
+            <li><a href="#privacidad">Política de privacidad</a></li>
+            <li><a href="#terminos">Términos y condiciones</a></li>
+            <li><a href="#cookies">Política de cookies</a></li>
+          </ol>
+
+          <h2 id="privacidad" class="legal-section">1. Política de privacidad</h2>
+
+          <h3>Quiénes somos</h3>
+          <p>El responsable de tus datos es <strong>Silver Tours NY, LLC</strong>, una empresa con sede en Nueva York (99 Wall Street, Suite 3255, New York, NY 10005, EE. UU.) que ofrece tours guiados en Nueva York. Nuestros clientes vienen sobre todo de España, del resto de la Unión Europea y de Latinoamérica.</p>
+          <p>Puedes escribirnos a <a href="mailto:info@silvertoursny.com">info@silvertoursny.com</a> o a <a href="mailto:silvertoursny@gmail.com">silvertoursny@gmail.com</a>.</p>
+
+          <h3>Qué datos recogemos</h3>
+          <ul>
+            <li><strong>Cuando nos escribes</strong> por email o WhatsApp: tu nombre, email o teléfono y lo que nos cuentes (fechas, número de personas, intereses).</li>
+            <li><strong>Cuando reservas</strong> a través de Calendly: nombre, email, fecha y hora del tour, número de personas y las respuestas que des en el formulario de reserva.</li>
+            <li><strong>Cuando compras el ebook</strong>: el pago lo procesa Stripe. Nosotros recibimos tu nombre, tu email y los datos de la compra, pero nunca los datos completos de tu tarjeta.</li>
+            <li><strong>Cuando navegas por la web</strong>: Vercel, nuestro proveedor de alojamiento, registra datos técnicos como la dirección IP, el navegador, el dispositivo y las páginas visitadas, para servir la web y generar estadísticas de uso.</li>
+          </ul>
+
+          <h3>Para qué los usamos</h3>
+          <ul>
+            <li>Responder a tus consultas.</li>
+            <li>Gestionar tu reserva y avisarte de lo que necesites saber antes del tour (punto de encuentro, cambios, clima).</li>
+            <li>Procesar la compra del ebook y enviártelo.</li>
+            <li>Mantener la web funcionando y segura, y entender cómo se usa para mejorarla.</li>
+            <li>Cumplir nuestras obligaciones legales, fiscales y contables.</li>
+          </ul>
+          <p>No vendemos tus datos ni te enviamos publicidad sin tu permiso.</p>
+
+          <h3>Base legal (si estás en la Unión Europea)</h3>
+          <p>Si resides en España o en otro país del Espacio Económico Europeo, tratamos tus datos conforme al Reglamento General de Protección de Datos (RGPD) sobre estas bases:</p>
+          <ul>
+            <li><strong>Contrato o solicitud previa</strong>: para responder a tu consulta y gestionar tu reserva o compra.</li>
+            <li><strong>Interés legítimo</strong>: para la seguridad y las estadísticas de la web y para llevar nuestros registros comerciales.</li>
+            <li><strong>Obligación legal</strong>: para conservar los registros fiscales y contables.</li>
+            <li><strong>Consentimiento</strong>: cuando te lo pidamos expresamente. Puedes retirarlo cuando quieras.</li>
+          </ul>
+
+          <h3>Con quién compartimos tus datos</h3>
+          <p>Trabajamos con estos proveedores, que tratan los datos en nuestro nombre o como servicios independientes:</p>
+          <ul>
+            <li><strong>Google (Gmail)</strong>: gestión de consultas por email.</li>
+            <li><strong>Calendly</strong>: reservas. Al pulsar un botón de reserva sales de nuestra web y se aplican también las condiciones de Calendly.</li>
+            <li><strong>Vercel</strong>: alojamiento de la web y análisis de datos.</li>
+            <li><strong>Stripe</strong>: pago del ebook.</li>
+            <li><strong>WhatsApp (Meta)</strong>: si decides escribirnos por WhatsApp.</li>
+            <li><strong>Google Fonts</strong>: las tipografías de la web se cargan desde servidores de Google, que reciben tu dirección IP.</li>
+          </ul>
+          <p>Cada proveedor trata los datos según su propia política de privacidad. Solo compartiremos tus datos con otros terceros si la ley nos obliga o para defender nuestros derechos.</p>
+
+          <h3>Transferencias internacionales</h3>
+          <p>Somos una empresa de Estados Unidos y la mayoría de nuestros proveedores también lo son. Si nos escribes desde España, la Unión Europea o Latinoamérica, tus datos se transferirán y tratarán en Estados Unidos. En esos casos nos apoyamos en las garantías que ofrecen estos proveedores, como las cláusulas contractuales tipo de la Comisión Europea o el Marco de Privacidad de Datos UE-EE. UU.</p>
+
+          <h3>Cuánto tiempo los conservamos</h3>
+          <p>Conservamos la información personal únicamente durante el tiempo razonablemente necesario para cumplir con las finalidades para las que fue recopilada. Esto incluye prestar y administrar nuestros servicios, mantener los registros comerciales y de transacciones, resolver disputas y cumplir las obligaciones legales, fiscales, contables y regulatorias aplicables. En todo caso, el plazo máximo es de <strong>3 años</strong>.</p>
+
+          <h3>Tus derechos</h3>
+          <p>Puedes pedirnos en cualquier momento acceder a tus datos, corregirlos o borrarlos, oponerte a su uso o limitarlo, recibirlos en un formato portable y retirar tu consentimiento. Solo tienes que escribirnos a cualquiera de nuestros emails.</p>
+          <p>Si resides en la Unión Europea y crees que no hemos tratado bien tus datos, puedes reclamar ante la autoridad de protección de datos de tu país. En España es la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener">aepd.es</a>). Si resides en Latinoamérica, puedes ejercer los derechos que te reconozca la ley de tu país, como los derechos ARCO.</p>
+
+          <h3>Menores</h3>
+          <p>Las reservas deben hacerlas personas mayores de edad. Si un menor participa en un tour, lo hace acompañado y bajo la responsabilidad del adulto que gestiona la reserva.</p>
+
+          <h3>Seguridad</h3>
+          <p>Tomamos medidas razonables para proteger tus datos. Aun así, ningún sistema es completamente seguro, por lo que no podemos garantizar una seguridad absoluta.</p>
+
+          <h2 id="terminos" class="legal-section">2. Términos y condiciones</h2>
+          <p>Estas condiciones regulan el uso de esta web y la contratación de tours con Silver Tours NY, LLC. Al reservar un tour o comprar el ebook, las aceptas.</p>
+
+          <h3>Reservas</h3>
+          <ul>
+            <li>Las reservas se hacen a través de un enlace externo de Calendly o, en algunos tours, escribiéndonos por WhatsApp o email.</li>
+            <li>Tu plaza queda reservada cuando recibes la confirmación. Las plazas son limitadas y dependen de la disponibilidad.</li>
+            <li>Te pedimos que los datos que nos des sean correctos, para poder contactarte si hay algún cambio.</li>
+          </ul>
+
+          <h3>Precios y pago</h3>
+          <ul>
+            <li>Los precios se muestran en dólares estadounidenses (USD), por persona o por grupo según se indique en cada tour.</li>
+            <li>Salvo que se indique otra cosa, el pago se realiza en persona el día del tour. La forma de pago aceptada se indica en la ficha de cada tour.</li>
+            <li>El free tour se basa en propinas: cada persona aporta lo que considere al terminar.</li>
+            <li>El transporte público, las entradas y los gastos personales no están incluidos, salvo que se indique lo contrario.</li>
+          </ul>
+
+          <h3>Cancelaciones y cambios</h3>
+          <ul>
+            <li>Si no puedes asistir, avísanos lo antes posible por email o WhatsApp para liberar tu plaza.</li>
+            <li>Los tours se realizan con cualquier clima siempre que sea seguro para el grupo. La ruta puede adaptarse para visitar zonas más resguardadas.</li>
+            <li>Podemos modificar o cancelar un tour por causas de fuerza mayor, seguridad u otras razones ajenas a nosotros. En ese caso te avisaremos lo antes posible y te propondremos otra fecha.</li>
+            <li>Si llegas tarde al punto de encuentro, escríbenos por WhatsApp y te indicaremos cómo unirte. El grupo no siempre podrá esperar.</li>
+          </ul>
+
+          <h3>Durante el tour</h3>
+          <ul>
+            <li>Sigue las indicaciones del guía y cuida de tus pertenencias.</li>
+            <li>Los menores deben ir acompañados de un adulto responsable.</li>
+            <li>El guía puede pedir que abandone el tour a quien ponga en riesgo la seguridad o la experiencia del grupo.</li>
+          </ul>
+
+          <h3>Ebook</h3>
+          <p>El ebook es un producto digital que se compra a través de Stripe. Es para tu uso personal y no puedes copiarlo, revenderlo ni distribuirlo. Si tienes cualquier problema con tu compra, escríbenos.</p>
+
+          <h3>Responsabilidad</h3>
+          <p>Prestamos nuestros servicios con la máxima diligencia. En la medida en que lo permita la ley, no respondemos de los servicios de terceros (transporte, iglesias, establecimientos u otros lugares visitados), de la pérdida de objetos personales ni de los daños causados por no seguir las indicaciones del guía.</p>
+
+          <h3>Propiedad intelectual</h3>
+          <p>Los textos, fotos, vídeos y el logotipo de esta web pertenecen a Silver Tours NY, LLC o a sus autores, y no pueden usarse sin permiso. Algunas imágenes pueden estar editadas digitalmente, también con herramientas de inteligencia artificial (color, luz, retoque).</p>
+
+          <h3>Ley aplicable</h3>
+          <p>Estas condiciones se rigen por las leyes del Estado de Nueva York (EE. UU.). Si eres consumidor, esto no te priva de las protecciones que te reconozca la ley de tu país de residencia.</p>
+
+          <h2 id="cookies" class="legal-section">3. Política de cookies</h2>
+
+          <h3>Qué son</h3>
+          <p>Las cookies y tecnologías similares, como el almacenamiento local del navegador, son pequeños archivos que una web guarda en tu dispositivo para recordar información.</p>
+
+          <h3>Qué usamos</h3>
+          <ul>
+            <li><strong>Almacenamiento técnico</strong>: guardamos en tu navegador el estado del contador de la página del ebook. Ese dato se queda en tu dispositivo y no nos llega.</li>
+            <li><strong>Análisis de datos con Vercel</strong>: usamos las estadísticas de Vercel para saber qué páginas se visitan. Según Vercel, su herramienta de análisis funciona sin cookies y ofrece datos agregados.</li>
+            <li><strong>Servicios externos</strong>: cuando pulsas un enlace a Calendly, Stripe, WhatsApp, Instagram, TikTok, YouTube, Facebook, Google Maps o TripAdvisor, sales de nuestra web. Esos sitios pueden usar sus propias cookies según sus políticas.</li>
+          </ul>
+          <p>No usamos cookies de publicidad ni de seguimiento. Por eso no te mostramos un aviso de cookies. Si algún día las añadimos, te pediremos permiso antes.</p>
+
+          <h3>Cómo gestionarlas</h3>
+          <p>Puedes borrar las cookies y el almacenamiento local, o bloquearlos, desde la configuración de tu navegador.</p>
+
+          <h2 class="legal-section">Contacto</h2>
+          <p>Para cualquier duda sobre esta página o sobre tus datos, escríbenos a <a href="mailto:info@silvertoursny.com">info@silvertoursny.com</a> o a <a href="mailto:silvertoursny@gmail.com">silvertoursny@gmail.com</a>.</p>
+          <p>Podemos actualizar esta página cuando cambien nuestros servicios o la ley. La fecha de la última actualización aparece arriba.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer tours={tours} />
+</Layout>

@@ -913,6 +913,10 @@
   .blog-prose ul, .blog-prose ol{margin-top:16px; padding-left:1.3em; display:flex; flex-direction:column; gap:8px;}
   .blog-prose a{color:var(--coral-dark); font-weight:600;}
   .blog-prose strong{color:var(--ink);}
+  .legal-prose h3{font-size:1.05rem; color:var(--ink); margin-top:26px; margin-bottom:4px;}
+  .legal-section{scroll-margin-top:100px;}
+  .footer-bottom a{color:inherit; text-decoration:underline; text-underline-offset:2px;}
+  .footer-bottom a:hover{color:var(--coral-dark);}
 
   /* ---------- reveal ---------- */
   .reveal{opacity:1; transform:none;}

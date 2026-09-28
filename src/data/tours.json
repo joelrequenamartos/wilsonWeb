@@ -76,15 +76,11 @@
       "faq": [
         {
           "q": "¿Qué debo llevar?",
-          "a": "Calzado cómodo y ropa adecuada según la climatología (si hace mucho frío recuerda usar gorro y guantes)."
+          "a": "Calzado cómodo, agua y, según la época del año, protección solar o ropa de abrigo."
         },
         {
           "q": "¿Qué pasa si llueve?",
           "a": "El tour se realizará independientemente de las inclemencias del tiempo, siempre y cuando sea seguro para el grupo y siguiendo las recomendaciones de las autoridades locales. La ruta se adaptará todo lo posible para visitar las zonas más resguardadas. Si tienes dudas contacta directamente conmigo el día del tour y te podré dar información más precisa."
-        },
-        {
-          "q": "¿Se puede hacer el tour con niños?",
-          "a": "Sí, la edad no es un inconveniente, pero ten en cuenta que se aconseja el tour para niños que puedan desplazarse de manera independiente y caminar media o larga distancia. Los menores de 10 años no pagan."
         },
         {
           "q": "¿Se camina mucho?",
@@ -100,7 +96,7 @@
         },
         {
           "q": "¿Es apto para todos los públicos?",
-          "a": "Sí, el tour es apto para todas las edades. Sin embargo, debido a algunos tramos y accesos sin ascensor, el recorrido no es accesible para personas con movilidad reducida."
+          "a": "Sí, el tour está pensado para todas las edades, y los niños menores de 10 años pueden participar de forma gratuita. Ten en cuenta que el recorrido requiere poder desplazarse de forma independiente y caminar distancias medias o largas. Además, algunos tramos y accesos no disponen de ascensor, por lo que el recorrido no es accesible para personas con movilidad reducida."
         }
       ]
     },
@@ -180,6 +176,10 @@
       ],
       "faq": [
         {
+          "q": "¿En qué se diferencia el tour La Media Maratón del tour La Maratón?",
+          "a": "Tour La Media Maratón: una experiencia más dinámica y concentrada, donde seleccionamos lo esencial para aprovechar al máximo unas pocas horas sin perder lo que realmente quieres conocer. Tour La Maratón: una experiencia pausada y completa para descubrir Nueva York en profundidad, combinando imprescindibles, lugares especiales y tus propios intereses."
+        },
+        {
           "q": "¿Con cuánto tiempo de antelación tengo que reservar?",
           "a": "Se aconseja reservar con una antelación de al menos un mes para garantizar disponibilidad, especialmente en meses de temporada alta."
         },
@@ -240,7 +240,7 @@
     "order": 4,
     "detail": {
       "subtitle": "",
-      "intro": "Una maratón en un tour privado completamente personalizado, pensado para descubrir la ciudad de una forma que no encontrarás en un itinerario convencional. Tú decides qué te interesa, el ritmo y cómo quieres vivir la experiencia. Yo aporto el conocimiento, la experiencia y la planificación necesarias para crear una ruta única, cuidada hasta el último detalle. Con total flexibilidad y sin renunciar a nada de lo que realmente merece la pena, aprovecharemos cada momento para descubrir todo lo que un día puede ofrecer en esta increíble ciudad.",
+      "intro": "La Maratón es un tour privado completamente personalizado, pensado para descubrir la ciudad de una forma que no encontrarás en un itinerario convencional. Tú decides qué te interesa, el ritmo y cómo quieres vivir la experiencia. Yo aporto el conocimiento, la experiencia y la planificación necesarias para crear una ruta única, cuidada hasta el último detalle. Con total flexibilidad y sin renunciar a nada de lo que realmente merece la pena, aprovecharemos cada momento para descubrir todo lo que un día puede ofrecer en esta increíble ciudad.",
       "meetingPoint": "Recogida en tu hotel (solo Manhattan)",
       "language": "Español",
       "priceDetail": "$1,099 hasta 4 personas · +$150 por persona adicional",
@@ -284,8 +284,8 @@
       ],
       "faq": [
         {
-          "q": "¿En qué se diferencia el tour Media Maratón del tour Maratón?",
-          "a": "Tour Media Maratón: una experiencia más dinámica y concentrada, donde seleccionamos lo esencial para aprovechar al máximo unas pocas horas sin perder lo que realmente quieres conocer. Tour Maratón: una experiencia pausada y completa para descubrir Nueva York en profundidad, combinando imprescindibles, lugares especiales y tus propios intereses."
+          "q": "¿En qué se diferencia el tour La Maratón del Tour La Media Maratón?",
+          "a": "Tour La Maratón: una experiencia pausada y completa para descubrir Nueva York en profundidad, combinando imprescindibles, lugares especiales y tus propios intereses. Tour La Media Maratón: una experiencia más dinámica y concentrada, donde seleccionamos lo esencial para aprovechar al máximo unas pocas horas sin perder lo que realmente quieres conocer."
         },
         {
           "q": "¿Con cuánto tiempo de antelación tengo que reservar?",
@@ -336,7 +336,7 @@
     "rating": 4.7,
     "reviewCount": 203,
     "price": "Gratis",
-    "priceNote": "Tour de pago libre basado en propinas",
+    "priceNote": "Basado en propinas",
     "art": "art-free",
     "mapPosition": {
       "top": "70%",
@@ -353,12 +353,11 @@
       "meetingPoint": "Bloomberg Tower, 731 Lexington Avenue",
       "endPoint": "Lexington Avenue–53rd Street station",
       "language": "Español",
-      "priceDetail": "Tour de pago libre basado en propinas",
+      "priceDetail": "Basado en propinas",
       "transport": "A pie y en transporte público",
-      "availability": "Lunes y jueves · plazas limitadas",
+      "availability": "Lunes y jueves · Plazas limitadas",
       "notIncludes": [
-        "El pago de transporte público",
-        "Entradas a museos o edificios"
+        "El pago de transporte público"
       ],
       "includes": [
         "Wilson, guía local licenciado y certificado de habla hispana",
@@ -400,10 +399,6 @@
           "a": "El tour se realizará independientemente de las inclemencias del tiempo, siempre y cuando sea seguro para el grupo y siguiendo las recomendaciones de las autoridades locales. La ruta se adaptará todo lo posible para visitar las zonas más resguardadas. Si tienes dudas contacta directamente conmigo el día del tour y te podré dar información más precisa."
         },
         {
-          "q": "¿Puedo hacer el tour si tengo movilidad reducida?",
-          "a": "Este tour no es apto para personas con movilidad reducida debido a la poca accesibilidad de algunas estaciones. Si necesitas más información contáctame personalmente."
-        },
-        {
           "q": "¿Se camina mucho?",
           "a": "Se camina bastante, pero el ritmo está equilibrado con pausas estratégicas."
         },
@@ -421,7 +416,7 @@
         },
         {
           "q": "¿Es apto para todos los públicos?",
-          "a": "Sí, el tour está pensado para todas las edades, y los niños menores de 10 años pueden participar de forma gratuita. Ten en cuenta que el recorrido requiere poder desplazarse de forma independiente y caminar distancias medias o largas. Además, algunos tramos y accesos no disponen de ascensor, por lo que el recorrido no es accesible para personas con movilidad reducida."
+          "a": "Sí, el tour es apto para todas las edades. Sin embargo, debido a algunos tramos y accesos sin ascensor, el recorrido no es accesible para personas con movilidad reducida."
         }
       ]
     },
