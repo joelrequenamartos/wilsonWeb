@@ -17,3 +17,7 @@ npm-debug.log*
 
 # raw source footage (not shipped, kept locally only)
 /raw-media/
+
+# vídeos originales de la portada (pesados; la web usa public/videos/portada.mp4)
+/public/videos/IMG_4302.MOV
+/public/videos/Secuencia 01.mp4
