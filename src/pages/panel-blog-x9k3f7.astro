@@ -119,11 +119,11 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
       background:var(--surface); color:var(--ink); border:1px solid var(--line);
       padding:10px 18px; border-radius:8px;
     }
-    .btn-panel:hover{border-color:var(--coral);}
+    @media (hover:hover){.btn-panel:hover{border-color:var(--coral);}}
     .btn-panel-primary{background:var(--coral); border-color:var(--coral); color:#fff;}
-    .btn-panel-primary:hover{background:var(--coral-dark);}
+    @media (hover:hover){.btn-panel-primary:hover{background:var(--coral-dark);}}
     .btn-panel-danger{color:var(--danger); border-color:var(--danger);}
-    .btn-panel-danger:hover{background:var(--danger); color:#fff;}
+    @media (hover:hover){.btn-panel-danger:hover{background:var(--danger); color:#fff;}}
     .btn-sm-panel{padding:6px 12px; font-size:.8rem;}
 
     .panel-form{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px; margin-bottom:32px;}
@@ -143,7 +143,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
       font-family:inherit; font-size:.8rem; background:#0d0b09; color:var(--ink);
       border:1px solid var(--line); border-radius:6px; padding:6px 10px; cursor:pointer;
     }
-    .editor-toolbar button:hover{border-color:var(--coral);}
+    @media (hover:hover){.editor-toolbar button:hover{border-color:var(--coral);}}
     .editor-sep{width:1px; height:20px; background:var(--line); margin:0 2px;}
     .editor-content{
       min-height:280px; background:#0d0b09; border:1px solid var(--line); border-radius:8px;
