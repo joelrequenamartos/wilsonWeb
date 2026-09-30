@@ -101,7 +101,7 @@
      ventana para no desbordar cuando la ventana es más estrecha */
   @media (min-width:881px){
     .nav{padding-block:clamp(12px,1.6vw,22px); gap:clamp(16px,1.6vw,24px);}
-    .brand-logo{width:clamp(215px,14.5vw,270px);}
+    .brand-logo{width:clamp(245px,16.5vw,310px);}
     .nav-links{gap:clamp(28px,2.2vw,38px);}
     .nav-links a{font-size:clamp(1.2rem,.5vw + 1rem,1.42rem);}
     .nav-cta{gap:clamp(14px,1.2vw,18px);}
@@ -131,7 +131,7 @@
     .nav-links a{font-size:1.15rem;}
     .nav-toggle{display:inline-flex;}
     .nav-whatsapp{display:none;}
-    .brand-logo{width:128px;}
+    .brand-logo{width:150px;}
     .nav{gap:10px;}
     .nav-reserve-btn{display:none;}
   }
@@ -191,9 +191,6 @@
   }
   @media (max-width:880px){
     /* glow negro suave tras el título y el menú hamburguesa para que se lean sobre la foto */
-    .hero-cover-content .eyebrow, .hero-cover h1{
-      text-shadow:0 0 14px rgba(0,0,0,.55), 0 0 32px rgba(0,0,0,.45), 0 0 56px rgba(0,0,0,.3);
-    }
     header.site[data-transparent-hero="true"]:not([data-scrolled="true"]) .nav-toggle,
     header.site[data-transparent-hero="true"]:not([data-scrolled="true"]) .brand-logo-wrap{
       filter:drop-shadow(0 0 5px rgba(0,0,0,.75)) drop-shadow(0 0 12px rgba(0,0,0,.6)) drop-shadow(0 0 24px rgba(0,0,0,.45));
@@ -211,6 +208,10 @@
   }
   .hero-cover-content{position:relative; z-index:2; padding-block:40px; text-align:center; margin-inline:auto; transform:translateY(40px);}
   .hero-cover-content .eyebrow{color:#fff; margin-bottom:6px; letter-spacing:.05em;}
+  /* mismo glow negro suave que los enlaces del menú, en escritorio y móvil */
+  .hero-cover-content .eyebrow, .hero-cover h1{
+    text-shadow:0 0 6px rgba(0,0,0,.7), 0 0 14px rgba(0,0,0,.55), 0 0 28px rgba(0,0,0,.4);
+  }
   .hero-cover-content .eyebrow::before{display:none;}
   @media (min-width:881px){.hero-cover-content .eyebrow{font-size:1.15rem;}}
   .hero-cover h1{color:#fff; font-size:clamp(2.1rem,4vw + 1rem,3.6rem); letter-spacing:-.01em; line-height:1.08;}
