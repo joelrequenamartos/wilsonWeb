@@ -251,6 +251,18 @@
   .tours-track .tour-card{flex:0 0 auto; width:80vw; scroll-snap-align:start;}
   @media (min-width:560px){.tours-track .tour-card{width:300px;}}
   @media (min-width:940px){.tours-track .tour-card{width:320px;}}
+  /* Escritorio ancho: el carrusel usa el ancho extra (wrap-wide) y las tarjetas crecen un poco
+     para que, con solo 4 tours, sigan sobrando tarjetas y el carrusel conserve su desplazamiento lateral. */
+  @media (min-width:1180px){.tours-track .tour-card{width:350px;}}
+  /* Escritorio (>=1180px): las tarjetas quedan estáticas en una fila de 4, sin carrusel ni flechas.
+     El contenedor llega a 1512px para que las 4 conserven los ~350px de ancho. */
+  @media (min-width:1180px){
+    #tours .wrap-wide{max-width:1512px;}
+    .tours-nav{display:none;}
+    .tours-scroll{overflow:visible; cursor:default; scroll-snap-type:none;}
+    .tours-track{display:grid; grid-template-columns:repeat(4,1fr);}
+    .tours-track .tour-card{width:auto;}
+  }
 
   .tour-card{
     position:relative; aspect-ratio:3/4; border-radius:var(--radius-lg); overflow:hidden;
@@ -864,7 +876,7 @@
        viewport, y una máscara lateral para que las tarjetas vecinas se difuminen en
        vez de cortarse en seco contra el borde. */
     .review-viewport{
-      height:clamp(228px,calc(52vw + 34px),260px); padding-block:17px;
+      height:clamp(228px,calc(52vw + 34px),260px); min-height:0; padding-block:17px;
       -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
       mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
     }

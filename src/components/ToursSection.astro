@@ -24,7 +24,9 @@ const { tours } = Astro.props;
         </button>
       </div>
     </div>
+  </div>
 
+  <div class="wrap wrap-wide">
     <div class="tours-scroll" id="toursScroll">
       <div class="tours-track" id="toursTrack">
         {tours.map((tour) => <TourCard tour={tour.data} />)}
