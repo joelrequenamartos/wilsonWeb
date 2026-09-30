@@ -199,7 +199,7 @@
       filter:drop-shadow(0 0 5px rgba(0,0,0,.75)) drop-shadow(0 0 12px rgba(0,0,0,.6)) drop-shadow(0 0 24px rgba(0,0,0,.45));
     }
     .hero-cover-media{overflow:hidden;}
-    .hero-cover-media img{object-position:46% center; transform:translateY(-6%) scale(1.5); transform-origin:50% 45%;}
+    .hero-cover-media img{object-position:46% center; transform:translateY(-11%) scale(1.4); transform-origin:50% 45%;}
   }
   .hero-cover-scrim{
     position:absolute; inset:0 0 4px;
