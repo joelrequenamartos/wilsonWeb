@@ -30,8 +30,7 @@ const otherTours = (relatedIds[t.id] ?? allTours.filter((other) => other.id !== 
   .filter((other): other is (typeof allTours)[number] => Boolean(other));
 const badge = getTourBadge(t);
 
-const waMessage = encodeURIComponent(`Hola, quiero reservar: ${t.name}`);
-const waHref = `https://wa.me/16466297581?text=${waMessage}`;
+const waHref = 'https://wa.link/w7v2sg';
 // Algunos tours reservan por Calendly en vez de WhatsApp.
 const CALENDLY_LINKS: Record<string, string> = {
   'free-tour-roosevelt': 'https://calendly.com/silvertoursny/free-tour-roosevelt-manhattan-express',
