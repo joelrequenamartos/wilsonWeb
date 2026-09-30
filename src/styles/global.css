@@ -171,9 +171,24 @@
      nunca asoma una línea de la foto por redondeo de píxeles con zoom. */
   .hero-cover-media{position:absolute; inset:0 0 4px;}
   .hero-cover-media img, .hero-cover-media video{width:100%; height:100%; object-fit:cover;}
-  @media (min-width:881px){.hero-cover-media img{object-position:center 60% !important;}}
+  /* Escritorio: apenas sobra foto a los lados, así que un pequeño zoom + desplazamiento
+     a la derecha (recortado por el overflow) permite mover el encuadre. */
+  @media (min-width:881px){
+    .hero-cover-media{overflow:hidden;}
+    .hero-cover-media img{object-position:center 60% !important; transform:scale(1.05) translateX(2%); transform-origin:50% 60%;}
+  }
   /* Móvil: zoom sobre la foto centrado en Wilson; el overflow la recorta a su caja para
      que no invada la franja de 4px bajo la onda. */
+  /* Escritorio: misma sombra suave que en móvil en el logo y en los enlaces del menú
+     (Tours, Ebook, Sobre Wilson), solo mientras el header es transparente sobre la foto. */
+  @media (min-width:881px){
+    header.site[data-transparent-hero="true"]:not([data-scrolled="true"]) .brand-logo-wrap{
+      filter:drop-shadow(0 0 5px rgba(0,0,0,.75)) drop-shadow(0 0 12px rgba(0,0,0,.6)) drop-shadow(0 0 24px rgba(0,0,0,.45));
+    }
+    header.site[data-transparent-hero="true"]:not([data-scrolled="true"]) .nav-links a{
+      text-shadow:0 0 6px rgba(0,0,0,.7), 0 0 14px rgba(0,0,0,.55), 0 0 28px rgba(0,0,0,.4);
+    }
+  }
   @media (max-width:880px){
     /* glow negro suave tras el título y el menú hamburguesa para que se lean sobre la foto */
     .hero-cover-content .eyebrow, .hero-cover h1{
