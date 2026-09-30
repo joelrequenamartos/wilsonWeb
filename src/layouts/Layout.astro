@@ -1,5 +1,6 @@
 ---
 import Icons from '../components/Icons.astro';
+import Analytics from '@vercel/analytics/astro';
 import WhatsAppBubble from '../components/WhatsAppBubble.astro';
 import '../styles/global.css';
 
@@ -50,5 +51,6 @@ const ogImageURL = new URL(image, Astro.site);
   <slot />
   <WhatsAppBubble />
   <script src="/script.js" defer></script>
+  <Analytics />
 </body>
 </html>
