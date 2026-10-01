@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /panel-blog-x9k3f7
+
+Sitemap: https://www.silvertoursny.com/sitemap-index.xml

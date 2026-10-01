@@ -7,7 +7,7 @@ import EbookSection from '../components/EbookSection.astro';
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
 ---
-<Layout title="Ebook — Silver Tours NY" description="La guía secreta de Nueva York escrita por Wilson: rutas fuera del circuito turístico habitual, mapa descargable y recomendaciones barrio por barrio.">
+<Layout title="Ebook — Silver Tours NY" description="La guía secreta de Nueva York: rutas fuera del circuito turístico.">
   <Header />
   <main id="main">
     <EbookSection />
