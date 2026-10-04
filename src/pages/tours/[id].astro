@@ -34,7 +34,9 @@ const waHref = 'https://wa.link/w7v2sg';
 // Algunos tours reservan por Calendly en vez de WhatsApp.
 const CALENDLY_LINKS: Record<string, string> = {
   'free-tour-roosevelt': 'https://calendly.com/silvertoursny/free-tour-roosevelt-manhattan-express',
-  'bronx-gospel': 'https://calendly.com/silvertoursny/tour-gosspel-bronx?month=2026-10'
+  'bronx-gospel': 'https://calendly.com/silvertoursny/tour-gosspel-bronx?month=2026-10',
+  'la-media-maraton': 'https://calendly.com/silvertoursny/tour-la-media-maraton',
+  'maraton-de-wilson': 'https://calendly.com/silvertoursny/tour-la-maraton'
 };
 const bookingHref = CALENDLY_LINKS[t.id] ?? waHref;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
