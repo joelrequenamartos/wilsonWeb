@@ -3,7 +3,6 @@ title: "5 lugares que no puedes perderte en tu primera visita a Nueva York"
 excerpt: "Si es tu primera vez en la ciudad, no todo son rascacielos. Esto es lo que yo recomiendo ver primero, sin gastar el día entero en colas."
 date: 2026-01-12
 author: "Wilson Silver"
-image: "/images/parque1.jpg"
 readTime: "5 min de lectura"
 ---
 

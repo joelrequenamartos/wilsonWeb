@@ -3,7 +3,6 @@ title: "Cómo moverte en metro por Nueva York sin perderte"
 excerpt: "El metro de Nueva York asusta la primera vez: 24 líneas, trenes locales y express con el mismo color... Te lo explico como se lo explico a mis grupos."
 date: 2026-01-28
 author: "Wilson Silver"
-image: "/images/imagenesfreetour/tram.jpg"
 readTime: "6 min de lectura"
 ---
 

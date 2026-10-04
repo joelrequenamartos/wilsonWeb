@@ -34,13 +34,11 @@ const waHref = 'https://wa.link/w7v2sg';
 // Algunos tours reservan por Calendly en vez de WhatsApp.
 const CALENDLY_LINKS: Record<string, string> = {
   'free-tour-roosevelt': 'https://calendly.com/silvertoursny/free-tour-roosevelt-manhattan-express',
-  'bronx-gospel': 'https://calendly.com/silvertoursny/tour-gosspel-bronx?month=2026-10',
-  'la-media-maraton': 'https://calendly.com/silvertoursny/tour-la-media-maraton',
-  'maraton-de-wilson': 'https://calendly.com/silvertoursny/tour-la-maraton'
+  'bronx-gospel': 'https://calendly.com/silvertoursny/tour-gosspel-bronx?month=2026-10'
 };
 const bookingHref = CALENDLY_LINKS[t.id] ?? waHref;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
-const ctaLabel = 'Ver disponibilidad';
+const ctaLabel = ['la-media-maraton', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
 // "Tour " delante del título, salvo si ya empieza por "Free Tour" (evita "Tour Free Tour")
 const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour ${title}`);
 // El H1 del tour Bronx usa el nombre corto ("El Bronx & Harlem"); el resto sigue con el nombre completo.

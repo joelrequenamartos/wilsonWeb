@@ -145,8 +145,7 @@ const blog = defineCollection({
     excerpt: z.string(),
     date: z.coerce.date(),
     author: z.string().default('Wilson Silver'),
-    readTime: z.string().default('4 min de lectura'),
-    image: z.string().optional()
+    readTime: z.string().default('4 min de lectura')
   })
 });
 
