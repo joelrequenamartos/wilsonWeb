@@ -40,7 +40,7 @@ const CALENDLY_LINKS: Record<string, string> = {
 };
 const bookingHref = CALENDLY_LINKS[t.id] ?? waHref;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
-const ctaLabel = ['la-media-maraton', 'maraton-de-wilson'].includes(t.id) ? 'Consultar disponibilidad' : 'Ver disponibilidad';
+const ctaLabel = 'Ver disponibilidad';
 // "Tour " delante del título, salvo si ya empieza por "Free Tour" (evita "Tour Free Tour")
 const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour ${title}`);
 // El H1 del tour Bronx usa el nombre corto ("El Bronx & Harlem"); el resto sigue con el nombre completo.
