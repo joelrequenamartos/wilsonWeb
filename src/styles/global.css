@@ -1086,3 +1086,36 @@
     .blog-agenda-title{grid-row:auto; writing-mode:horizontal-tb; transform:none; margin-bottom:18px;}
     .blog-agenda-all{grid-column:1;}
   }
+
+  /* ---------- plantilla de entrada de blog (estilo revista) ---------- */
+  .blog-tpl{
+    --tpl-ink:#2a2724; max-width:880px; margin-inline:auto; padding:clamp(18px,4vw,36px);
+    background:var(--bg-alt); color:var(--tpl-ink); font-family:"Lora",Georgia,serif;
+  }
+  .blog-tpl-top, .blog-tpl-section{display:flex; align-items:center; gap:18px;}
+  .blog-tpl-top .blog-tpl-line{flex:0 0 78%; height:1px; background:var(--tpl-ink);}
+  .blog-tpl-top{justify-content:space-between;}
+  .blog-tpl-num{font-size:.8rem; letter-spacing:.04em;}
+  .blog-tpl-section{margin-top:clamp(22px,4vw,36px);}
+  .blog-tpl-section .blog-tpl-line{flex:1; height:1px; background:var(--tpl-ink); margin-right:calc(-1 * clamp(18px,4vw,36px));}
+  .blog-tpl-eyebrow{font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;}
+  .blog-tpl-brand{
+    margin-top:clamp(14px,3vw,26px); text-align:center; font-family:"Poppins",sans-serif; font-weight:300;
+    font-size:clamp(2rem,8vw,4rem); letter-spacing:-.02em; line-height:1;
+  }
+  .blog-tpl-brand strong{font-weight:800;}
+  .blog-tpl-brand span{color:var(--coral); font-weight:800;}
+  .blog-tpl-row{display:grid; grid-template-columns:1fr 1fr; gap:clamp(18px,5vw,48px); align-items:start; margin-top:clamp(26px,5vw,48px);}
+  .blog-tpl-row-reverse{align-items:center;}
+  .blog-tpl-photo{width:100%; object-fit:cover; display:block;}
+  .blog-tpl-photo-tall{aspect-ratio:4/5;}
+  .blog-tpl-photo-small{aspect-ratio:5/4;}
+  .blog-tpl-text{font-size:.9rem; line-height:1.7; text-align:justify; color:var(--tpl-ink);}
+  .blog-tpl-wide{margin-top:clamp(16px,3vw,28px);}
+  .blog-tpl-title{
+    margin-top:clamp(28px,6vw,56px); text-align:center; text-transform:uppercase; font-family:"Italiana",serif; font-weight:400;
+    font-size:clamp(1.9rem,5.5vw,3.2rem); line-height:1.1; letter-spacing:.01em; color:var(--tpl-ink);
+  }
+  @media (max-width:520px){.blog-tpl-text{font-size:.82rem; text-align:left;}}
+  .blog-post-wrap-tpl{max-width:920px;}
+  .blog-post-wrap-tpl .tour-back{margin-bottom:18px;}

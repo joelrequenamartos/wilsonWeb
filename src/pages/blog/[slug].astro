@@ -1,35 +1,29 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import BlogTemplate from '../../components/BlogTemplate.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({
+  const posts = (await getCollection('blog')).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+  return posts.map((post, i) => ({
     params: { slug: post.id },
-    props: { post }
+    props: { post, number: i + 1 }
   }));
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, number } = Astro.props;
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
-const dateFmt = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
 <Layout title={`${post.data.title} — Blog Silver Tours NY`} description={post.data.excerpt}>
   <Header />
   <main id="main">
     <section class="section">
-      <div class="wrap blog-post-wrap">
+      <div class="wrap blog-post-wrap blog-post-wrap-tpl">
         <a class="tour-back" href="/blog"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al blog</a>
-        <span class="blog-date">{dateFmt.format(post.data.date)} · {post.data.readTime}</span>
-        <h1 class="blog-post-title">{post.data.title}</h1>
-        <div class="blog-post-author">Por {post.data.author}</div>
-        <div class="blog-prose">
-          <Content />
-        </div>
+        <BlogTemplate number={number} title={post.data.title} />
       </div>
     </section>
   </main>
