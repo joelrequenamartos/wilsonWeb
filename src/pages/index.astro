@@ -9,6 +9,7 @@ import AdBanner from '../components/AdBanner.astro';
 import EventsSection from '../components/EventsSection.astro';
 import SocialSection from '../components/SocialSection.astro';
 import CtaBanner from '../components/CtaBanner.astro';
+import BlogSection from '../components/BlogSection.astro';
 import Footer from '../components/Footer.astro';
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
@@ -16,6 +17,7 @@ const byOrder = (a: { data: { order: number } }, b: { data: { order: number } })
 const tours = (await getCollection('tours')).sort(byOrder);
 const reviews = (await getCollection('reviews')).sort(byOrder);
 const restaurants = (await getCollection('restaurants')).sort(byOrder);
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 <Layout>
   <Header transparent />
@@ -23,6 +25,7 @@ const restaurants = (await getCollection('restaurants')).sort(byOrder);
     <Hero />
     <ToursSection tours={tours} />
     <ReviewsSection reviews={reviews} />
+    <BlogSection posts={posts} />
     {/* Oculto de momento: no borrar, se reactivará más adelante.
     <section class="section">
       <div class="wrap">

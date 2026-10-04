@@ -3,6 +3,7 @@ title: "Qué llevar en la maleta para un viaje a Nueva York en invierno"
 excerpt: "El frío de Nueva York no es como el de otras ciudades: es un frío seco y con viento entre rascacielos. Esto es lo que no debería faltarte."
 date: 2026-02-09
 author: "Wilson Silver"
+image: "/images/imagenesmaraton/barrios.jpg"
 readTime: "4 min de lectura"
 ---
 
