@@ -116,6 +116,9 @@
       transition:filter .25s ease;
       pointer-events:none; /* cerrado es invisible, pero sin esto tapaba los clics bajo el header */
       overflow:hidden; /* el menú baja desde debajo del header: oculto mientras está recogido arriba */
+      /* Safari recorta el drop-shadow al borde del overflow:hidden de este mismo elemento: este relleno
+         inferior deja sitio para que la sombra de la curva se vea (sin tapar clics: el wrap no los recibe). */
+      padding-bottom:36px;
     }
     .nav-links[data-open="true"]{pointer-events:auto;}
     .nav-links-wrap:has(.nav-links[data-open="true"]){
