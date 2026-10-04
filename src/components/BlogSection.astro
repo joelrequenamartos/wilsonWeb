@@ -17,13 +17,12 @@ const year = new Intl.DateTimeFormat('es', { year: 'numeric' });
       {posts.map((post) => (
         <a class="blog-agenda-row" href={`/blog/${post.id}`}>
           <div class="blog-agenda-when">
-            <span class="blog-agenda-date">{day.format(post.data.date).replace('.', '')}<br />{year.format(post.data.date)}</span>
+            <span class="blog-agenda-date">{day.format(post.data.date).replace('.', '')} {year.format(post.data.date)}</span>
             {post.data.image && <img class="blog-agenda-photo" src={post.data.image} alt="" loading="lazy" />}
           </div>
           <div class="blog-agenda-body">
             <h3>{post.data.title}</h3>
             <span class="blog-agenda-by">Por {post.data.author} · {post.data.readTime}</span>
-            <p>{post.data.excerpt}</p>
           </div>
         </a>
       ))}
