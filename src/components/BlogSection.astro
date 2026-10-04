@@ -12,7 +12,7 @@ const year = new Intl.DateTimeFormat('es', { year: 'numeric' });
 ---
 <section class="section" id="blog">
   <div class="wrap blog-agenda reveal">
-    <h2 class="blog-agenda-title">Eventos.</h2>
+    <h1 class="blog-agenda-title">Blog.</h1>
     <div class="blog-agenda-list">
       {posts.map((post) => (
         <a class="blog-agenda-row" href={`/blog/${post.id}`}>
@@ -27,6 +27,5 @@ const year = new Intl.DateTimeFormat('es', { year: 'numeric' });
         </a>
       ))}
     </div>
-    <a class="btn btn-outline blog-agenda-all" href="/blog">Ver todos los artículos <svg class="icon"><use href="#i-arrow" /></svg></a>
   </div>
 </section>
