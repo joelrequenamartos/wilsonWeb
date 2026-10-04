@@ -1068,13 +1068,15 @@
   }
   .blog-agenda-list{display:flex; flex-direction:column; max-width:880px;}
   .blog-agenda-row{
-    display:grid; grid-template-columns:clamp(110px,16vw,150px) 1fr; gap:clamp(16px,3vw,32px);
+    display:grid; grid-template-columns:clamp(92px,11vw,116px) 1fr; gap:clamp(16px,3vw,32px);
     padding-block:22px; border-top:1px solid var(--line); text-decoration:none; color:inherit;
   }
   .blog-agenda-row:first-child{border-top:none; padding-top:0;}
   .blog-agenda-when{display:flex; flex-direction:column; gap:12px;}
   .blog-agenda-date{font-family:"Space Mono"; font-weight:700; font-size:.85rem; line-height:1.3; text-transform:uppercase; color:var(--ink); white-space:nowrap;}
   .blog-agenda-photo{width:100%; aspect-ratio:1; object-fit:cover; border-radius:var(--radius-md); display:block;}
+  /* texto centrado en vertical respecto a la foto (el padding superior compensa la fecha que va encima) */
+  .blog-agenda-body{display:flex; flex-direction:column; justify-content:center; padding-top:calc(1.3 * .85rem + 12px);}
   .blog-agenda-body h3{font-size:clamp(1.05rem,1.4vw + .6rem,1.35rem); line-height:1.25; transition:color .15s;}
   .blog-agenda-by{display:block; margin-top:6px; font-size:.78rem; color:var(--ink-mute); font-family:"Space Mono";}
   @media (hover:hover){.blog-agenda-row:hover h3{color:var(--coral-dark);}}
