@@ -1061,8 +1061,15 @@
   }
 
   /* ---------- blog en la home (estilo agenda: fecha + foto cuadrada a la izquierda) ---------- */
-  /* Escritorio: título horizontal arriba y todo en una columna. Móvil: título vertical a la izquierda. */
+  /* Escritorio: título vertical a la izquierda. Móvil: título horizontal arriba y todo en una columna. */
   .blog-agenda{display:block;}
+  /* Escritorio: título vertical a la izquierda; subtítulo, encabezado y lista en la columna de la derecha. */
+  @media (min-width:641px){
+    .blog-agenda{display:grid; grid-template-columns:auto 1fr; column-gap:clamp(20px,4vw,56px); align-items:start;}
+    .blog-agenda-title{grid-row:1 / span 3; writing-mode:vertical-rl; transform:rotate(180deg);}
+    .blog-agenda-sub{margin-top:0;}
+    .blog-agenda-head{margin-top:clamp(28px,4vw,44px);}
+  }
   .blog-agenda-title{
     font-family:"Poppins"; font-weight:400; text-transform:lowercase; line-height:1; letter-spacing:-.03em; color:var(--ink);
     font-size:clamp(3.4rem,7vw,6rem);
@@ -1085,7 +1092,7 @@
   .blog-agenda-body h3{font-size:clamp(1.05rem,1.4vw + .6rem,1.35rem); line-height:1.25; transition:color .15s;}
   .blog-agenda-by{display:block; margin-top:6px; font-size:.78rem; color:var(--ink-mute); font-family:"Space Mono";}
   @media (hover:hover){.blog-agenda-row:hover h3{color:var(--coral-dark);}}
-  /* Móvil: título horizontal también, ajustado al ancho de pantalla */
+  /* Móvil: título horizontal, ajustado al ancho de pantalla */
   @media (max-width:640px){
     .blog-agenda-title{font-size:min(11vw,3.4rem);}
     .blog-agenda-sub{font-size:1rem;}
