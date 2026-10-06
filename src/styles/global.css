@@ -1061,11 +1061,16 @@
   }
 
   /* ---------- blog en la home (estilo agenda: fecha + foto cuadrada a la izquierda) ---------- */
-  .blog-agenda{display:grid; grid-template-columns:auto 1fr; column-gap:clamp(20px,4vw,56px); align-items:start;}
+  /* Escritorio: título horizontal arriba y todo en una columna. Móvil: título vertical a la izquierda. */
+  .blog-agenda{display:block;}
   .blog-agenda-title{
-    grid-row:1 / span 2; writing-mode:vertical-rl; transform:rotate(180deg);
-    font-family:"Poppins"; font-weight:900; font-size:clamp(3.4rem,7vw,6rem); line-height:1; letter-spacing:-.02em; color:var(--ink);
+    font-family:"Poppins"; font-weight:400; text-transform:lowercase; line-height:1; letter-spacing:-.03em; color:var(--ink);
+    font-size:clamp(3.4rem,7vw,6rem);
   }
+  .blog-agenda-title strong{font-weight:800;}
+  .blog-agenda-title span{color:var(--coral); font-weight:800;}
+  .blog-agenda-sub{margin-top:14px; max-width:56ch; font-size:1.1rem; color:var(--ink-soft);}
+  .blog-agenda-head{margin-top:clamp(36px,6vw,64px); margin-bottom:clamp(20px,3vw,32px);}
   .blog-agenda-list{display:flex; flex-direction:column; max-width:880px;}
   .blog-agenda-row{
     display:grid; grid-template-columns:clamp(92px,11vw,116px) 1fr; gap:clamp(16px,3vw,32px);
@@ -1080,11 +1085,13 @@
   .blog-agenda-body h3{font-size:clamp(1.05rem,1.4vw + .6rem,1.35rem); line-height:1.25; transition:color .15s;}
   .blog-agenda-by{display:block; margin-top:6px; font-size:.78rem; color:var(--ink-mute); font-family:"Space Mono";}
   @media (hover:hover){.blog-agenda-row:hover h3{color:var(--coral-dark);}}
-  .blog-agenda-all{grid-column:2; margin-top:10px; justify-self:start;}
   @media (max-width:640px){
-    .blog-agenda{grid-template-columns:1fr;}
-    .blog-agenda-title{grid-row:auto; writing-mode:horizontal-tb; transform:none; margin-bottom:18px;}
-    .blog-agenda-all{grid-column:1;}
+    .blog-agenda{display:grid; grid-template-columns:auto 1fr; column-gap:18px; align-items:start;}
+    .blog-agenda-title{
+      grid-row:1 / span 3; writing-mode:vertical-rl; transform:rotate(180deg); font-size:clamp(2.3rem,11vw,3rem);
+    }
+    .blog-agenda-sub{margin-top:0; font-size:1rem;}
+    .blog-agenda-head{margin-top:24px;}
   }
 
   /* ---------- plantilla de entrada de blog (estilo revista) ---------- */

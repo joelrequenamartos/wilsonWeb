@@ -12,7 +12,12 @@ const year = new Intl.DateTimeFormat('es', { year: 'numeric' });
 ---
 <section class="section" id="blog">
   <div class="wrap blog-agenda reveal">
-    <h1 class="blog-agenda-title">Eventos.</h1>
+    <h1 class="blog-agenda-title"><strong>silver</strong>blog<strong>ny</strong><span>.</span></h1>
+    <p class="blog-agenda-sub">Consejos de Wilson para moverte, comer y disfrutar Nueva York como un local.</p>
+    <div class="section-head blog-agenda-head">
+      <span class="eyebrow">Desde la calle, no desde una guía</span>
+      <h2 class="section-title">Últimos artículos</h2>
+    </div>
     <div class="blog-agenda-list">
       {posts.map((post) => (
         <a class="blog-agenda-row" href={`/blog/${post.id}`}>
