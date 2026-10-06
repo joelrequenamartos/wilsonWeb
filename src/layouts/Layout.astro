@@ -8,12 +8,14 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  whatsappHref?: string;
 }
 
 const {
   title = 'Silver Tours NY',
   description = 'Tours guiados en español por Nueva York con Wilson, guía local.',
-  image = '/images/roosvelt.png'
+  image = '/images/roosvelt.png',
+  whatsappHref
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -49,7 +51,7 @@ const ogImageURL = new URL(image, Astro.site);
   <a class="skip-link" href="#main">Saltar al contenido</a>
   <Icons />
   <slot />
-  <WhatsAppBubble />
+  <WhatsAppBubble href={whatsappHref} />
   <script src="/script.js" defer></script>
   <Analytics />
 </body>

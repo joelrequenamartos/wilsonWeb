@@ -39,6 +39,10 @@ const CALENDLY_LINKS: Record<string, string> = {
   'maraton-de-wilson': 'https://calendly.com/silvertoursny/tour-la-maraton'
 };
 const bookingHref = CALENDLY_LINKS[t.id] ?? waHref;
+// Solo en La Maratón y La Media Maratón: el WhatsApp del menú (escritorio) y el botón flotante (móvil) van al chat del tour privado.
+const privateWaHref = ['la-media-maraton', 'maraton-de-wilson'].includes(t.id)
+  ? 'https://api.whatsapp.com/send?phone=18093213121&text=Hola!%20%F0%9F%91%8B%F0%9F%8F%BB%20Me%20interesa%20saber%20m%C3%A1s%20informaci%C3%B3n%20sobre%20el%20Tour%20Privado'
+  : undefined;
 const shareImage = t.coverVideoPoster ?? t.coverImage;
 const ctaLabel = 'Ver disponibilidad';
 // "Tour " delante del título, salvo si ya empieza por "Free Tour" (evita "Tour Free Tour")
@@ -46,8 +50,8 @@ const withTour = (title: string) => (/^free tour/i.test(title) ? title : `Tour $
 // El H1 del tour Bronx usa el nombre corto ("El Bronx & Harlem"); el resto sigue con el nombre completo.
 const heroTitle = t.id === 'bronx-gospel' ? t.cardTitle : t.name;
 ---
-<Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage}>
-  <Header transparent={!!(t.coverImage || t.coverVideo)} />
+<Layout title={`${t.name} — Silver Tours NY`} description={t.detail.intro} image={shareImage} whatsappHref={privateWaHref}>
+  <Header transparent={!!(t.coverImage || t.coverVideo)} whatsappHref={privateWaHref} />
   <main id="main">
     <section class:list={['tour-hero', `tour-hero-${t.id}`, { 'tour-hero-photo': t.coverImage || t.coverVideo }]}>
       {t.coverVideo ? (
