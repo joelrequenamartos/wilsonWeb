@@ -1141,12 +1141,11 @@
   /* La fecha en grande ocupa el hueco que antes tenía la foto (mismo tamaño de tarjeta). */
   .upcoming-bigdate{
     width:100%; aspect-ratio:4/3; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center; container-type:inline-size; user-select:none;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:2px;
+    container-type:inline-size; user-select:none; color:var(--ink);
   }
-  .upcoming-bigdate span{
-    font-family:"Poppins"; font-weight:900; text-transform:uppercase; white-space:nowrap; line-height:1; letter-spacing:-.02em;
-    font-size:21cqw; color:var(--coral-dark);
-  }
+  .upcoming-day{font-family:"Poppins"; font-weight:900; font-size:38cqw; line-height:.95; letter-spacing:-.03em;}
+  .upcoming-mon{font-family:"Poppins"; font-weight:800; font-size:15cqw; line-height:1; text-transform:uppercase; letter-spacing:.04em;}
   .upcoming-card h3{margin-top:16px; font-size:1.15rem; line-height:1.25;}
   .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono";}
 

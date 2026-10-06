@@ -4,7 +4,12 @@
 import { rawEvents } from '../data/events';
 
 const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
-const events = rawEvents.map((e) => ({ ...e, label: day.format(new Date(`${e.date}T12:00:00`)).replace('.', '') }));
+const dayNum = new Intl.DateTimeFormat('es', { day: 'numeric' });
+const monthShort = new Intl.DateTimeFormat('es', { month: 'short' });
+const events = rawEvents.map((e) => {
+  const d = new Date(`${e.date}T12:00:00`);
+  return { ...e, label: day.format(d).replace('.', ''), num: dayNum.format(d), mon: monthShort.format(d).replace('.', '') };
+});
 ---
 <section class="section section-alt" id="proximos-eventos">
   <div class="wrap wrap-wide">
@@ -27,7 +32,7 @@ const events = rawEvents.map((e) => ({ ...e, label: day.format(new Date(`${e.dat
       <div class="upcoming-track">
         {events.map((event) => (
           <article class="upcoming-card">
-            <div class="upcoming-bigdate" aria-label={event.label}><span>{event.label}</span></div>
+            <div class="upcoming-bigdate" aria-label={event.label}><span class="upcoming-day">{event.num}</span><span class="upcoming-mon">{event.mon}</span></div>
             <h3>{event.title}</h3>
             <span class="upcoming-meta">{event.kind} · {event.place}</span>
           </article>
