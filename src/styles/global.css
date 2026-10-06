@@ -1139,12 +1139,12 @@
   @media (min-width:1100px){.upcoming-card{flex-basis:calc((100% - 48px) / 4);}}
   /* La fecha en grande ocupa el hueco que antes tenía la foto (mismo tamaño de tarjeta). */
   .upcoming-bigdate{
-    width:100%; aspect-ratio:3/2; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--line);
+    width:78%; aspect-ratio:1; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--line);
     display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:0;
     container-type:inline-size; user-select:none; color:var(--ink);
   }
-  .upcoming-day{font-family:"Poppins"; font-weight:900; font-size:44cqw; line-height:.9; letter-spacing:-.03em;}
-  .upcoming-mon{font-family:"Poppins"; font-weight:800; font-size:17cqw; line-height:1; text-transform:uppercase; letter-spacing:.04em;}
+  .upcoming-day{font-family:"Poppins"; font-weight:900; font-size:54cqw; line-height:.9; letter-spacing:-.03em;}
+  .upcoming-mon{font-family:"Poppins"; font-weight:800; font-size:21cqw; line-height:1; text-transform:uppercase; letter-spacing:.04em;}
   .upcoming-card h3{margin-top:16px; font-size:1.15rem; line-height:1.25;}
   .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono";}
 
