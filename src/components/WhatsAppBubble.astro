@@ -1,7 +1,13 @@
+---
+interface Props {
+  href?: string;
+}
+const { href = 'https://wa.link/w7v2sg' } = Astro.props;
+---
 <a
   class="wa-bubble"
   id="waBubble"
-  href="https://wa.link/w7v2sg"
+  href={href}
   target="_blank"
   rel="noopener"
   aria-label="Escríbenos por WhatsApp"

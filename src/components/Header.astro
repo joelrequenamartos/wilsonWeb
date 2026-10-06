@@ -1,8 +1,9 @@
 ---
 interface Props {
   transparent?: boolean;
+  whatsappHref?: string;
 }
-const { transparent = false } = Astro.props;
+const { transparent = false, whatsappHref = 'https://wa.link/w7v2sg' } = Astro.props;
 
 // Ocultos de momento (no borrar): se reactivarán más adelante añadiéndolos de nuevo aquí.
 const navLinks = [
@@ -36,7 +37,7 @@ const navLinks = [
       </div>
     </nav>
     <div class="nav-cta">
-      <a class="nav-whatsapp" href="https://wa.link/w7v2sg" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+      <a class="nav-whatsapp" href={whatsappHref} target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
         <img src="/images/brand/whatsapp.svg" alt="WhatsApp" />
       </a>
       <a class="btn btn-primary btn-sm nav-reserve-btn" href="/#tours">Reservar Tours</a>
