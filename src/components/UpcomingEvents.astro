@@ -1,0 +1,49 @@
+---
+// Próximos eventos en Nueva York. De momento son de ejemplo; cuando haya eventos reales
+// basta con sustituir esta lista (8 eventos: se ven 4 a la vez y el resto con las flechas o deslizando).
+type EventItem = { date: string; title: string; kind: string; place: string; image: string };
+const rawEvents: EventItem[] = [
+  { date: '2026-10-10', title: 'Concierto de jazz al aire libre', kind: 'Concierto', place: 'Harlem', image: '/images/gospel.jpg' },
+  { date: '2026-10-17', title: 'Atardecer en Roosevelt Island', kind: 'Experiencia', place: 'Roosevelt Island', image: '/images/roosvelt2.jpg' },
+  { date: '2026-10-24', title: 'Mercadillo de otoño', kind: 'Mercado', place: 'Brooklyn', image: '/images/parque1.jpg' },
+  { date: '2026-10-31', title: 'Desfile de Halloween', kind: 'Desfile', place: 'Greenwich Village', image: '/images/actor.jpg' },
+  { date: '2026-11-01', title: 'Maratón de Nueva York', kind: 'Deporte', place: 'Cinco distritos', image: '/images/tour-privado.jpg' },
+  { date: '2026-11-07', title: 'Noche de museos', kind: 'Cultura', place: 'Manhattan', image: '/images/wilson-guide.jpg' },
+  { date: '2026-11-14', title: 'Festival gastronómico', kind: 'Gastronomía', place: 'El Bronx', image: '/images/bronxvertical.jpg' },
+  { date: '2026-11-21', title: 'Encendido de luces de invierno', kind: 'Festival', place: 'Midtown', image: '/images/estatua.jpg' }
+].sort((a, b) => a.date.localeCompare(b.date));
+
+const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
+const events = rawEvents.map((e) => ({ ...e, label: day.format(new Date(`${e.date}T12:00:00`)).replace('.', '') }));
+---
+<section class="section section-alt" id="proximos-eventos">
+  <div class="wrap wrap-wide">
+    <div class="section-head-split upcoming-head">
+      <div class="section-head" style="margin-bottom:0;">
+        <span class="eyebrow">Qué hacer en Nueva York</span>
+        <h2 class="section-title">Próximos eventos</h2>
+      </div>
+      <div class="upcoming-nav">
+        <button class="upcoming-nav-btn upcoming-prev" id="upcomingPrev" aria-label="Evento anterior">
+          <svg class="icon"><use href="#i-arrow" /></svg>
+        </button>
+        <button class="upcoming-nav-btn upcoming-next" id="upcomingNext" aria-label="Evento siguiente">
+          <svg class="icon"><use href="#i-arrow" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="upcoming-scroll" id="upcomingScroll" data-hscroll data-prev="upcomingPrev" data-next="upcomingNext">
+      <div class="upcoming-track">
+        {events.map((event) => (
+          <article class="upcoming-card">
+            <img class="upcoming-photo" src={event.image} alt="" loading="lazy" />
+            <span class="upcoming-date">{event.label}</span>
+            <h3>{event.title}</h3>
+            <span class="upcoming-meta">{event.kind} · {event.place}</span>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

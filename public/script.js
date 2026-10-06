@@ -156,6 +156,48 @@
     }, true);
   }
 
+  // Carruseles horizontales genéricos: [data-hscroll] con botones data-prev / data-next (por id).
+  document.querySelectorAll('[data-hscroll]').forEach(function(scroller){
+    var prev = document.getElementById(scroller.getAttribute('data-prev'));
+    var next = document.getElementById(scroller.getAttribute('data-next'));
+    function step(){
+      var card = scroller.firstElementChild && scroller.firstElementChild.firstElementChild;
+      return card ? card.getBoundingClientRect().width + 16 : scroller.clientWidth * 0.8;
+    }
+    function updateNav(){
+      if(!prev || !next) return;
+      var max = scroller.scrollWidth - scroller.clientWidth;
+      prev.disabled = scroller.scrollLeft <= 4;
+      next.disabled = scroller.scrollLeft >= max - 4;
+    }
+    if(prev) prev.addEventListener('click', function(){ scroller.scrollBy({ left: -step(), behavior: 'smooth' }); });
+    if(next) next.addEventListener('click', function(){ scroller.scrollBy({ left: step(), behavior: 'smooth' }); });
+    scroller.addEventListener('scroll', updateNav, { passive: true });
+    window.addEventListener('resize', updateNav);
+    updateNav();
+
+    var dragging = false, moved = false, startX = 0, startScroll = 0;
+    scroller.addEventListener('pointerdown', function(e){
+      if(e.pointerType === 'touch') return;
+      dragging = true; moved = false; startX = e.clientX; startScroll = scroller.scrollLeft;
+      scroller.classList.add('is-dragging');
+    });
+    window.addEventListener('pointermove', function(e){
+      if(!dragging) return;
+      var delta = e.clientX - startX;
+      if(Math.abs(delta) > 4) moved = true;
+      scroller.scrollLeft = startScroll - delta;
+    });
+    window.addEventListener('pointerup', function(){
+      if(!dragging) return;
+      dragging = false;
+      scroller.classList.remove('is-dragging');
+    });
+    scroller.addEventListener('click', function(e){
+      if(moved){ e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+  });
+
   var search = document.getElementById('searchBar');
   if(search){
     search.addEventListener('submit', function(e){

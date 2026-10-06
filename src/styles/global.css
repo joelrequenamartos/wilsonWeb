@@ -1111,6 +1111,34 @@
     .blog-agenda-by{margin-top:10px;}
   }
 
+  /* ---------- próximos eventos (carrusel: 4 visibles en escritorio) ---------- */
+  .upcoming-head{margin-bottom:22px;}
+  .upcoming-nav{display:flex; gap:10px;}
+  .upcoming-nav-btn{
+    flex:none; width:40px; height:40px; border-radius:50%; background:#fff; border:none;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);
+    box-shadow:0 8px 20px -8px rgba(0,0,0,.35); transition:background .15s ease, opacity .15s ease;
+  }
+  @media (hover:hover){.upcoming-nav-btn:hover{background:var(--surface-2);}}
+  .upcoming-nav-btn:disabled{opacity:.35; cursor:default;}
+  .upcoming-prev .icon{transform:rotate(180deg);}
+  @media (max-width:640px){.upcoming-nav-btn{width:34px; height:34px;}}
+  .upcoming-scroll{overflow-x:auto; overflow-y:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch; cursor:grab; scroll-snap-type:x mandatory;}
+  .upcoming-scroll.is-dragging{cursor:grabbing; scroll-snap-type:none;}
+  .upcoming-scroll::-webkit-scrollbar{display:none;}
+  .upcoming-track{display:flex; gap:16px; padding:6px 0 4px;}
+  .upcoming-card{flex:0 0 78vw; scroll-snap-align:start; display:flex; flex-direction:column; align-items:flex-start;}
+  @media (min-width:560px){.upcoming-card{flex-basis:calc((100% - 16px) / 2);}}
+  @media (min-width:860px){.upcoming-card{flex-basis:calc((100% - 32px) / 3);}}
+  @media (min-width:1100px){.upcoming-card{flex-basis:calc((100% - 48px) / 4);}}
+  .upcoming-photo{width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:var(--radius-md); display:block; user-select:none; -webkit-user-drag:none;}
+  .upcoming-date{
+    margin-top:14px; padding-bottom:3px; font-family:"Space Mono"; font-weight:700; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink);
+    background:linear-gradient(to top, var(--coral) 0, var(--coral) 4px, transparent 4px);
+  }
+  .upcoming-card h3{margin-top:12px; font-size:1.15rem; line-height:1.25;}
+  .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono";}
+
   /* ---------- entrada de blog ---------- */
   .blog-post-wrap-tpl{max-width:760px;}
   .post .tour-back{display:flex;}
