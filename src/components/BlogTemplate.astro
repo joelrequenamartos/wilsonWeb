@@ -9,6 +9,12 @@ interface Props {
 
 const { title, excerpt, image } = Astro.props;
 
+// Índice: cada entrada enlaza al título (h2) o subtítulo (h3) con el mismo id.
+const index = [
+  { id: 'primera-seccion', title: 'Título de la primera sección', subs: [{ id: 'subtitulo-de-ejemplo', title: 'Subtítulo de ejemplo' }] },
+  { id: 'segunda-seccion', title: 'Título de la segunda sección', subs: [{ id: 'otro-subtitulo', title: 'Otro subtítulo' }] }
+];
+
 const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
 const loremShort = 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 ---
@@ -19,14 +25,26 @@ const loremShort = 'Duis aute irure dolor in reprehenderit in voluptate velit es
   <h1 class="post-title">{title}</h1>
   <p class="post-summary">{excerpt}</p>
 
+  <nav class="post-index" aria-label="En este artículo">
+    <p class="post-index-title"><svg class="icon"><use href="#i-menu" /></svg>En este artículo</p>
+    <ul>
+      {index.map((section) => (
+        <>
+          <li><a href={`#${section.id}`}>{section.title}</a></li>
+          {section.subs.map((sub) => <li class="post-index-sub"><a href={`#${sub.id}`}>{sub.title}</a></li>)}
+        </>
+      ))}
+    </ul>
+  </nav>
+
   <div class="post-body">
     <p>{lorem}</p>
 
-    <h2>Título de la primera sección</h2>
+    <h2 id="primera-seccion">Título de la primera sección</h2>
     <p>{lorem}</p>
     <p>{loremShort}</p>
 
-    <h3>Subtítulo de ejemplo</h3>
+    <h3 id="subtitulo-de-ejemplo">Subtítulo de ejemplo</h3>
     <p>{lorem}</p>
     <ul>
       <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
@@ -34,11 +52,11 @@ const loremShort = 'Duis aute irure dolor in reprehenderit in voluptate velit es
       <li>Ut enim ad minim veniam, quis nostrud exercitation.</li>
     </ul>
 
-    <h2>Título de la segunda sección</h2>
+    <h2 id="segunda-seccion">Título de la segunda sección</h2>
     <p>{loremShort}</p>
     <blockquote>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</blockquote>
 
-    <h3>Otro subtítulo</h3>
+    <h3 id="otro-subtitulo">Otro subtítulo</h3>
     <p>{lorem}</p>
     <p>{loremShort}</p>
   </div>
