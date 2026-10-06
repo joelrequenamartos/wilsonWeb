@@ -162,7 +162,8 @@
     var next = document.getElementById(scroller.getAttribute('data-next'));
     function step(){
       var card = scroller.firstElementChild && scroller.firstElementChild.firstElementChild;
-      return card ? card.getBoundingClientRect().width + 16 : scroller.clientWidth * 0.8;
+      var gap = parseFloat(getComputedStyle(scroller.firstElementChild).columnGap) || 0;
+      return card ? card.getBoundingClientRect().width + gap : scroller.clientWidth * 0.8;
     }
     function updateNav(){
       if(!prev || !next) return;

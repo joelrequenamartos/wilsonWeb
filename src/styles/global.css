@@ -1126,26 +1126,26 @@
   .upcoming-scroll{overflow-x:auto; overflow-y:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch; cursor:grab; scroll-snap-type:x mandatory;}
   .upcoming-scroll.is-dragging{cursor:grabbing; scroll-snap-type:none;}
   .upcoming-scroll::-webkit-scrollbar{display:none;}
-  .upcoming-track{display:flex; gap:16px; padding:6px 0 4px;}
-  .upcoming-card{flex:0 0 calc((100% - 20px) / 2.35); scroll-snap-align:start; display:flex; flex-direction:column; align-items:flex-start; min-width:0;}
+  .upcoming-track{display:flex; gap:8px; padding:6px 0 4px;}
+  .upcoming-card{flex:0 0 calc((100% - 12px) / 2.35); scroll-snap-align:start; display:flex; flex-direction:column; align-items:flex-start; min-width:0;}
   /* Móvil: 2 tarjetas enteras y la tercera asomando (2,35 por pantalla) */
   @media (max-width:559px){
-    .upcoming-track{gap:10px;}
-    .upcoming-card h3{margin-top:12px; font-size:.95rem; line-height:1.25;}
+    .upcoming-track{gap:6px;}
+    .upcoming-card h3{margin-top:10px; font-size:.82rem; line-height:1.25;}
     .upcoming-card .upcoming-meta{margin-top:6px; font-size:.68rem; line-height:1.3;}
   }
-  @media (min-width:560px){.upcoming-card{flex-basis:calc((100% - 16px) / 2);}}
-  @media (min-width:860px){.upcoming-card{flex-basis:calc((100% - 32px) / 3);}}
-  @media (min-width:1100px){.upcoming-card{flex-basis:calc((100% - 48px) / 4);}}
+  @media (min-width:560px){.upcoming-card{flex-basis:calc((100% - 8px) / 2);}}
+  @media (min-width:860px){.upcoming-card{flex-basis:calc((100% - 16px) / 3);}}
+  @media (min-width:1100px){.upcoming-card{flex-basis:calc((100% - 24px) / 4);}}
   /* La fecha en grande ocupa el hueco que antes tenía la foto (mismo tamaño de tarjeta). */
   .upcoming-bigdate{
-    width:78%; aspect-ratio:1; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--line);
+    width:90%; aspect-ratio:1; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--line);
     display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:0;
     container-type:inline-size; user-select:none; color:var(--ink);
   }
   .upcoming-day{font-family:"Poppins"; font-weight:900; font-size:54cqw; line-height:.9; letter-spacing:-.03em;}
   .upcoming-mon{font-family:"Poppins"; font-weight:800; font-size:21cqw; line-height:1; text-transform:uppercase; letter-spacing:.04em;}
-  .upcoming-card h3{margin-top:16px; font-size:1.15rem; line-height:1.25;}
+  .upcoming-card h3{margin-top:14px; font-size:.95rem; line-height:1.25;}
   .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono";}
 
   /* ---------- tendencias (lista numerada) ---------- */
