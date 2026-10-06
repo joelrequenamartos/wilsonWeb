@@ -1,4 +1,4 @@
-// Eventos de ejemplo en Nueva York (se sustituirán por reales). Se comparten entre secciones del blog.
+// Eventos de ejemplo en Nueva York (se sustituirán por reales).
 export type EventItem = { date: string; title: string; kind: string; place: string; image: string };
 export const rawEvents: EventItem[] = [
   { date: '2026-10-10', title: 'Concierto de jazz al aire libre', kind: 'Concierto', place: 'Harlem', image: '/images/gospel.jpg' },
