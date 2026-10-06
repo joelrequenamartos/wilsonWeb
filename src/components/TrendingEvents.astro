@@ -1,0 +1,27 @@
+---
+// Lista numerada de eventos destacados (formato "trending"). Usa los mismos datos de ejemplo
+// que el carrusel de próximos eventos (src/data/events.ts) y enseña los 5 primeros.
+import { rawEvents } from '../data/events';
+
+const day = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'long', year: 'numeric' });
+const items = rawEvents.slice(0, 5).map((e) => ({ ...e, label: day.format(new Date(`${e.date}T12:00:00`)) }));
+---
+<section class="section" id="tendencias">
+  <div class="wrap">
+    <div class="section-head" style="margin-bottom:clamp(20px,3vw,32px);">
+      <span class="eyebrow">Lo más comentado</span>
+      <h2 class="trending-title">Tendencias</h2>
+    </div>
+    <ol class="trending-list">
+      {items.map((event, i) => (
+        <li class="trending-item">
+          <span class="trending-num">{i + 1}</span>
+          <div class="trending-body">
+            <h3>{event.title}</h3>
+            <span class="trending-date">{event.label}</span>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

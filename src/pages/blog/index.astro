@@ -5,6 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BlogSection from '../../components/BlogSection.astro';
 import UpcomingEvents from '../../components/UpcomingEvents.astro';
+import TrendingEvents from '../../components/TrendingEvents.astro';
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
 const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -15,6 +16,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf()
   <main id="main">
     <BlogSection posts={posts} />
     <UpcomingEvents />
+    <TrendingEvents />
   </main>
   <Footer tours={tours} />
 </Layout>

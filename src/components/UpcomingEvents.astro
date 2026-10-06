@@ -1,17 +1,7 @@
 ---
-// Próximos eventos en Nueva York. De momento son de ejemplo; cuando haya eventos reales
-// basta con sustituir esta lista (8 eventos: se ven 4 a la vez y el resto con las flechas o deslizando).
-type EventItem = { date: string; title: string; kind: string; place: string; image: string };
-const rawEvents: EventItem[] = [
-  { date: '2026-10-10', title: 'Concierto de jazz al aire libre', kind: 'Concierto', place: 'Harlem', image: '/images/gospel.jpg' },
-  { date: '2026-10-17', title: 'Atardecer en Roosevelt Island', kind: 'Experiencia', place: 'Roosevelt Island', image: '/images/roosvelt2.jpg' },
-  { date: '2026-10-24', title: 'Mercadillo de otoño', kind: 'Mercado', place: 'Brooklyn', image: '/images/parque1.jpg' },
-  { date: '2026-10-31', title: 'Desfile de Halloween', kind: 'Desfile', place: 'Greenwich Village', image: '/images/actor.jpg' },
-  { date: '2026-11-01', title: 'Maratón de Nueva York', kind: 'Deporte', place: 'Cinco distritos', image: '/images/tour-privado.jpg' },
-  { date: '2026-11-07', title: 'Noche de museos', kind: 'Cultura', place: 'Manhattan', image: '/images/wilson-guide.jpg' },
-  { date: '2026-11-14', title: 'Festival gastronómico', kind: 'Gastronomía', place: 'El Bronx', image: '/images/bronxvertical.jpg' },
-  { date: '2026-11-21', title: 'Encendido de luces de invierno', kind: 'Festival', place: 'Midtown', image: '/images/estatua.jpg' }
-].sort((a, b) => a.date.localeCompare(b.date));
+// Próximos eventos en Nueva York. Los datos (de ejemplo) están en src/data/events.ts:
+// 8 eventos, se ven 4 a la vez y el resto con las flechas o deslizando.
+import { rawEvents } from '../data/events';
 
 const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
 const events = rawEvents.map((e) => ({ ...e, label: day.format(new Date(`${e.date}T12:00:00`)).replace('.', '') }));
