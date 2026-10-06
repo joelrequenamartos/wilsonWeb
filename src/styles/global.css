@@ -1066,7 +1066,7 @@
   /* Escritorio: título vertical a la izquierda; subtítulo, encabezado y lista en la columna de la derecha. */
   @media (min-width:641px){
     .blog-agenda{display:grid; grid-template-columns:auto 1fr; column-gap:clamp(20px,4vw,56px); align-items:start;}
-    .blog-agenda-title{grid-row:1 / span 3; writing-mode:vertical-rl; transform:rotate(180deg);}
+    .blog-agenda-title{grid-row:1 / span 4; writing-mode:vertical-rl; transform:rotate(180deg);}
     .blog-agenda-sub{margin-top:0;}
     .blog-agenda-head{margin-top:clamp(28px,4vw,44px);}
   }
@@ -1078,6 +1078,18 @@
   .blog-agenda-title span{color:var(--coral); font-weight:800;}
   .blog-agenda-sub{margin-top:14px; font-size:1.1rem; color:var(--ink-soft);}
   .blog-agenda-head{margin-top:clamp(36px,6vw,64px); margin-bottom:clamp(20px,3vw,32px);}
+  /* artículo destacado: foto horizontal con etiqueta en la esquina */
+  .blog-featured{margin-top:clamp(26px,4vw,40px); max-width:880px;}
+  .blog-featured-media{position:relative; border-radius:var(--radius-md); overflow:hidden;}
+  .blog-featured-media img{width:100%; aspect-ratio:16/9; object-fit:cover; display:block;}
+  .blog-featured-tag{
+    position:absolute; top:12px; left:12px; display:inline-flex; align-items:center; gap:6px;
+    padding:7px 14px 7px 11px; border-radius:100px; background:var(--coral); color:#fff;
+    font-family:"Poppins"; font-weight:700; font-size:.82rem; letter-spacing:.02em; box-shadow:0 6px 16px -6px rgba(0,0,0,.45);
+  }
+  .blog-featured-tag .icon{width:16px; height:16px;}
+  .blog-featured-body{margin-top:16px;}
+  .blog-featured-body h3{font-size:clamp(1.3rem,3.6vw,1.9rem); line-height:1.2;}
   .blog-agenda-list{display:flex; flex-direction:column; max-width:880px;}
   .blog-agenda-row{
     display:grid; grid-template-columns:clamp(92px,11vw,116px) 1fr; gap:clamp(16px,3vw,32px);
