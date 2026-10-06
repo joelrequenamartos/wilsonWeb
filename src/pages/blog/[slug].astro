@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BlogTemplate from '../../components/BlogTemplate.astro';
+import UpcomingEvents from '../../components/UpcomingEvents.astro';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog')).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
@@ -25,6 +26,7 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
         <BlogTemplate title={post.data.title} excerpt={post.data.excerpt} image={post.data.image} />
       </div>
     </section>
+    <UpcomingEvents />
   </main>
   <Footer tours={tours} />
 </Layout>
