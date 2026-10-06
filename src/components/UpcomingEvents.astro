@@ -27,8 +27,7 @@ const events = rawEvents.map((e) => ({ ...e, label: day.format(new Date(`${e.dat
       <div class="upcoming-track">
         {events.map((event) => (
           <article class="upcoming-card">
-            <img class="upcoming-photo" src={event.image} alt="" loading="lazy" />
-            <span class="upcoming-date">{event.label}</span>
+            <div class="upcoming-bigdate" aria-label={event.label}><span>{event.label}</span></div>
             <h3>{event.title}</h3>
             <span class="upcoming-meta">{event.kind} · {event.place}</span>
           </article>
