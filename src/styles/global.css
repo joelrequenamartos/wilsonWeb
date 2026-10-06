@@ -1097,6 +1097,18 @@
     .blog-agenda-title{font-size:min(11vw,3.4rem);}
     .blog-agenda-sub{font-size:1rem;}
     .blog-agenda-head{margin-top:28px;}
+    /* Cada artículo: foto horizontal arriba, fecha subrayada en naranja, título y autor. */
+    .blog-agenda-row{display:flex; flex-direction:column; gap:0; padding-block:26px;}
+    .blog-agenda-row:first-child{padding-top:0;}
+    .blog-agenda-when{display:contents;}
+    .blog-agenda-photo{order:1; aspect-ratio:16/9; width:100%;}
+    .blog-agenda-date{
+      order:2; align-self:flex-start; margin-top:16px; padding-bottom:3px; font-size:.78rem; letter-spacing:.12em;
+      background:linear-gradient(to top, var(--coral) 0, var(--coral) 4px, transparent 4px);
+    }
+    .blog-agenda-body{order:3; display:block; padding-top:0; margin-top:12px;}
+    .blog-agenda-body h3{font-size:1.4rem; line-height:1.2;}
+    .blog-agenda-by{margin-top:10px;}
   }
 
   /* ---------- plantilla de entrada de blog (estilo revista) ---------- */
