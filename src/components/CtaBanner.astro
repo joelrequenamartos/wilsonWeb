@@ -13,10 +13,9 @@ const { note = 'Las reservas se gestionan fuera de esta web.' } = Astro.props;
       <p>Si tienes dudas contáctame por aquí</p>
     </div>
 
-    {/* Formulario de contacto. Envía con FormSubmit (formsubmit.co) al correo de la URL de data-endpoint.
-        Ahora llega a silvertoursny@gmail.com. Para cambiar el destinatario basta con cambiar el correo en esa URL
-        (la primera vez FormSubmit manda un correo de activación a esa dirección). Sin data-endpoint no envía nada. */}
-    <form class="contact-form" id="contactForm" data-contact-form data-endpoint="https://formsubmit.co/ajax/silvertoursny@gmail.com" novalidate>
+    {/* Formulario de contacto. Envía a /api/contact (api/contact.js), que manda el correo con Resend a silvertoursny@gmail.com.
+        Necesita la variable RESEND_API_KEY en Vercel. Para cambiar el destinatario: variable CONTACT_TO en Vercel. */}
+    <form class="contact-form" id="contactForm" data-contact-form data-endpoint="/api/contact" novalidate>
       <label class="contact-field">
         <span>Nombre <small>(obligatorio)</small></span>
         <input type="text" name="nombre" autocomplete="name" required />
