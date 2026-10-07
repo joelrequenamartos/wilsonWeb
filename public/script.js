@@ -199,6 +199,52 @@
     }, true);
   });
 
+  // Formulario de contacto. Sin data-endpoint (modo prueba) valida y avisa, pero NO envía nada a nadie.
+  document.querySelectorAll('[data-contact-form]').forEach(function(form){
+    var status = form.querySelector('.contact-status');
+    var submitBtn = form.querySelector('button[type="submit"]');
+    function setStatus(text, kind){
+      status.textContent = text;
+      status.className = 'contact-status' + (kind ? ' is-' + kind : '');
+    }
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var bad = false;
+      form.querySelectorAll('.contact-field').forEach(function(field){
+        var input = field.querySelector('input, textarea');
+        var empty = !input.value.trim();
+        var wrongMail = input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+        field.classList.toggle('is-invalid', empty || wrongMail);
+        if(empty || wrongMail) bad = true;
+      });
+      if(bad){ setStatus('Revisa los campos marcados.', 'error'); return; }
+      if(form.elements['web'] && form.elements['web'].value){ return; } // anti-spam: un robot rellenó el campo oculto
+
+      var endpoint = form.getAttribute('data-endpoint');
+      if(!endpoint){
+        setStatus('Modo prueba: el formulario es correcto, pero todavía no se envía a ningún correo.', 'ok');
+        return;
+      }
+      submitBtn.disabled = true;
+      setStatus('Enviando…');
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          nombre: form.elements['nombre'].value.trim(),
+          correo: form.elements['correo'].value.trim(),
+          mensaje: form.elements['mensaje'].value.trim()
+        })
+      }).then(function(res){
+        if(!res.ok) throw new Error('status ' + res.status);
+        form.reset();
+        setStatus('¡Gracias! Te responderé lo antes posible.', 'ok');
+      }).catch(function(){
+        setStatus('No se ha podido enviar. Escríbenos a info@silvertoursny.com.', 'error');
+      }).finally(function(){ submitBtn.disabled = false; });
+    });
+  });
+
   var search = document.getElementById('searchBar');
   if(search){
     search.addEventListener('submit', function(e){

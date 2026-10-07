@@ -6,13 +6,37 @@ interface Props {
 const { note = 'Las reservas se gestionan fuera de esta web.' } = Astro.props;
 ---
 <section class="section cta-banner">
-  <div class="wrap">
-    <span class="eyebrow">Estoy para ayudarte</span>
-    <h2>¿Aún no te decides?</h2>
-    <p>Si tienes dudas contáctame por aquí</p>
-    <div class="hero-cta">
-      <a class="btn btn-primary" href="mailto:info@silvertoursny.com">Contactar por email</a>
+  <div class="wrap cta-split">
+    <div class="cta-copy">
+      <span class="eyebrow">Estoy para ayudarte</span>
+      <h2>¿Aún no te decides?</h2>
+      <p>Si tienes dudas contáctame por aquí</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="mailto:info@silvertoursny.com">Contactar por email</a>
+      </div>
+      <p class="tour-info-note">{note}</p>
     </div>
-    <p class="tour-info-note">{note}</p>
+
+    {/* Formulario de contacto. De momento NO envía a nadie: sin data-endpoint solo valida y muestra un aviso de prueba.
+        Cuando se sepa el correo de Wilson, se pone aquí la URL del servicio de envío en data-endpoint. */}
+    <form class="contact-form" id="contactForm" data-contact-form data-endpoint="" novalidate>
+      <label class="contact-field">
+        <span>Nombre <small>(obligatorio)</small></span>
+        <input type="text" name="nombre" autocomplete="name" required />
+      </label>
+      <label class="contact-field">
+        <span>Correo electrónico <small>(obligatorio)</small></span>
+        <input type="email" name="correo" autocomplete="email" required />
+      </label>
+      <label class="contact-field">
+        <span>Mensaje <small>(obligatorio)</small></span>
+        <textarea name="mensaje" rows="4" required></textarea>
+      </label>
+      <input class="contact-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <div class="contact-actions">
+        <p class="contact-status" role="status" aria-live="polite"></p>
+        <button class="btn btn-primary" type="submit">Enviar</button>
+      </div>
+    </form>
   </div>
 </section>
