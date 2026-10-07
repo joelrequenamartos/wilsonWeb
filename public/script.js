@@ -234,6 +234,7 @@
           nombre: form.elements['nombre'].value.trim(),
           correo: form.elements['correo'].value.trim(),
           mensaje: form.elements['mensaje'].value.trim(),
+          _replyto: form.elements['correo'].value.trim(), // al pulsar «Responder» se contesta al correo que escribió el usuario
           _subject: 'CONSULTA WEB',
           _template: 'table'
         })
