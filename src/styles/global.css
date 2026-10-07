@@ -558,6 +558,37 @@
   .cta-banner .hero-cta{justify-content:center; margin-top:26px;}
   .guide-grid .hero-cta{margin-top:30px; max-width:56ch; text-align:center;}
   .guide-grid .hero-cta .btn-primary{box-shadow:0 0 30px 10px color-mix(in srgb, var(--coral) 30%, transparent);}
+  /* sección en dos columnas: texto a la izquierda y formulario a la derecha */
+  .cta-split{display:grid; grid-template-columns:1fr; gap:32px; text-align:left;}
+  .cta-split .cta-copy p{margin-inline:0; text-align:left;}
+  .cta-split .hero-cta{justify-content:flex-start;}
+  @media (min-width:900px){.cta-split{grid-template-columns:1fr 1.1fr; gap:clamp(40px,6vw,88px); align-items:center;}}
+  .contact-form{display:flex; flex-direction:column; gap:16px;}
+  .contact-field{display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:.95rem; color:var(--ink);}
+  .contact-field small{font-weight:400; font-size:.8rem; color:var(--ink-soft);}
+  .contact-field input, .contact-field textarea{
+    width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:10px; background:#fff;
+    font:inherit; font-weight:400; color:var(--ink); resize:vertical;
+  }
+  .contact-field input:focus, .contact-field textarea:focus{outline:2px solid var(--coral); outline-offset:1px; border-color:var(--coral);}
+  .contact-field.is-invalid input, .contact-field.is-invalid textarea{border-color:#c0392b;}
+  /* Solo escritorio: la sección contacto un poco más pequeña (móvil no se toca) */
+  @media (min-width:881px){
+    .cta-split{max-width:1040px; gap:clamp(32px,5vw,64px);}
+    .cta-banner h2{font-size:clamp(1.5rem,2.2vw + .8rem,2.2rem);}
+    .cta-split .cta-copy p{font-size:.95rem;}
+    .contact-form{gap:12px;}
+    .contact-field{font-size:.85rem; gap:5px;}
+    .contact-field small{font-size:.72rem;}
+    .contact-field input, .contact-field textarea{padding:10px 12px; font-size:.9rem;}
+    .contact-form .btn{padding:10px 24px; font-size:.9rem;}
+  }
+  .contact-form .contact-note{margin:-6px 0 0; text-align:left;}
+  .contact-hp{position:absolute; left:-9999px; width:1px; height:1px; opacity:0;}
+  .contact-actions{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .contact-status{margin:0; font-size:.9rem; color:var(--ink-soft); flex:1 1 200px;}
+  .contact-status.is-error{color:#c0392b;}
+  .contact-status.is-ok{color:#178F4E;}
   .cta-banner .btn-outline{border-color:var(--ink); color:var(--ink);}
   @media (hover:hover){.cta-banner .btn-outline:hover{background:var(--coral); border-color:var(--coral); color:#fff;}}
 

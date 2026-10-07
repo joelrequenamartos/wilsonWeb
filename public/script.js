@@ -156,6 +156,66 @@
     }, true);
   }
 
+  // Formulario de contacto. Sin data-endpoint (modo prueba) valida y avisa, pero NO envía nada a nadie.
+  document.querySelectorAll('[data-contact-form]').forEach(function(form){
+    var status = form.querySelector('.contact-status');
+    var submitBtn = form.querySelector('button[type="submit"]');
+    function setStatus(text, kind){
+      status.textContent = text;
+      status.className = 'contact-status' + (kind ? ' is-' + kind : '');
+    }
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var bad = false;
+      form.querySelectorAll('.contact-field').forEach(function(field){
+        var input = field.querySelector('input, textarea');
+        var empty = !input.value.trim();
+        var wrongMail = input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+        field.classList.toggle('is-invalid', empty || wrongMail);
+        if(empty || wrongMail) bad = true;
+      });
+      if(bad){ setStatus('Revisa los campos marcados.', 'error'); return; }
+      if(form.elements['web'] && form.elements['web'].value){ return; } // anti-spam: un robot rellenó el campo oculto
+
+      var endpoint = form.getAttribute('data-endpoint');
+      if(!endpoint){
+        setStatus('Modo prueba: el formulario es correcto, pero todavía no se envía a ningún correo.', 'ok');
+        return;
+      }
+      submitBtn.disabled = true;
+      setStatus('Enviando…');
+      var nombre = form.elements['nombre'].value.trim();
+      var correo = form.elements['correo'].value.trim();
+      var texto = form.elements['mensaje'].value.trim();
+      // Dos modos: FormSubmit (servicio externo, formato fijo) o /api/contact (función propia con Resend).
+      var payload = endpoint.indexOf('formsubmit.co') !== -1 ? {
+        // FormSubmit usa el campo «email» como Reply-To (junto con _replyto): «Responder» contesta al usuario
+        email: correo,
+        Mensaje: nombre + ' con el mail ' + correo + ' te ha enviado el siguiente mensaje:\n\n' + texto,
+        _replyto: correo,
+        _subject: 'CONSULTA WEB',
+        _template: 'box'
+      } : { nombre: nombre, correo: correo, mensaje: texto, web: form.elements['web'].value };
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(res){
+        return res.json().catch(function(){ return {}; }).then(function(data){
+          if(!res.ok){ var err = new Error('status ' + res.status); err.code = data.error || ('http-' + res.status); throw err; }
+          return data;
+        });
+      }).then(function(data){
+        // FormSubmit responde HTTP 200 aunque no envíe (p. ej. «needs Activation»): hay que mirar el campo success.
+        if(data && (data.success === false || data.success === 'false')) throw new Error(data.message || 'not-sent');
+        form.reset();
+        setStatus('¡Gracias! Te responderé lo antes posible.', 'ok');
+      }).catch(function(err){
+        setStatus('No se ha podido enviar. Escríbenos a info@silvertoursny.com.' + (err && err.code ? ' (' + err.code + ')' : ''), 'error');
+      }).finally(function(){ submitBtn.disabled = false; });
+    });
+  });
+
   var search = document.getElementById('searchBar');
   if(search){
     search.addEventListener('submit', function(e){
