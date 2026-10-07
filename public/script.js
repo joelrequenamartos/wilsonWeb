@@ -233,7 +233,9 @@
         body: JSON.stringify({
           nombre: form.elements['nombre'].value.trim(),
           correo: form.elements['correo'].value.trim(),
-          mensaje: form.elements['mensaje'].value.trim()
+          mensaje: form.elements['mensaje'].value.trim(),
+          _subject: 'Nuevo mensaje desde silvertoursny.com',
+          _template: 'table'
         })
       }).then(function(res){
         if(!res.ok) throw new Error('status ' + res.status);
