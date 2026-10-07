@@ -229,20 +229,20 @@
       setStatus('Enviando…');
       var nombre = form.elements['nombre'].value.trim();
       var correo = form.elements['correo'].value.trim();
-      var cuando = new Intl.DateTimeFormat('es', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/New_York' }).format(new Date());
+      var texto = form.elements['mensaje'].value.trim();
+      // Dos modos: FormSubmit (servicio externo, formato fijo) o /api/contact (función propia con Resend).
+      var payload = endpoint.indexOf('formsubmit.co') !== -1 ? {
+        // FormSubmit usa el campo «email» como Reply-To (junto con _replyto): «Responder» contesta al usuario
+        email: correo,
+        Mensaje: nombre + ' con el mail ' + correo + ' te ha enviado el siguiente mensaje:\n\n' + texto,
+        _replyto: correo,
+        _subject: 'CONSULTA WEB',
+        _template: 'box'
+      } : { nombre: nombre, correo: correo, mensaje: texto, web: form.elements['web'].value };
       fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          // FormSubmit usa el campo «email» como Reply-To (junto con _replyto): «Responder» contesta al usuario
-          email: correo,
-          mensaje: nombre + ' con el mail ' + correo + ' te ha enviado el siguiente mensaje:\n\n' +
-            form.elements['mensaje'].value.trim() + '\n\n' +
-            'Enviado desde la web el ' + cuando + ' (hora de Nueva York).',
-          _replyto: correo,
-          _subject: 'CONSULTA WEB',
-          _template: 'box'
-        })
+        body: JSON.stringify(payload)
       }).then(function(res){
         if(!res.ok) throw new Error('status ' + res.status);
         form.reset();
