@@ -15,25 +15,33 @@ const { note = 'Las reservas se gestionan fuera de esta web.' } = Astro.props;
 
     {/* Formulario de contacto. Envía a /api/contact (api/contact.js), que manda el correo con Resend a silvertoursny@gmail.com.
         Necesita la variable RESEND_API_KEY en Vercel. Para cambiar el destinatario: variable CONTACT_TO en Vercel. */}
-    <form class="contact-form" id="contactForm" data-contact-form data-endpoint="/api/contact" novalidate>
-      <label class="contact-field">
-        <span>Nombre <small>(obligatorio)</small></span>
-        <input type="text" name="nombre" autocomplete="name" required />
-      </label>
-      <label class="contact-field">
-        <span>Correo electrónico <small>(obligatorio)</small></span>
-        <input type="email" name="correo" autocomplete="email" required />
-      </label>
-      <label class="contact-field">
-        <span>Mensaje <small>(obligatorio)</small></span>
-        <textarea name="mensaje" rows="4" required></textarea>
-      </label>
-      <p class="tour-info-note contact-note">{note}</p>
-      <input class="contact-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <div class="contact-actions">
-        <p class="contact-status" role="status" aria-live="polite"></p>
-        <button class="btn btn-primary" type="submit">Enviar</button>
+    <div class="contact-wrap">
+      <form class="contact-form" id="contactForm" data-contact-form data-endpoint="/api/contact" novalidate>
+        <label class="contact-field">
+          <span>Nombre <small>(obligatorio)</small></span>
+          <input type="text" name="nombre" autocomplete="name" required />
+        </label>
+        <label class="contact-field">
+          <span>Correo electrónico <small>(obligatorio)</small></span>
+          <input type="email" name="correo" autocomplete="email" required />
+        </label>
+        <label class="contact-field">
+          <span>Mensaje <small>(obligatorio)</small></span>
+          <textarea name="mensaje" rows="4" required></textarea>
+        </label>
+        <p class="tour-info-note contact-note">{note}</p>
+        <input class="contact-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <div class="contact-actions">
+          <p class="contact-status" role="status" aria-live="polite"></p>
+          <button class="btn btn-primary" type="submit">Enviar</button>
+        </div>
+      </form>
+      <div class="contact-thanks" role="status" aria-live="polite">
+        <div class="contact-bubble">
+          <strong>¡Gracias!</strong>
+          <span>Te responderé lo antes posible.</span>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 </section>

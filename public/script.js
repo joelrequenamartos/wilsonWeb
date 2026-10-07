@@ -252,7 +252,15 @@
         // FormSubmit responde HTTP 200 aunque no envíe (p. ej. «needs Activation»): hay que mirar el campo success.
         if(data && (data.success === false || data.success === 'false')) throw new Error(data.message || 'not-sent');
         form.reset();
-        setStatus('¡Gracias! Te responderé lo antes posible.', 'ok');
+        setStatus('');
+        var wrap = form.closest('.contact-wrap');
+        if(wrap){
+          wrap.style.minHeight = wrap.offsetHeight + 'px'; // mantiene el hueco para que la burbuja quede justo en medio
+          form.setAttribute('inert', '');
+          wrap.classList.add('is-sent');
+        } else {
+          setStatus('¡Gracias! Te responderé lo antes posible.', 'ok');
+        }
       }).catch(function(err){
         setStatus('No se ha podido enviar. Escríbenos a info@silvertoursny.com.' + (err && err.code ? ' (' + err.code + ')' : ''), 'error');
       }).finally(function(){ submitBtn.disabled = false; });

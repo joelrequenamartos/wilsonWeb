@@ -563,7 +563,25 @@
   .cta-split .cta-copy p{margin-inline:0; text-align:left;}
   .cta-split .hero-cta{justify-content:flex-start;}
   @media (min-width:900px){.cta-split{grid-template-columns:1fr 1.1fr; gap:clamp(40px,6vw,88px); align-items:center;}}
-  .contact-form{display:flex; flex-direction:column; gap:16px;}
+  .contact-wrap{position:relative;}
+  .contact-form{display:flex; flex-direction:column; gap:16px; transition:opacity .35s ease, transform .5s cubic-bezier(.4,0,.2,1); transform-origin:center;}
+  /* Al enviar: el formulario se encoge y se desvanece, y en su lugar aparece la burbuja de «¡Gracias!» */
+  .contact-wrap.is-sent .contact-form{opacity:0; transform:scale(.85); pointer-events:none;}
+  .contact-thanks{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;}
+  .contact-bubble{
+    display:flex; flex-direction:column; gap:6px; align-items:center; text-align:center; max-width:320px;
+    padding:30px 36px; border-radius:30px; background:var(--coral); color:#fff;
+    box-shadow:0 24px 50px -20px color-mix(in srgb, var(--coral) 70%, transparent);
+    opacity:0; transform:scale(.4);
+    transition:transform .6s cubic-bezier(.34,1.56,.64,1) .2s, opacity .3s ease .2s;
+  }
+  .contact-bubble strong{font-family:"Poppins"; font-size:1.7rem; line-height:1.1;}
+  .contact-bubble span{font-size:1rem; opacity:.95;}
+  .contact-wrap.is-sent .contact-bubble{opacity:1; transform:scale(1);}
+  @media (prefers-reduced-motion: reduce){
+    .contact-form, .contact-bubble{transition:none;}
+  }
+
   .contact-field{display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:.95rem; color:var(--ink);}
   .contact-field small{font-weight:400; font-size:.8rem; color:var(--ink-soft);}
   .contact-field input, .contact-field textarea{
