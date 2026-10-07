@@ -232,7 +232,8 @@
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
           nombre: form.elements['nombre'].value.trim(),
-          correo: form.elements['correo'].value.trim(),
+          // FormSubmit usa el campo llamado «email» como Reply-To (junto con _replyto): «Responder» contesta al usuario
+          email: form.elements['correo'].value.trim(),
           mensaje: form.elements['mensaje'].value.trim(),
           _replyto: form.elements['correo'].value.trim(), // al pulsar «Responder» se contesta al correo que escribió el usuario
           _subject: 'CONSULTA WEB',
