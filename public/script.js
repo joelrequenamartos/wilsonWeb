@@ -227,17 +227,21 @@
       }
       submitBtn.disabled = true;
       setStatus('Enviando…');
+      var nombre = form.elements['nombre'].value.trim();
+      var correo = form.elements['correo'].value.trim();
+      var cuando = new Intl.DateTimeFormat('es', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/New_York' }).format(new Date());
       fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
-          nombre: form.elements['nombre'].value.trim(),
-          // FormSubmit usa el campo llamado «email» como Reply-To (junto con _replyto): «Responder» contesta al usuario
-          email: form.elements['correo'].value.trim(),
-          mensaje: form.elements['mensaje'].value.trim(),
-          _replyto: form.elements['correo'].value.trim(), // al pulsar «Responder» se contesta al correo que escribió el usuario
+          // FormSubmit usa el campo «email» como Reply-To (junto con _replyto): «Responder» contesta al usuario
+          email: correo,
+          mensaje: nombre + ' con el mail ' + correo + ' te ha enviado el siguiente mensaje:\n\n' +
+            form.elements['mensaje'].value.trim() + '\n\n' +
+            'Enviado desde la web el ' + cuando + ' (hora de Nueva York).',
+          _replyto: correo,
           _subject: 'CONSULTA WEB',
-          _template: 'table'
+          _template: 'box'
         })
       }).then(function(res){
         if(!res.ok) throw new Error('status ' + res.status);
