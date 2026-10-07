@@ -8,6 +8,18 @@ const ORANGE = '#E07A3E';
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+// Asunto único por mensaje para que Gmail no los junte en un solo hilo:
+// «CONSULTA WEB de: María López #1007-1832» (mes y día – hora y minutos, hora de Nueva York).
+function asunto(nombre) {
+  const partes = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(new Date()).map((p) => [p.type, p.value])
+  );
+  const limpio = nombre.replace(/[\r\n]+/g, ' ').slice(0, 30).trim();
+  return `CONSULTA WEB de: ${limpio} #${partes.month}${partes.day}-${partes.hour}${partes.minute}`;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -50,7 +62,7 @@ export default async function handler(req, res) {
         from: process.env.CONTACT_FROM || 'Silver Tours NY <onboarding@resend.dev>',
         to: [process.env.CONTACT_TO || 'silvertoursny@gmail.com'],
         reply_to: correo, // «Responder» contesta directamente al usuario
-        subject: 'CONSULTA WEB',
+        subject: asunto(nombre),
         html,
         text
       })
