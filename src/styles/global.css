@@ -572,6 +572,18 @@
   }
   .contact-field input:focus, .contact-field textarea:focus{outline:2px solid var(--coral); outline-offset:1px; border-color:var(--coral);}
   .contact-field.is-invalid input, .contact-field.is-invalid textarea{border-color:#c0392b;}
+  /* Solo escritorio: la sección contacto un poco más pequeña (móvil no se toca) */
+  @media (min-width:881px){
+    .cta-split{max-width:1040px; gap:clamp(32px,5vw,64px);}
+    .cta-banner h2{font-size:clamp(1.5rem,2.2vw + .8rem,2.2rem);}
+    .cta-split .cta-copy p{font-size:.95rem;}
+    .contact-form{gap:12px;}
+    .contact-field{font-size:.85rem; gap:5px;}
+    .contact-field small{font-size:.72rem;}
+    .contact-field input, .contact-field textarea{padding:10px 12px; font-size:.9rem;}
+    .contact-form .btn{padding:10px 24px; font-size:.9rem;}
+  }
+  .contact-form .contact-note{margin:-6px 0 0; text-align:left;}
   .contact-hp{position:absolute; left:-9999px; width:1px; height:1px; opacity:0;}
   .contact-actions{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
   .contact-status{margin:0; font-size:.9rem; color:var(--ink-soft); flex:1 1 200px;}

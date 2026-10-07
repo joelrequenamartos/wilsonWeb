@@ -11,10 +11,6 @@ const { note = 'Las reservas se gestionan fuera de esta web.' } = Astro.props;
       <span class="eyebrow">Estoy para ayudarte</span>
       <h2>¿Aún no te decides?</h2>
       <p>Si tienes dudas contáctame por aquí</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="mailto:info@silvertoursny.com">Contactar por email</a>
-      </div>
-      <p class="tour-info-note">{note}</p>
     </div>
 
     {/* Formulario de contacto. Envía con FormSubmit (formsubmit.co) al correo de la URL de data-endpoint.
@@ -33,6 +29,7 @@ const { note = 'Las reservas se gestionan fuera de esta web.' } = Astro.props;
         <span>Mensaje <small>(obligatorio)</small></span>
         <textarea name="mensaje" rows="4" required></textarea>
       </label>
+      <p class="tour-info-note contact-note">{note}</p>
       <input class="contact-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <div class="contact-actions">
         <p class="contact-status" role="status" aria-live="polite"></p>
