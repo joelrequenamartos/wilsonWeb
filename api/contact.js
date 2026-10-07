@@ -55,7 +55,13 @@ export default async function handler(req, res) {
         text
       })
     });
-    if (!r.ok) return res.status(502).json({ ok: false, error: 'send-failed' });
+    if (!r.ok) {
+      const detail = await r.json().catch(() => ({}));
+      console.error('Resend rechazó el envío', r.status, detail);
+      // 403 sin dominio verificado: Resend solo deja enviar al correo con el que se creó la cuenta.
+      const code = r.status === 403 ? 'resend-destinatario' : r.status === 401 ? 'resend-clave' : `resend-${r.status}`;
+      return res.status(502).json({ ok: false, error: code, detail: detail.message || '' });
+    }
     return res.status(200).json({ ok: true });
   } catch {
     return res.status(502).json({ ok: false, error: 'send-failed' });
