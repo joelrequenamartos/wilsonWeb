@@ -245,6 +245,10 @@
         body: JSON.stringify(payload)
       }).then(function(res){
         if(!res.ok) throw new Error('status ' + res.status);
+        return res.json().catch(function(){ return {}; });
+      }).then(function(data){
+        // FormSubmit responde HTTP 200 aunque no envíe (p. ej. «needs Activation»): hay que mirar el campo success.
+        if(data && (data.success === false || data.success === 'false')) throw new Error(data.message || 'not-sent');
         form.reset();
         setStatus('¡Gracias! Te responderé lo antes posible.', 'ok');
       }).catch(function(){
