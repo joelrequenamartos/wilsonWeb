@@ -1,22 +1,15 @@
 ---
-// Plantilla de entrada de blog: volver, silverblogny., foto horizontal, título, resumen y texto.
-// De momento el cuerpo es un ejemplo (lorem ipsum) con títulos, subtítulos, listas y cita.
+// Entrada de blog: volver, silverblogny., foto horizontal, título, resumen, índice y texto.
+// El texto (HTML) y el índice (títulos h2/h3) vienen de la entrada guardada en Supabase.
 interface Props {
   title: string;
   excerpt: string;
   image?: string;
+  html: string;
+  toc: { id: string; title: string; level: 2 | 3 }[];
 }
 
-const { title, excerpt, image } = Astro.props;
-
-// Índice: cada entrada enlaza al título (h2) o subtítulo (h3) con el mismo id.
-const index = [
-  { id: 'primera-seccion', title: 'Título de la primera sección', subs: [{ id: 'subtitulo-de-ejemplo', title: 'Subtítulo de ejemplo' }] },
-  { id: 'segunda-seccion', title: 'Título de la segunda sección', subs: [{ id: 'otro-subtitulo', title: 'Otro subtítulo' }] }
-];
-
-const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
-const loremShort = 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+const { title, excerpt, image, html, toc } = Astro.props;
 ---
 <article class="post">
   <a class="tour-back" href="/blog"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al blog</a>
@@ -25,39 +18,16 @@ const loremShort = 'Duis aute irure dolor in reprehenderit in voluptate velit es
   <h1 class="post-title">{title}</h1>
   <p class="post-summary">{excerpt}</p>
 
-  <nav class="post-index" aria-label="En este artículo">
-    <p class="post-index-title"><svg class="icon"><use href="#i-menu" /></svg>En este artículo</p>
-    <ul>
-      {index.map((section) => (
-        <>
-          <li><a href={`#${section.id}`}>{section.title}</a></li>
-          {section.subs.map((sub) => <li class="post-index-sub"><a href={`#${sub.id}`}>{sub.title}</a></li>)}
-        </>
-      ))}
-    </ul>
-  </nav>
+  {toc.length > 0 && (
+    <nav class="post-index" aria-label="En este artículo">
+      <p class="post-index-title"><svg class="icon"><use href="#i-menu" /></svg>En este artículo</p>
+      <ul>
+        {toc.map((item) => (
+          <li class={item.level === 3 ? 'post-index-sub' : undefined}><a href={`#${item.id}`}>{item.title}</a></li>
+        ))}
+      </ul>
+    </nav>
+  )}
 
-  <div class="post-body">
-    <p>{lorem}</p>
-
-    <h2 id="primera-seccion">Título de la primera sección</h2>
-    <p>{lorem}</p>
-    <p>{loremShort}</p>
-
-    <h3 id="subtitulo-de-ejemplo">Subtítulo de ejemplo</h3>
-    <p>{lorem}</p>
-    <ul>
-      <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-      <li>Sed do eiusmod tempor incididunt ut labore et dolore magna.</li>
-      <li>Ut enim ad minim veniam, quis nostrud exercitation.</li>
-    </ul>
-
-    <h2 id="segunda-seccion">Título de la segunda sección</h2>
-    <p>{loremShort}</p>
-    <blockquote>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</blockquote>
-
-    <h3 id="otro-subtitulo">Otro subtítulo</h3>
-    <p>{lorem}</p>
-    <p>{loremShort}</p>
-  </div>
+  <div class="post-body" set:html={html} />
 </article>

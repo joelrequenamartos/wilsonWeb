@@ -5,25 +5,27 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BlogTemplate from '../../components/BlogTemplate.astro';
 import UpcomingEvents from '../../components/UpcomingEvents.astro';
+import { getPosts, prepareContent } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('blog')).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+  const posts = await getPosts();
   return posts.map((post) => ({
-    params: { slug: post.id },
+    params: { slug: post.slug },
     props: { post }
   }));
 }
 
 const { post } = Astro.props;
+const { html, toc } = prepareContent(post.content);
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
 ---
-<Layout title={`${post.data.title} — Blog Silver Tours NY`} description={post.data.excerpt}>
+<Layout title={`${post.title} — Blog Silver Tours NY`} description={post.excerpt} image={post.image ?? undefined}>
   <Header />
   <main id="main">
     <section class="section">
       <div class="wrap blog-post-wrap blog-post-wrap-tpl">
-        <BlogTemplate title={post.data.title} excerpt={post.data.excerpt} image={post.data.image} />
+        <BlogTemplate title={post.title} excerpt={post.excerpt} image={post.image ?? undefined} html={html} toc={toc} />
       </div>
     </section>
     <UpcomingEvents />

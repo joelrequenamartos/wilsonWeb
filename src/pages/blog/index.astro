@@ -4,9 +4,10 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BlogSection from '../../components/BlogSection.astro';
+import { getPosts } from '../../lib/posts';
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
-const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = await getPosts();
 
 ---
 <Layout title="Blog — Silver Tours NY" description="Consejos, rutas y recomendaciones de Wilson para moverte por Nueva York como un local.">
