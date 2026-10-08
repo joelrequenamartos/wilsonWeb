@@ -5,6 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BlogTemplate from '../../components/BlogTemplate.astro';
 import UpcomingEvents from '../../components/UpcomingEvents.astro';
+import EbookPopup from '../../components/EbookPopup.astro';
 import { getPosts, prepareContent } from '../../lib/posts';
 
 export async function getStaticPaths() {
@@ -31,5 +32,6 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
     </section>
     <UpcomingEvents />
   </main>
+  <EbookPopup />
   <Footer tours={tours} />
 </Layout>
