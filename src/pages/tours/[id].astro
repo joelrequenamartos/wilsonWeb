@@ -37,7 +37,10 @@ const CALENDLY_LINKS: Record<string, string> = {
   'bronx-gospel': 'https://calendly.com/silvertoursny/tour-gosspel-bronx?month=2026-10'
   // La Media Maratón y La Maratón reservan por WhatsApp (waHref): sus Calendly se han quitado.
 };
-const bookingHref = CALENDLY_LINKS[t.id] ?? waHref;
+// La Media Maratón y La Maratón reservan por WhatsApp con su propio enlace; el resto, por Calendly o por el WhatsApp general.
+const PRIVATE_TOUR_BOOKING = 'https://wa.link/33ww5e';
+const isPrivateTour = ['la-media-maraton', 'maraton-de-wilson'].includes(t.id);
+const bookingHref = CALENDLY_LINKS[t.id] ?? (isPrivateTour ? PRIVATE_TOUR_BOOKING : waHref);
 // Solo en La Maratón y La Media Maratón: el WhatsApp del menú (escritorio) y el botón flotante (móvil) van al chat del tour privado.
 const privateWaHref = ['la-media-maraton', 'maraton-de-wilson'].includes(t.id)
   ? 'https://api.whatsapp.com/send?phone=18093213121&text=Hola!%20%F0%9F%91%8B%F0%9F%8F%BB%20Me%20interesa%20saber%20m%C3%A1s%20informaci%C3%B3n%20sobre%20el%20Tour%20Privado'
