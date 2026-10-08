@@ -1246,9 +1246,11 @@
   .post-index-title{display:flex; align-items:center; gap:10px; font-family:"Space Mono"; font-weight:700; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft);}
   .post-index-title .icon{width:18px; height:18px;}
   .post-index ul{list-style:none; margin-top:14px; padding:0; display:flex; flex-direction:column; gap:10px;}
-  .post-index a{color:var(--ink); font-weight:500; text-decoration:none; line-height:1.4;}
-  .post-index-sub{padding-left:18px;}
-  .post-index-sub a{font-weight:400; color:var(--ink-soft);}
+  .post-index a{color:var(--ink); font-weight:600; text-decoration:none; line-height:1.4;}
+  /* Los subtítulos (h3) van sangrados bajo su título (h2), con una rayita naranja delante y letra más ligera */
+  .post-index-sub{padding-left:30px; position:relative;}
+  .post-index-sub::before{content:""; position:absolute; left:10px; top:.72em; width:10px; height:2px; background:var(--coral); border-radius:2px;}
+  .post-index-sub a{font-weight:400; font-size:.95em; color:var(--ink-soft);}
   @media (hover:hover){.post-index a:hover{color:var(--coral-dark);}}
   .post-body h2, .post-body h3{scroll-margin-top:110px;}
   .post-body{overflow-wrap:break-word; min-width:0;}
