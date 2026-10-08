@@ -170,7 +170,7 @@
 
   <script>
     import { createClient } from '@supabase/supabase-js';
-    import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
+    import { SUPABASE_URL, SUPABASE_KEY } from '../../lib/supabase';
 
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
     const $ = (id) => document.getElementById(id);
@@ -407,7 +407,7 @@
       };
       try { localStorage.setItem('blog-preview', JSON.stringify(draft)); }
       catch { return banner($('editMsg'), 'No se ha podido preparar la vista previa en este navegador.', 'error'); }
-      window.open('/blog-preview-x9k3f7', '_blank');
+      window.open('/adminblog/vista-previa', '_blank');
     });
 
     function openEditor(post) {

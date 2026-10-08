@@ -2,9 +2,9 @@
 // Vista previa privada de una entrada del blog, tal y como se verá publicada (con el diseño real de la web).
 // Los datos los guarda el panel en el navegador (localStorage) al pulsar «Vista previa»; nada se publica.
 import { getCollection } from 'astro:content';
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
 ---
