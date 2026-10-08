@@ -1252,10 +1252,11 @@
   @media (hover:hover){.ebook-pop-close:hover{background:var(--bg-alt);}}
   .ebook-pop-media{display:flex; justify-content:center; padding:10px; border-radius:20px; background:radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--coral) 28%, transparent), transparent 68%);}
   .ebook-pop-media img{width:min(240px,100%); height:auto; filter:drop-shadow(0 18px 24px rgba(26,21,18,.35));}
-  .ebook-pop-eyebrow{font-family:"Space Mono"; font-weight:700; font-size:.82rem; letter-spacing:.16em; text-transform:uppercase; color:var(--coral-dark);}
+  .ebook-pop-eyebrow{font-family:"Space Mono"; font-weight:700; font-size:.82rem; letter-spacing:.16em; text-transform:uppercase; color:#178F4E;}
   .ebook-pop-body h2{margin-top:10px; font-size:clamp(1.5rem,3.4vw,2.1rem); line-height:1.15; color:var(--ink);}
   .ebook-pop-body p{margin-top:14px; color:var(--ink-soft); font-size:1.02rem; line-height:1.6;}
   .ebook-pop-cta{margin-top:22px; width:100%; justify-content:center;}
+  .ebook-pop-note{display:block; margin-top:12px; font-size:.82rem; color:var(--ink-mute); text-align:center;}
   @media (max-width:640px){
     .ebook-pop{align-items:flex-end; padding:0;}
     .ebook-pop-card{grid-template-columns:1fr; border-radius:26px 26px 0 0; width:100%; max-height:92vh; padding:22px 20px 26px; gap:14px;}

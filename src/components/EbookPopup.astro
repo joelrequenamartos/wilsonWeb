@@ -1,18 +1,21 @@
 ---
-// Popup del ebook: sale a los 6 segundos, solo dentro de cada entrada del blog (no en el listado).
+// Archivo de la guía gratuita: hay que dejar el PDF en public/ con este nombre (o cambiar la ruta aquí).
+const GUIA_URL = '/guia-gratuita-nueva-york.pdf';
+// Popup de la guía gratuita: sale a los 6 segundos, solo dentro de cada entrada del blog (no en el listado).
 // Si se cierra (o se pulsa el botón), no vuelve a salir durante 3 días en ese navegador.
 ---
 <div class="ebook-pop" id="ebookPop" role="dialog" aria-modal="true" aria-labelledby="ebookPopTitle" hidden>
   <div class="ebook-pop-card">
     <button class="ebook-pop-close" id="ebookPopClose" type="button" aria-label="Cerrar">×</button>
     <div class="ebook-pop-media">
-      <img src="/images/ebook.webp" alt="Portada del ebook de Wilson sobre Nueva York" loading="lazy" />
+      <img src="/images/ebook.webp" alt="Portada de la guía de Wilson sobre Nueva York" loading="lazy" />
     </div>
     <div class="ebook-pop-body">
-      <span class="ebook-pop-eyebrow">Oferta limitada</span>
-      <h2 id="ebookPopTitle">Tu viaje a Nueva York empieza aquí</h2>
-      <p>La guía de Wilson con itinerarios optimizados, los lugares que de verdad merecen la pena, restaurantes recomendados y trucos para ahorrar tiempo y evitar errores.</p>
-      <a class="btn btn-primary ebook-pop-cta" href="/ebook" id="ebookPopCta"><svg class="icon"><use href="#i-book" /></svg>Ver el ebook</a>
+      <span class="ebook-pop-eyebrow">Guía gratuita</span>
+      <h2 id="ebookPopTitle">¿Tienes pensado viajar a Nueva York?</h2>
+      <p>Descubre algunos de los mejores consejos, lugares y recomendaciones de Wilson para preparar tu viaje a Nueva York. Un adelanto de su guía completa.</p>
+      <a class="btn btn-primary ebook-pop-cta" href={GUIA_URL} download id="ebookPopCta"><svg class="icon"><use href="#i-book" /></svg>Descárgala aquí</a>
+      <small class="ebook-pop-note">Descarga inmediata en PDF · Sin registro</small>
     </div>
   </div>
 </div>
