@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BlogSection from '../../components/BlogSection.astro';
+import UpcomingEvents from '../../components/UpcomingEvents.astro';
 import { getPosts } from '../../lib/posts';
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
@@ -14,6 +15,7 @@ const posts = await getPosts();
   <Header />
   <main id="main">
     <BlogSection posts={posts} />
+    <UpcomingEvents />
   </main>
   <Footer tours={tours} />
 </Layout>
