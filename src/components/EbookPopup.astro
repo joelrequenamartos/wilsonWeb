@@ -2,13 +2,14 @@
 // Archivo de la guía gratuita: hay que dejar el PDF en public/ con este nombre (o cambiar la ruta aquí).
 const GUIA_URL = '/guia-gratuita-nueva-york.pdf';
 // Popup de la guía gratuita: sale a los 6 segundos, solo dentro de cada entrada del blog (no en el listado).
-// Si se cierra (o se pulsa el botón), no vuelve a salir durante 3 días en ese navegador.
+// Se cierra solo con la × o con Esc (no al hacer clic fuera). Al cerrarlo, o al pulsar el botón, no vuelve a salir durante 3 días.
 ---
 <div class="ebook-pop" id="ebookPop" role="dialog" aria-modal="true" aria-labelledby="ebookPopTitle" hidden>
   <div class="ebook-pop-card">
     <button class="ebook-pop-close" id="ebookPopClose" type="button" aria-label="Cerrar">×</button>
     <div class="ebook-pop-media">
       <img src="/images/ebook.webp" alt="Portada de la guía de Wilson sobre Nueva York" loading="lazy" />
+      <span class="ebook-pop-sticker" aria-hidden="true">Gratis</span>
     </div>
     <div class="ebook-pop-body">
       <span class="ebook-pop-eyebrow">Guía gratuita</span>
@@ -50,7 +51,7 @@ const GUIA_URL = '/guia-gratuita-nueva-york.pdf';
 
     document.getElementById('ebookPopClose').addEventListener('click', cerrar);
     document.getElementById('ebookPopCta').addEventListener('click', () => { try { localStorage.setItem(KEY, String(Date.now())); } catch {} });
-    pop.addEventListener('click', (e) => { if (e.target === pop) cerrar(); }); // clic fuera de la tarjeta
+    // No se cierra al hacer clic fuera de la tarjeta: solo con la × (o con Esc).
 
     if (!visto) setTimeout(abrir, 6000);
   }
