@@ -1,0 +1,115 @@
+---
+// Vista previa privada de una entrada del blog, tal y como se verá publicada (con el diseño real de la web).
+// Los datos los guarda el panel en el navegador (localStorage) al pulsar «Vista previa»; nada se publica.
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+---
+<Layout title="Vista previa — Silver Tours NY" description="Vista previa de una entrada del blog." noindex>
+  <div class="pv-bar" id="pvBar" hidden>
+    <strong>Vista previa</strong>
+    <span class="pv-note">Así se verá la entrada. Aún no está publicada.</span>
+    <div class="pv-modes" role="group" aria-label="Tamaño de pantalla">
+      <button type="button" data-mode="desktop" class="is-active">🖥 Escritorio</button>
+      <button type="button" data-mode="mobile">📱 Móvil</button>
+    </div>
+  </div>
+  <div class="pv-stage" id="pvStage" hidden><iframe id="pvFrame" title="Vista previa de la entrada"></iframe></div>
+
+  <div id="pvContent">
+    <Header />
+    <main id="main">
+      <section class="section">
+        <div class="wrap blog-post-wrap blog-post-wrap-tpl">
+          <article class="post" id="pvPost">
+            <a class="tour-back" href="/blog"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al blog</a>
+            <p class="post-brand"><strong>silver</strong>blog<strong>ny</strong><span>.</span></p>
+            <img class="post-cover" id="pvCover" alt="" hidden />
+            <h1 class="post-title" id="pvTitle"></h1>
+            <p class="post-summary" id="pvSummary"></p>
+            <nav class="post-index" id="pvIndex" aria-label="En este artículo" hidden>
+              <p class="post-index-title"><svg class="icon"><use href="#i-menu" /></svg>En este artículo</p>
+              <ul id="pvIndexList"></ul>
+            </nav>
+            <div class="post-body" id="pvBody"></div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <Footer tours={tours} />
+  </div>
+
+  <style is:global>
+    .pv-bar{position:sticky; top:0; z-index:100; display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:10px 16px; background:#1A1512; color:#fff; font-size:.9rem;}
+    .pv-bar[hidden], .pv-stage[hidden]{display:none;}
+    .pv-note{opacity:.75;}
+    .pv-modes{display:flex; gap:6px; margin-left:auto;}
+    .pv-modes button{border:1px solid rgba(255,255,255,.35); background:transparent; color:#fff; border-radius:100px; padding:6px 14px; font:inherit; cursor:pointer;}
+    .pv-modes button.is-active{background:#E07A3E; border-color:#E07A3E;}
+    .pv-stage{background:#e9e4dc; padding:18px 0; display:flex; justify-content:center; min-height:calc(100vh - 56px);}
+    .pv-stage iframe{border:0; background:#fff; height:calc(100vh - 92px); width:100%; box-shadow:0 10px 40px -12px rgba(0,0,0,.4);}
+    .pv-stage.is-mobile iframe{width:390px; border-radius:18px;}
+    .pv-stage:not(.is-mobile){padding:0;}
+    .pv-stage:not(.is-mobile) iframe{height:calc(100vh - 56px); box-shadow:none;}
+    /* Modo «marco»: dentro del iframe solo se ve la entrada con el diseño normal. */
+    body.pv-shell #pvContent{display:none;}
+  </style>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const inFrame = params.get('frame') === '1';
+    const raw = (() => { try { return JSON.parse(localStorage.getItem('blog-preview') || 'null'); } catch { return null; } })();
+
+    const slugify = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'seccion';
+
+    function pintar() {
+      const $ = (id) => document.getElementById(id);
+      if (!raw) {
+        $('pvTitle').textContent = 'No hay nada que previsualizar';
+        $('pvSummary').textContent = 'Abre el panel del blog y pulsa «Vista previa» desde una entrada.';
+        return;
+      }
+      $('pvTitle').textContent = raw.title || '(sin título)';
+      $('pvSummary').textContent = raw.excerpt || '';
+      $('pvSummary').hidden = !raw.excerpt;
+      if (raw.image) { $('pvCover').src = raw.image; $('pvCover').hidden = false; }
+
+      const body = $('pvBody');
+      body.innerHTML = (raw.content || '').replace(/&nbsp;|\u00a0/g, ' ');
+      const used = new Set();
+      const list = $('pvIndexList');
+      body.querySelectorAll('h2, h3').forEach((h) => {
+        const title = h.textContent.replace(/\s+/g, ' ').trim();
+        let id = slugify(title);
+        while (used.has(id)) id += '-2';
+        used.add(id);
+        h.id = id;
+        const li = document.createElement('li');
+        if (h.tagName === 'H3') li.className = 'post-index-sub';
+        const a = document.createElement('a');
+        a.href = '#' + id; a.textContent = title;
+        li.append(a); list.append(li);
+      });
+      $('pvIndex').hidden = !list.children.length;
+    }
+
+    if (inFrame) {
+      // Dentro del marco: solo la entrada.
+      pintar();
+    } else {
+      // Fuera: barra con Escritorio / Móvil y la entrada dentro de un marco de ese ancho (para que se vean los estilos móviles de verdad).
+      document.body.classList.add('pv-shell');
+      document.getElementById('pvBar').hidden = false;
+      const stage = document.getElementById('pvStage');
+      stage.hidden = false;
+      document.getElementById('pvFrame').src = location.pathname + '?frame=1';
+      document.querySelectorAll('.pv-modes button').forEach((b) => b.addEventListener('click', () => {
+        document.querySelectorAll('.pv-modes button').forEach((x) => x.classList.toggle('is-active', x === b));
+        stage.classList.toggle('is-mobile', b.dataset.mode === 'mobile');
+      }));
+    }
+  </script>
+</Layout>

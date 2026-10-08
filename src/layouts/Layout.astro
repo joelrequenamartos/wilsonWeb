@@ -9,13 +9,15 @@ interface Props {
   description?: string;
   image?: string;
   whatsappHref?: string;
+  noindex?: boolean;
 }
 
 const {
   title = 'Silver Tours NY',
   description = 'Tours guiados en español por Nueva York con Wilson, guía local.',
   image = '/images/roosvelt.png',
-  whatsappHref
+  whatsappHref,
+  noindex = false
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -27,6 +29,7 @@ const ogImageURL = new URL(image, Astro.site);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{title}</title>
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
   <meta name="description" content={description} />
   <link rel="canonical" href={canonicalURL} />
   <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />

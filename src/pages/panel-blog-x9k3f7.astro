@@ -91,7 +91,10 @@
         </div>
 
         <div class="form-actions">
-          <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
+          <div class="form-actions-left">
+            <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
+            <button class="btn" id="previewBtn" type="button" title="Abre una pestaña con cómo se verá la entrada, sin guardar ni publicar nada">👁 Vista previa</button>
+          </div>
           <button class="btn danger" id="deleteBtn" type="button" hidden>Borrar entrada</button>
         </div>
       </form>
@@ -152,7 +155,15 @@
     .ql-toolbar.ql-snow{border-radius:10px 10px 0 0; border-color:var(--line); background:#fff;}
     .ql-container.ql-snow{border-radius:0 0 10px 10px; border-color:var(--line);}
     .ql-editor{min-height:340px; line-height:1.7;}
-    .ql-editor img{max-width:100%; border-radius:8px;}
+    .ql-editor img{max-width:100%; border-radius:8px; cursor:pointer;}
+    .ql-editor img.is-selected{outline:3px solid var(--coral); outline-offset:2px;}
+    .form-actions-left{display:flex; gap:10px; flex-wrap:wrap;}
+    .ql-container{position:relative;}
+    .img-tools{position:absolute; z-index:5; display:flex; gap:4px; align-items:center; padding:6px 8px; background:#1A1512; color:#fff; border-radius:10px; box-shadow:0 8px 24px -8px rgba(0,0,0,.5); font-size:.8rem;}
+    .img-tools[hidden]{display:none;}
+    .img-tools button{border:0; background:transparent; color:#fff; padding:5px 9px; border-radius:7px; font:inherit; font-weight:600; cursor:pointer;}
+    .img-tools button:hover, .img-tools button.is-active{background:var(--coral);}
+    .img-tools .sep{width:1px; height:18px; background:rgba(255,255,255,.3); margin:0 2px;}
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js" is:inline></script>
@@ -326,7 +337,78 @@
           }
         }
       });
+      iniciarTamanoImagenes();
     }
+
+    // Tamaño de las fotos del texto: al hacer clic en una foto aparece una barrita con 25 % · 50 % · 75 % · 100 % (ancho del texto).
+    function iniciarTamanoImagenes() {
+      const cont = quill.container;
+      const bar = document.createElement('div');
+      bar.className = 'img-tools'; bar.hidden = true;
+      let sel = null;
+      const botones = [['25 %', '25%'], ['50 %', '50%'], ['75 %', '75%'], ['100 %', false]];
+      for (const [txt, val] of botones) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = txt; b.dataset.w = val === false ? '' : val;
+        b.addEventListener('mousedown', (e) => e.preventDefault());
+        b.addEventListener('click', () => {
+          if (!sel) return;
+          const blot = window.Quill.find(sel);
+          if (!blot) return;
+          quill.formatText(quill.getIndex(blot), 1, 'width', val, 'user');
+          colocar();
+        });
+        bar.append(b);
+      }
+      const sep = document.createElement('span'); sep.className = 'sep'; bar.append(sep);
+      const del = document.createElement('button');
+      del.type = 'button'; del.textContent = 'Quitar foto';
+      del.addEventListener('mousedown', (e) => e.preventDefault());
+      del.addEventListener('click', () => {
+        if (!sel) return;
+        const blot = window.Quill.find(sel);
+        if (blot) quill.deleteText(quill.getIndex(blot), 1, 'user');
+        ocultar();
+      });
+      bar.append(del);
+      cont.append(bar);
+
+      function colocar() {
+        if (!sel || !sel.isConnected) return ocultar();
+        const c = cont.getBoundingClientRect();
+        const r = sel.getBoundingClientRect();
+        bar.hidden = false;
+        bar.style.top = Math.max(4, r.top - c.top + cont.scrollTop - bar.offsetHeight - 6) + 'px';
+        bar.style.left = Math.max(4, r.left - c.left) + 'px';
+        const actual = sel.getAttribute('width') || '';
+        bar.querySelectorAll('button[data-w]').forEach((b) => b.classList.toggle('is-active', b.dataset.w === actual));
+      }
+      function ocultar() {
+        if (sel) sel.classList.remove('is-selected');
+        sel = null; bar.hidden = true;
+      }
+      quill.root.addEventListener('click', (e) => {
+        if (e.target.tagName === 'IMG') {
+          if (sel) sel.classList.remove('is-selected');
+          sel = e.target; sel.classList.add('is-selected'); colocar();
+        } else ocultar();
+      });
+      quill.on('text-change', () => { if (sel) colocar(); });
+      window.addEventListener('resize', () => { if (sel) colocar(); });
+    }
+
+    // Vista previa: guarda el borrador actual en el navegador y abre /blog-preview con el diseño real, sin guardar ni publicar nada.
+    $('previewBtn').addEventListener('click', () => {
+      const draft = {
+        title: $('fTitle').value.trim(),
+        excerpt: $('fExcerpt').value.trim(),
+        image: coverUrl,
+        content: quill.getSemanticHTML().replace(/&nbsp;/g, ' ')
+      };
+      try { localStorage.setItem('blog-preview', JSON.stringify(draft)); }
+      catch { return banner($('editMsg'), 'No se ha podido preparar la vista previa en este navegador.', 'error'); }
+      window.open('/blog-preview-x9k3f7', '_blank');
+    });
 
     function openEditor(post) {
       editing = post;
