@@ -207,6 +207,18 @@
       status.textContent = text;
       status.className = 'contact-status' + (kind ? ' is-' + kind : '');
     }
+    // Anti-spam: al cargar la página se pide un token firmado con la hora; el servidor comprueba que han pasado unos segundos.
+    var spamToken = '';
+    function pedirToken(){
+      var ep = form.getAttribute('data-endpoint');
+      if(!ep || ep.charAt(0) !== '/') return;
+      fetch(ep, { headers: { 'Accept': 'application/json' } })
+        .then(function(r){ return r.ok ? r.json() : {}; })
+        .then(function(d){ spamToken = (d && d.token) || ''; })
+        .catch(function(){});
+    }
+    pedirToken();
+
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var bad = false;
@@ -238,7 +250,7 @@
         _replyto: correo,
         _subject: 'CONSULTA WEB',
         _template: 'box'
-      } : { nombre: nombre, correo: correo, mensaje: texto, web: form.elements['web'].value };
+      } : { nombre: nombre, correo: correo, mensaje: texto, web: form.elements['web'].value, token: spamToken };
       fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -262,7 +274,10 @@
           setStatus('¡Gracias! Te responderé lo antes posible.', 'ok');
         }
       }).catch(function(err){
-        setStatus('No se ha podido enviar. Escríbenos a info@silvertoursny.com.' + (err && err.code ? ' (' + err.code + ')' : ''), 'error');
+        var code = err && err.code;
+        if(code === 'too-fast'){ setStatus('Un momento… vuelve a pulsar «Enviar» en unos segundos.', 'error'); return; }
+        if(code === 'token'){ pedirToken(); setStatus('Se ha caducado el formulario. Vuelve a pulsar «Enviar».', 'error'); return; }
+        setStatus('No se ha podido enviar. Escríbenos a info@silvertoursny.com.' + (code ? ' (' + code + ')' : ''), 'error');
       }).finally(function(){ submitBtn.disabled = false; });
     });
   });
