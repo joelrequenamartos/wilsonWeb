@@ -89,5 +89,5 @@ create policy "imagenes del blog: admin borra" on storage.objects
   for delete to authenticated using (bucket_id = 'blog-images' and public.is_admin());
 
 -- 5) Tu correo de administrador (CÁMBIALO) ---------------------------------------------------
-insert into public.admin_emails (email) values ('CAMBIA-ESTE-CORREO@gmail.com')
+insert into public.admin_emails (email) values ('admin@silvertours.com')
 on conflict do nothing;
