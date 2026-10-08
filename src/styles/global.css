@@ -1232,6 +1232,13 @@
 
   /* ---------- entrada de blog ---------- */
   .blog-post-wrap-tpl{max-width:760px;}
+  /* Escritorio: la entrada usa el mismo ancho que el resto de la web (foto y título a todo el ancho);
+     el texto se queda en una columna cómoda de leer. En móvil no cambia nada. */
+  @media (min-width:881px){
+    .blog-post-wrap-tpl{max-width:var(--maxw);}
+    .post-cover{aspect-ratio:2/1;}
+    .post-summary, .post-index, .post-body{max-width:860px;}
+  }
   .post .tour-back{display:flex;}
   .post-brand{
     margin-top:22px; font-family:"Poppins"; font-weight:400; text-transform:lowercase; letter-spacing:-.03em; line-height:1;
