@@ -1,5 +1,5 @@
 ---
-// Archivo de la guía gratuita: hay que dejar el PDF en public/ con este nombre (o cambiar la ruta aquí).
+// Guía gratuita en PDF (public/guia-gratuita-nueva-york.pdf, versión comprimida de ~4 MB).
 const GUIA_URL = '/guia-gratuita-nueva-york.pdf';
 // Popup de la guía gratuita: sale a los 6 segundos, solo dentro de cada entrada del blog (no en el listado).
 // Se cierra solo con la × o con Esc (no al hacer clic fuera). Al cerrarlo, o al pulsar el botón, no vuelve a salir durante 3 días.
@@ -14,7 +14,7 @@ const GUIA_URL = '/guia-gratuita-nueva-york.pdf';
       <span class="ebook-pop-eyebrow">Guía gratuita</span>
       <h2 id="ebookPopTitle">¿Tienes pensado viajar a Nueva York?</h2>
       <p>Descubre algunos de los mejores consejos, lugares y recomendaciones de Wilson para preparar tu viaje a Nueva York. Un adelanto de su guía completa.</p>
-      <a class="btn btn-primary ebook-pop-cta" href={GUIA_URL} download id="ebookPopCta"><svg class="icon"><use href="#i-book" /></svg>Descárgala aquí</a>
+      <a class="btn btn-primary ebook-pop-cta" href={GUIA_URL} download="Guia-Nueva-York-Wilson.pdf" id="ebookPopCta"><svg class="icon"><use href="#i-book" /></svg>Descárgala aquí</a>
       <small class="ebook-pop-note">Descarga inmediata en PDF · Sin registro</small>
     </div>
   </div>
