@@ -1251,6 +1251,8 @@
   .post-index-sub a{font-weight:400; color:var(--ink-soft);}
   @media (hover:hover){.post-index a:hover{color:var(--coral-dark);}}
   .post-body h2, .post-body h3{scroll-margin-top:110px;}
+  .post-body{overflow-wrap:break-word; min-width:0;}
+  .post-body img{max-width:100%; height:auto; border-radius:var(--radius-md);}
   html{scroll-behavior:smooth;}
   .post-body{margin-top:30px; color:var(--ink-soft); font-size:1.03rem; line-height:1.78;}
   .post-body p{margin-top:16px;}

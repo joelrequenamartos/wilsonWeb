@@ -58,11 +58,17 @@ const slugify = (s: string) =>
   s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'seccion';
 
 // Añade un id a cada título (h2/h3) del contenido y devuelve el índice «En este artículo».
-export function prepareContent(html: string) {
+export function prepareContent(rawHtml: string) {
+  // El editor guarda los espacios como «&nbsp;» (espacio que no se parte): el texto no salta de línea y se sale de la pantalla.
+  const html = rawHtml.replace(/&nbsp;|\u00a0/g, ' ');
   const toc: { id: string; title: string; level: 2 | 3 }[] = [];
   const used = new Set<string>();
   const out = html.replace(/<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi, (_m, lvl, attrs, inner) => {
-    const title = inner.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim();
+    const title = inner
+      .replace(/<[^>]+>/g, '')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&')
+      .replace(/\s+/g, ' ')
+      .trim();
     let id = slugify(title);
     while (used.has(id)) id += '-2';
     used.add(id);

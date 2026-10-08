@@ -377,7 +377,7 @@
       const row = {
         slug, title,
         excerpt: $('fExcerpt').value.trim(),
-        content: quill.getSemanticHTML(),
+        content: quill.getSemanticHTML().replace(/&nbsp;/g, ' '), // sin espacios «duros»: así el texto salta de línea
         author: $('fAuthor').value.trim() || 'Wilson Silver',
         image: coverUrl,
         featured: $('fFeatured').checked,
