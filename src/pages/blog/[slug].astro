@@ -8,7 +8,8 @@ import UpcomingEvents from '../../components/UpcomingEvents.astro';
 import { getPosts, prepareContent } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  // «todos» está reservado para el listado paginado (/blog/todos)
+  const posts = (await getPosts()).filter((p) => p.slug !== 'todos');
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post }

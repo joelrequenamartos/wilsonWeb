@@ -1,5 +1,6 @@
 ---
 import type { Post } from '../lib/posts';
+import BlogRows from './BlogRows.astro';
 
 interface Props {
   posts: Post[];
@@ -8,9 +9,7 @@ interface Props {
 const { posts } = Astro.props;
 
 const featured = posts.find((p) => p.featured);
-
-const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
-const year = new Intl.DateTimeFormat('es', { year: 'numeric' });
+const latest = posts.slice(0, 5); // las 5 últimas; el resto, en «Ver todos»
 ---
 <section class="section" id="blog">
   <div class="wrap blog-agenda reveal">
@@ -32,19 +31,9 @@ const year = new Intl.DateTimeFormat('es', { year: 'numeric' });
       <span class="eyebrow">Desde la calle, no desde una guía</span>
       <h2 class="section-title">Últimos artículos</h2>
     </div>
-    <div class="blog-agenda-list">
-      {posts.map((post) => (
-        <a class="blog-agenda-row" href={`/blog/${post.slug}`}>
-          <div class="blog-agenda-when">
-            <span class="blog-agenda-date">{day.format(post.date).replace('.', '')} {year.format(post.date)}</span>
-            {post.image && <img class="blog-agenda-photo" src={post.image} alt="" loading="lazy" />}
-          </div>
-          <div class="blog-agenda-body">
-            <h3>{post.title}</h3>
-            <span class="blog-agenda-by">Por {post.author}</span>
-          </div>
-        </a>
-      ))}
+    <div>
+      <BlogRows posts={latest} />
+      <a class="btn btn-outline blog-all-btn" href="/blog/todos">Ver todos <svg class="icon"><use href="#i-arrow" /></svg></a>
     </div>
   </div>
 </section>

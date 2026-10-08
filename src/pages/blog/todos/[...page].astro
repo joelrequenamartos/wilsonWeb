@@ -1,0 +1,47 @@
+---
+// Todos los artículos, de 10 en 10: /blog/todos, /blog/todos/2, /blog/todos/3…
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import BlogRows from '../../../components/BlogRows.astro';
+import { getPosts } from '../../../lib/posts';
+
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  const posts = await getPosts();
+  return paginate(posts, { pageSize: 10 });
+}
+
+const { page } = Astro.props;
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+const href = (n: number) => (n === 1 ? '/blog/todos' : `/blog/todos/${n}`);
+const numbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
+---
+<Layout
+  title={`Todos los artículos${page.currentPage > 1 ? ` (página ${page.currentPage})` : ''} — Blog Silver Tours NY`}
+  description="Todos los artículos del blog de Silver Tours NY: consejos, rutas y recomendaciones de Wilson para moverte por Nueva York."
+>
+  <Header />
+  <main id="main">
+    <section class="section">
+      <div class="wrap blog-all">
+        <a class="tour-back" href="/blog"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al blog</a>
+        <h1 class="blog-all-title">Todos los artículos</h1>
+        <BlogRows posts={page.data} />
+
+        {page.lastPage > 1 && (
+          <nav class="blog-pager" aria-label="Paginación">
+            {page.url.prev ? <a class="blog-pager-btn" href={page.url.prev}>Anterior</a> : <span class="blog-pager-btn is-disabled">Anterior</span>}
+            <ul>
+              {numbers.map((n) => (
+                <li><a class:list={['blog-pager-num', { 'is-current': n === page.currentPage }]} href={href(n)} aria-current={n === page.currentPage ? 'page' : undefined}>{n}</a></li>
+              ))}
+            </ul>
+            {page.url.next ? <a class="blog-pager-btn" href={page.url.next}>Siguiente</a> : <span class="blog-pager-btn is-disabled">Siguiente</span>}
+          </nav>
+        )}
+      </div>
+    </section>
+  </main>
+  <Footer tours={tours} />
+</Layout>
