@@ -44,10 +44,10 @@ let cache: { at: number; value: Promise<Post[]> } | null = null;
 // para que una caída nunca deje el blog vacío.
 async function loadPosts(): Promise<Post[]> {
   try {
-    const url =
-      `${SUPABASE_URL}/rest/v1/posts` +
-      `?select=*&published=eq.true&order=published_at.desc`;
-    const res = await fetch(url, { headers: { apikey: SUPABASE_KEY } });
+    // Orden manual del panel (columna «position»). Si esa columna aún no existe en Supabase, se ordena por fecha.
+    const base = `${SUPABASE_URL}/rest/v1/posts?select=*&published=eq.true`;
+    let res = await fetch(`${base}&order=position.asc.nullslast,created_at.desc`, { headers: { apikey: SUPABASE_KEY } });
+    if (res.status === 400) res = await fetch(`${base}&order=published_at.desc`, { headers: { apikey: SUPABASE_KEY } });
     if (!res.ok) throw new Error(`Supabase ${res.status}`);
     const rows = await res.json();
     if (!Array.isArray(rows) || rows.length === 0) throw new Error('sin entradas publicadas');

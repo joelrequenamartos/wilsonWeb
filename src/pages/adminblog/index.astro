@@ -36,11 +36,22 @@
         <h1>Entradas del blog</h1>
         <div class="bar-actions">
           <button class="btn primary" id="newBtn" type="button">+ Nueva entrada</button>
+          <button class="btn" id="orderBtn" type="button" title="Cambiar el orden de las entradas publicadas">↕ Reordenar</button>
           <button class="btn" id="rebuildBtn" type="button" title="Vuelve a construir la web con lo que hay guardado">Actualizar web</button>
           <button class="btn ghost" id="logoutBtn" type="button">Salir</button>
         </div>
       </header>
       <p class="banner" id="listMsg" role="status" hidden></p>
+      <p class="banner" id="orderWarn" hidden>⚠ Para poder reordenar hay que ejecutar <b>supabase/order.sql</b> en Supabase (una sola vez).</p>
+
+      <div class="order-bar" id="orderBar">
+        <p><b>Modo reordenar.</b> Arrastra las entradas por el asa <span aria-hidden="true">⋮⋮</span> o usa las flechas. Solo se pueden mover las <b>publicadas</b>; el orden vale también para el blog público.</p>
+        <div class="order-actions">
+          <button class="btn primary" id="orderSave" type="button" disabled>Guardar orden</button>
+          <button class="btn" id="orderReset" type="button" title="Ordena las entradas de la última creada a la primera">Orden de creación</button>
+          <button class="btn ghost" id="orderCancel" type="button">Cancelar</button>
+        </div>
+      </div>
 
       <div class="filters" id="filters" hidden>
         <div class="seg" role="group" aria-label="Estado de la entrada">
@@ -163,6 +174,21 @@
     .chip[aria-pressed=true]{background:var(--coral); border-color:var(--coral); color:#fff;}
     .chip[hidden]{display:none;}
     .filters .n{font-weight:500; opacity:.7; margin-left:2px;}
+    .order-bar{display:none; flex-direction:column; gap:12px; margin-bottom:16px; padding:14px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-size:.92rem;}
+    .order-bar p{margin:0;}
+    .order-actions{display:flex; gap:8px; flex-wrap:wrap;}
+    .is-ordering .order-bar{display:flex;}
+    .is-ordering .bar-actions, .is-ordering .filters, .is-ordering #filterEmpty{display:none !important;}
+    .post.post-order{grid-template-columns:40px 56px 1fr auto; user-select:none;}
+    .drag-handle{
+      display:flex; align-items:center; justify-content:center; width:40px; height:48px; border:0; border-radius:10px;
+      background:#f1ede6; color:var(--soft); font-size:1.2rem; letter-spacing:-.15em; cursor:grab; touch-action:none;
+    }
+    .drag-handle:active{cursor:grabbing;}
+    .order-arrows{display:flex; flex-direction:column; gap:4px;}
+    .order-arrows button{width:34px; height:30px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size:.95rem;}
+    .order-arrows button[disabled]{opacity:.35; cursor:default;}
+    .post.is-dragging{position:relative; z-index:20; box-shadow:0 14px 34px -10px rgba(0,0,0,.4); border-color:var(--coral); background:#fffaf5;}
     .posts{display:flex; flex-direction:column; gap:10px;}
     .post{display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px;}
     .post img, .post .ph{width:64px; height:64px; border-radius:10px; object-fit:cover; background:#ece6dc;}
@@ -224,6 +250,7 @@
     let coverUrl = null;      // portada actual
     let slugTouched = false;  // el usuario ha escrito el enlace a mano
     let quill = null;
+    let positionSupported = true; // false si en Supabase aún no se ha ejecutado order.sql
     let eventsSupported = true; // false si en Supabase aún no se ha ejecutado monthly-events.sql
 
     // ---------- utilidades ----------
@@ -321,14 +348,172 @@
       }
     }
 
+    // ---------- modo reordenar (solo las publicadas) ----------
+    let ordenando = false;
+    let ordenInicial = [];
+
+    const idsEnOrden = () => [...$('postList').children].map((r) => r.dataset.id);
+
+    function marcarCambios() {
+      $('orderSave').disabled = idsEnOrden().join() === ordenInicial.join();
+      const filas = [...$('postList').children];
+      filas.forEach((r, i) => {
+        r.querySelector('[data-mover=arriba]').disabled = i === 0;
+        r.querySelector('[data-mover=abajo]').disabled = i === filas.length - 1;
+      });
+    }
+
+    function filaOrden(p) {
+      const row = document.createElement('article');
+      row.className = 'post post-order';
+      row.dataset.id = p.id;
+      const handle = document.createElement('button');
+      handle.type = 'button'; handle.className = 'drag-handle'; handle.textContent = '⋮⋮';
+      handle.setAttribute('aria-label', 'Arrastrar para reordenar');
+      const thumb = p.image ? Object.assign(document.createElement('img'), { src: p.image, alt: '' }) : Object.assign(document.createElement('div'), { className: 'ph' });
+      const info = document.createElement('div');
+      const h = document.createElement('h2'); h.textContent = p.title;
+      const meta = document.createElement('div'); meta.className = 'meta';
+      const f = document.createElement('span');
+      f.textContent = new Date(p.published_at + 'T12:00:00').toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+      meta.append(f);
+      if (p.featured) { const s = document.createElement('span'); s.className = 'pill feat'; s.textContent = '★ Destacada'; meta.append(s); }
+      info.append(h, meta);
+      const arrows = document.createElement('div'); arrows.className = 'order-arrows';
+      for (const [dir, txt, label] of [['arriba', '↑', 'Subir'], ['abajo', '↓', 'Bajar']]) {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.mover = dir; b.textContent = txt; b.setAttribute('aria-label', label);
+        arrows.append(b);
+      }
+      row.append(handle, thumb, info, arrows);
+      return row;
+    }
+
+    function entrarOrden() {
+      if (!positionSupported) return;
+      ordenando = true;
+      $('listView').classList.add('is-ordering');
+      banner($('listMsg'), '');
+      const list = $('postList');
+      list.textContent = '';
+      const publicadas = todas.filter((p) => p.published);
+      if (!publicadas.length) { list.textContent = 'No hay entradas publicadas que reordenar.'; $('orderSave').disabled = true; return; }
+      publicadas.forEach((p) => list.append(filaOrden(p)));
+      ordenInicial = idsEnOrden();
+      marcarCambios();
+      window.scrollTo(0, 0);
+    }
+
+    function salirOrden() {
+      ordenando = false;
+      $('listView').classList.remove('is-ordering');
+    }
+
+    $('orderBtn').addEventListener('click', entrarOrden);
+    $('orderCancel').addEventListener('click', () => { salirOrden(); renderList(); });
+
+    // Volver al orden de creación: la última creada, primera (se aplica al pulsar «Guardar orden»).
+    $('orderReset').addEventListener('click', () => {
+      const porId = new Map(todas.map((p) => [String(p.id), p]));
+      const list = $('postList');
+      [...list.children]
+        .sort((a, b) => {
+          const A = porId.get(a.dataset.id), B = porId.get(b.dataset.id);
+          return String(B.created_at).localeCompare(String(A.created_at)) || String(B.published_at).localeCompare(String(A.published_at));
+        })
+        .forEach((r) => list.append(r));
+      marcarCambios();
+    });
+
+    // Flechas ↑ ↓
+    $('postList').addEventListener('click', (e) => {
+      if (!ordenando) return;
+      const b = e.target.closest('[data-mover]');
+      if (!b) return;
+      const row = b.closest('.post');
+      const list = $('postList');
+      if (b.dataset.mover === 'arriba' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+      else if (b.dataset.mover === 'abajo' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+      marcarCambios();
+      const activo = row.querySelector(`[data-mover=${b.dataset.mover}]`);
+      if (activo && !activo.disabled) activo.focus();
+      else row.querySelector('.drag-handle').focus();
+    });
+
+    // Arrastrar con el asa (ratón o dedo): la fila sigue al puntero y las demás se apartan.
+    $('postList').addEventListener('pointerdown', (e) => {
+      if (!ordenando) return;
+      const handle = e.target.closest('.drag-handle');
+      if (!handle) return;
+      const row = handle.closest('.post');
+      const list = $('postList');
+      e.preventDefault();
+      handle.setPointerCapture(e.pointerId);
+      const grab = e.clientY - row.getBoundingClientRect().top;
+      let y = e.clientY;
+      let raf = 0;
+      row.classList.add('is-dragging');
+
+      const colocar = () => {
+        const deseada = y - grab;
+        row.style.transform = 'none';
+        const centro = deseada + row.offsetHeight / 2;
+        const otras = [...list.children].filter((r) => r !== row);
+        let idx = 0;
+        for (const o of otras) { const r = o.getBoundingClientRect(); if (r.top + r.height / 2 < centro) idx++; }
+        if (idx !== [...list.children].indexOf(row)) list.insertBefore(row, otras[idx] || null);
+        row.style.transform = `translateY(${deseada - row.getBoundingClientRect().top}px)`;
+      };
+      const tick = () => {
+        if (y < 70) window.scrollBy(0, -14); else if (y > window.innerHeight - 70) window.scrollBy(0, 14); // desplazamiento automático
+        colocar();
+        raf = requestAnimationFrame(tick);
+      };
+      const mover = (ev) => { y = ev.clientY; };
+      const soltar = () => {
+        cancelAnimationFrame(raf);
+        handle.removeEventListener('pointermove', mover);
+        handle.removeEventListener('pointerup', soltar);
+        handle.removeEventListener('pointercancel', soltar);
+        row.classList.remove('is-dragging');
+        row.style.transform = '';
+        marcarCambios();
+      };
+      handle.addEventListener('pointermove', mover);
+      handle.addEventListener('pointerup', soltar);
+      handle.addEventListener('pointercancel', soltar);
+      raf = requestAnimationFrame(tick);
+    });
+
+    // Guardar: las publicadas reparten entre sí las posiciones que ya tenían (los borradores no se mueven).
+    $('orderSave').addEventListener('click', async () => {
+      const porId = new Map(todas.map((p) => [String(p.id), p]));
+      const ids = idsEnOrden();
+      let huecos = ids.map((id) => porId.get(id).position).filter((n) => n != null).sort((a, b) => a - b);
+      if (huecos.length !== ids.length) huecos = ids.map((_, i) => i + 1);
+      const cambios = ids.map((id, i) => ({ id, position: huecos[i] })).filter((c) => porId.get(c.id).position !== c.position);
+      $('orderSave').disabled = true;
+      const res = await Promise.all(cambios.map((c) => sb.from('posts').update({ position: c.position }).eq('id', c.id)));
+      const fallo = res.find((r) => r.error);
+      if (fallo) { $('orderSave').disabled = false; return banner($('listMsg'), 'No se ha podido guardar el orden: ' + fallo.error.message, 'error'); }
+      const r = await publicar();
+      await showList('Orden guardado. ' + r.msg, r.ok ? 'ok' : 'error');
+    });
+
     async function showList(message, kind) {
       show('listView');
       banner($('listMsg'), message, kind);
       window.scrollTo(0, 0);
       const { data, error } = await sb.from('posts').select('*').order('published_at', { ascending: false });
       if (error) { $('postList').textContent = ''; banner($('listMsg'), 'No se han podido cargar las entradas: ' + error.message, 'error'); return; }
-      todas = data;
       eventsSupported = data.length ? 'monthly_events' in data[0] : true;
+      positionSupported = data.length ? 'position' in data[0] : true;
+      // Orden manual (posición; las sin posición, al final y por creación). Sin la columna, por fecha como antes.
+      todas = positionSupported
+        ? [...data].sort((a, b) => ((a.position ?? 1e9) - (b.position ?? 1e9)) || String(b.created_at).localeCompare(String(a.created_at)))
+        : data;
+      $('orderBtn').hidden = !positionSupported;
+      $('orderWarn').hidden = positionSupported;
+      salirOrden();
       renderList(); // los filtros elegidos se mantienen al volver de editar
     }
 
