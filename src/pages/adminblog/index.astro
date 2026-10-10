@@ -133,6 +133,14 @@
     </section>
   </main>
 
+  <!-- Aviso de «guardando»: cubre la pantalla mientras se guarda y se avisa a la web (tarda unos segundos) -->
+  <div class="saving" id="saving" role="status" aria-live="polite" hidden>
+    <div class="saving-card">
+      <span class="spinner" aria-hidden="true"></span>
+      <p id="savingWord">Guardando…</p>
+    </div>
+  </div>
+
   <style is:global>
     :root{ --ink:#1A1512; --soft:#5C5147; --mute:#948879; --line:rgba(26,21,18,.16); --coral:#E07A3E; --coral-d:#A8501E; --bg:#F6F2EC; }
     *{box-sizing:border-box;}
@@ -174,6 +182,14 @@
     .chip[aria-pressed=true]{background:var(--coral); border-color:var(--coral); color:#fff;}
     .chip[hidden]{display:none;}
     .filters .n{font-weight:500; opacity:.7; margin-left:2px;}
+    .saving{position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; background:rgba(246,242,236,.82); backdrop-filter:blur(3px);}
+    .saving[hidden]{display:none;}
+    .saving-card{display:flex; flex-direction:column; align-items:center; gap:18px; min-width:min(300px,86vw); padding:30px 36px; text-align:center; background:#fff; border-radius:22px; box-shadow:0 24px 60px -20px rgba(0,0,0,.35);}
+    .spinner{width:54px; height:54px; border-radius:50%; border:6px solid #f3d9c6; border-top-color:var(--coral); animation:spin .9s linear infinite;}
+    .saving-card p{margin:0; min-height:1.6em; font-weight:700; font-size:1.15rem; transition:opacity .22s ease;}
+    .saving-card p.is-fading{opacity:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @media (prefers-reduced-motion: reduce){.spinner{animation-duration:2.6s;}}
     .order-bar{display:none; flex-direction:column; gap:12px; margin-bottom:16px; padding:14px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-size:.92rem;}
     .order-bar p{margin:0;}
     .order-actions{display:flex; gap:8px; flex-wrap:wrap;}
@@ -265,6 +281,41 @@
       el.hidden = !text;
       // Un error del formulario sube la página hasta el aviso: si no, se queda arriba sin verse (el botón Guardar está abajo).
       if (text && kind === 'error' && el.id === 'editMsg') window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------- aviso de «guardando» ----------
+    const FRASES = [
+      'Guardando…',
+      'Espera un poquito…',
+      'Calentando motores…',
+      'Contando los rascacielos…',
+      'Pidiendo un café en Manhattan…',
+      'Cruzando el puente de Brooklyn…',
+      'Persiguiendo un taxi amarillo…',
+      'Avisando a la Estatua de la Libertad…',
+      'Colocando cada coma…',
+      'Ya casi está…'
+    ];
+    let frasesTimer = null;
+    function mostrarGuardando() {
+      const palabra = $('savingWord');
+      let i = 0;
+      palabra.textContent = FRASES[0];
+      palabra.classList.remove('is-fading');
+      $('saving').hidden = false;
+      clearInterval(frasesTimer);
+      frasesTimer = setInterval(() => {
+        palabra.classList.add('is-fading');
+        setTimeout(() => {
+          i = (i + 1) % FRASES.length;
+          palabra.textContent = FRASES[i];
+          palabra.classList.remove('is-fading');
+        }, 220);
+      }, 1700);
+    }
+    function ocultarGuardando() {
+      clearInterval(frasesTimer);
+      $('saving').hidden = true;
     }
 
     // ---------- acceso ----------
@@ -492,11 +543,13 @@
       if (huecos.length !== ids.length) huecos = ids.map((_, i) => i + 1);
       const cambios = ids.map((id, i) => ({ id, position: huecos[i] })).filter((c) => porId.get(c.id).position !== c.position);
       $('orderSave').disabled = true;
+      mostrarGuardando();
       const res = await Promise.all(cambios.map((c) => sb.from('posts').update({ position: c.position }).eq('id', c.id)));
       const fallo = res.find((r) => r.error);
-      if (fallo) { $('orderSave').disabled = false; return banner($('listMsg'), 'No se ha podido guardar el orden: ' + fallo.error.message, 'error'); }
+      if (fallo) { $('orderSave').disabled = false; ocultarGuardando(); return banner($('listMsg'), 'No se ha podido guardar el orden: ' + fallo.error.message, 'error'); }
       const r = await publicar();
       await showList('Orden guardado. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
     });
 
     async function showList(message, kind) {
@@ -864,11 +917,13 @@
         ...(eventsSupported ? { monthly_events: monthly, events } : {})
       };
       $('saveBtn').disabled = true;
+      mostrarGuardando();
       let saved, error;
       if (editing) ({ data: saved, error } = await sb.from('posts').update(row).eq('id', editing.id).select().single());
       else ({ data: saved, error } = await sb.from('posts').insert(row).select().single());
       if (error) {
         $('saveBtn').disabled = false;
+        ocultarGuardando();
         const dup = error.code === '23505';
         return banner($('editMsg'), dup ? 'Ya existe una entrada con ese enlace. Cambia el título o el enlace.' : 'No se ha podido guardar: ' + error.message, 'error');
       }
@@ -877,16 +932,19 @@
       const r = await publicar();
       $('saveBtn').disabled = false;
       await showList('Entrada guardada. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
     });
 
     // ---------- borrar ----------
     $('deleteBtn').addEventListener('click', async () => {
       if (!editing) return;
       if (!confirm(`¿Borrar «${editing.title}»? No se puede deshacer.`)) return;
+      mostrarGuardando();
       const { error } = await sb.from('posts').delete().eq('id', editing.id);
-      if (error) return banner($('editMsg'), 'No se ha podido borrar: ' + error.message, 'error');
+      if (error) { ocultarGuardando(); return banner($('editMsg'), 'No se ha podido borrar: ' + error.message, 'error'); }
       const r = await publicar();
       await showList('Entrada borrada. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
     });
 
     // ---------- arranque ----------
