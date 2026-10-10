@@ -1,17 +1,11 @@
 ---
-// Próximos eventos en Nueva York. Se mezclan, por fecha:
-//  - los de ejemplo de src/data/events.ts (se quedan como están), y
-//  - TODOS los de la entrada del blog que tiene activo «Eventos mensuales» (si está publicada).
-// Los eventos nuevos llevan su subtítulo y, al pulsarlos, abren su enlace en una pestaña nueva.
-// 4 visibles a la vez en escritorio; el resto con las flechas o deslizando.
-import { rawEvents } from '../data/events';
+// Próximos eventos: salen TODOS los de la entrada del blog que tiene activo «Eventos mensuales» (si está publicada),
+// ordenados por fecha. Cada tarjeta lleva su subtítulo y, al pulsarla, abre su enlace en una pestaña nueva.
+// Si no hay ninguno, el bloque entero no se muestra. 4 visibles a la vez en escritorio; el resto con las flechas o deslizando.
 import { getMonthlyEvents } from '../lib/posts';
 
 const monthly = await getMonthlyEvents();
-const all = [
-  ...rawEvents.map((e) => ({ date: e.date, title: e.title, meta: `${e.kind} · ${e.place}`, link: '' })),
-  ...monthly.map((e) => ({ date: e.date, title: e.title, meta: e.subtitle, link: e.link }))
-].sort((a, b) => a.date.localeCompare(b.date));
+const all = monthly.map((e) => ({ date: e.date, title: e.title, meta: e.subtitle, link: e.link }));
 
 const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
 const dayNum = new Intl.DateTimeFormat('es', { day: 'numeric' });
@@ -21,6 +15,7 @@ const events = all.map((e) => {
   return { ...e, label: day.format(d).replace('.', ''), num: dayNum.format(d), mon: monthShort.format(d).replace('.', '') };
 });
 ---
+{events.length > 0 && (
 <section class="section section-alt" id="proximos-eventos">
   <div class="wrap wrap-wide">
     <div class="section-head-split upcoming-head">
@@ -59,3 +54,4 @@ const events = all.map((e) => {
     </div>
   </div>
 </section>
+)}
