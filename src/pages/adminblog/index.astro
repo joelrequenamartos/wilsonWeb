@@ -42,6 +42,11 @@
         </div>
       </header>
       <p class="banner" id="listMsg" role="status" hidden></p>
+      <div class="pending-bar" id="pendingBar" hidden>
+        <span id="pendingText"></span>
+        <button class="btn primary" id="pendingBtn" type="button">Actualizar web ahora</button>
+      </div>
+      <p class="banner" id="stateWarn" hidden>⚠ Para que los cambios se publiquen solo al pulsar «Actualizar web», hay que ejecutar <b>supabase/publish-state.sql</b> en Supabase (una sola vez). Mientras tanto, cada guardado actualiza la web.</p>
       <p class="banner" id="orderWarn" hidden>⚠ Para poder reordenar hay que ejecutar <b>supabase/order.sql</b> en Supabase (una sola vez).</p>
 
       <div class="order-bar" id="orderBar">
@@ -190,6 +195,9 @@
     .saving-card p.is-fading{opacity:0;}
     @keyframes spin{to{transform:rotate(360deg);}}
     @media (prefers-reduced-motion: reduce){.spinner{animation-duration:2.6s;}}
+    .pending-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:12px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-weight:600; font-size:.95rem;}
+    .pending-bar[hidden]{display:none;}
+    .is-ordering .pending-bar{display:none !important;}
     .order-bar{display:none; flex-direction:column; gap:12px; margin-bottom:16px; padding:14px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-size:.92rem;}
     .order-bar p{margin:0;}
     .order-actions{display:flex; gap:8px; flex-wrap:wrap;}
@@ -362,7 +370,10 @@
       await showList();
     });
 
-    $('logoutBtn').addEventListener('click', async () => { await sb.auth.signOut(); session = null; show('loginView'); });
+    $('logoutBtn').addEventListener('click', async () => {
+      if (estadoWeb.supported && estadoWeb.pending > 0 && !confirm('Hay cambios guardados sin publicar en la web. ¿Salir igualmente? (Seguirán pendientes hasta que pulses «Actualizar web».)')) return;
+      await sb.auth.signOut(); session = null; show('loginView');
+    });
 
     // ---------- lista ----------
     let todas = [];
@@ -570,7 +581,7 @@
       const res = await Promise.all(cambios.map((c) => sb.from('posts').update({ position: c.position }).eq('id', c.id)));
       const fallo = res.find((r) => r.error);
       if (fallo) { $('orderSave').disabled = false; ocultarGuardando(); return banner($('listMsg'), 'No se ha podido guardar el orden: ' + fallo.error.message, 'error'); }
-      const r = await publicar();
+      const r = cambios.length ? await registrarCambio() : { ok: true, msg: '' };
       await showList('Orden guardado. ' + r.msg, r.ok ? 'ok' : 'error');
       ocultarGuardando();
     });
@@ -579,6 +590,7 @@
       show('listView');
       banner($('listMsg'), message, kind);
       window.scrollTo(0, 0);
+      cargarEstadoWeb();
       const { data, error } = await sb.from('posts').select('*').order('published_at', { ascending: false });
       if (error) { $('postList').textContent = ''; banner($('listMsg'), 'No se han podido cargar las entradas: ' + error.message, 'error'); return; }
       eventsSupported = data.length ? 'monthly_events' in data[0] : true;
@@ -606,21 +618,64 @@
     $('backBtn').addEventListener('click', () => showList());
 
     // ---------- publicar (reconstruir la web) ----------
+    // Avisa a Vercel para que reconstruya la web con lo que hay en la base de datos.
     async function publicar() {
       try {
         const r = await fetch('/api/publish', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token } });
         const j = await r.json().catch(() => ({}));
         if (r.ok) return { ok: true, msg: 'La web se está actualizando: los cambios se verán en /blog en 1-2 minutos.' };
-        if (j.error === 'not-configured') return { ok: false, msg: 'Guardado en la base de datos, pero falta conectar la publicación automática con Vercel (DEPLOY_HOOK_URL).' };
-        return { ok: false, msg: 'Guardado, pero no se ha podido avisar a la web (' + (j.error || r.status) + ').' };
-      } catch { return { ok: false, msg: 'Guardado, pero no se ha podido avisar a la web (sin conexión).' }; }
+        if (j.error === 'not-configured') return { ok: false, msg: 'Falta conectar la publicación con Vercel (variable DEPLOY_HOOK_URL).' };
+        return { ok: false, msg: 'No se ha podido avisar a la web (' + (j.error || r.status) + ').' };
+      } catch { return { ok: false, msg: 'No se ha podido avisar a la web (sin conexión).' }; }
     }
 
-    $('rebuildBtn').addEventListener('click', async () => {
-      $('rebuildBtn').disabled = true;
+    // ---------- cambios pendientes de publicar ----------
+    // Guardar NO actualiza la web: suma un cambio pendiente. La web solo se reconstruye al pulsar «Actualizar web».
+    // El contador vive en Supabase (tabla site_state), así que se ve igual desde cualquier dispositivo.
+    let estadoWeb = { supported: false, pending: 0 };
+
+    async function cargarEstadoWeb() {
+      const { data, error } = await sb.from('site_state').select('pending').maybeSingle();
+      estadoWeb.supported = !error && !!data;
+      estadoWeb.pending = data?.pending ?? 0;
+      pintarPendientes();
+    }
+
+    function pintarPendientes() {
+      const n = estadoWeb.pending;
+      $('pendingBar').hidden = !(estadoWeb.supported && n > 0);
+      $('pendingText').textContent = `Hay ${n} ${n === 1 ? 'cambio guardado' : 'cambios guardados'} sin publicar en la web.`;
+      $('stateWarn').hidden = estadoWeb.supported;
+      $('rebuildBtn').classList.toggle('primary', estadoWeb.supported && n > 0);
+    }
+
+    // Un cambio que afecta a la web pública. Con el SQL ejecutado, queda pendiente; sin él, se publica al guardar como antes.
+    async function registrarCambio() {
+      if (!estadoWeb.supported) return await publicar();
+      const { error } = await sb.rpc('mark_site_dirty');
+      await cargarEstadoWeb();
+      if (error) return { ok: false, msg: 'Guardado, pero no se ha podido anotar como pendiente (' + error.message + ').' };
+      return { ok: true, msg: 'Aún no se ve en la web: pulsa «Actualizar web» cuando termines.' };
+    }
+
+    // «Actualizar web»: reconstruye la web y pone el contador a cero.
+    async function actualizarWeb() {
+      mostrarGuardando();
       const r = await publicar();
+      if (r.ok && estadoWeb.supported) await sb.rpc('mark_site_published');
+      await cargarEstadoWeb();
+      ocultarGuardando();
       banner($('listMsg'), r.msg, r.ok ? 'ok' : 'error');
-      $('rebuildBtn').disabled = false;
+      if (r.ok) window.scrollTo(0, 0);
+      return r;
+    }
+
+    $('rebuildBtn').addEventListener('click', actualizarWeb);
+    $('pendingBtn').addEventListener('click', actualizarWeb);
+
+    // Al cerrar la pestaña con cambios sin publicar, el navegador pide confirmación (el texto lo pone el propio navegador).
+    window.addEventListener('beforeunload', (e) => {
+      if (estadoWeb.supported && estadoWeb.pending > 0) { e.preventDefault(); e.returnValue = ''; }
     });
 
     // ---------- fotos ----------
@@ -952,9 +1007,11 @@
       }
       // Solo una destacada a la vez.
       if (row.featured) await sb.from('posts').update({ featured: false }).neq('id', saved.id).eq('featured', true);
-      const r = await publicar();
+      // Solo cuenta como cambio de la web si la entrada está publicada (antes o después) o activa los eventos mensuales.
+      const afectaWeb = !!(row.published || editing?.published || (row.monthly_events && !editing?.monthly_events));
+      const r = afectaWeb ? await registrarCambio() : { ok: true, msg: '' };
       $('saveBtn').disabled = false;
-      await showList('Entrada guardada. ' + r.msg, r.ok ? 'ok' : 'error');
+      await showList(afectaWeb ? 'Entrada guardada. ' + r.msg : 'Borrador guardado. No cambia la web pública.', r.ok ? 'ok' : 'error');
       ocultarGuardando();
     });
 
@@ -965,7 +1022,7 @@
       mostrarGuardando();
       const { error } = await sb.from('posts').delete().eq('id', editing.id);
       if (error) { ocultarGuardando(); return banner($('editMsg'), 'No se ha podido borrar: ' + error.message, 'error'); }
-      const r = await publicar();
+      const r = editing.published ? await registrarCambio() : { ok: true, msg: '' };
       await showList('Entrada borrada. ' + r.msg, r.ok ? 'ok' : 'error');
       ocultarGuardando();
     });
