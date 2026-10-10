@@ -83,11 +83,20 @@
         <div class="checks">
           <label class="check"><input type="checkbox" id="fFeatured" /> Destacada <small class="muted">(solo una a la vez: al marcarla se desmarca la anterior)</small></label>
           <label class="check"><input type="checkbox" id="fPublished" /> Publicada <small class="muted">(si no, queda como borrador y no se ve en la web)</small></label>
+          <label class="check"><input type="checkbox" id="fMonthly" /> Eventos mensuales <small class="muted">(solo una entrada a la vez: al activarlo aquí se desactiva en la anterior)</small></label>
+          <small id="monthlyWarn" class="muted" hidden>⚠ Para usar «Eventos mensuales» hay que ejecutar <b>supabase/monthly-events.sql</b> en Supabase (una sola vez).</small>
         </div>
 
         <div>
           <span class="label">Texto</span>
           <div id="editor"></div>
+        </div>
+
+        <div id="eventsBox" class="card events-box" hidden>
+          <span class="label">Eventos mensuales</span>
+          <p class="muted events-help">Salen al final de <b>esta</b> entrada y en el carrusel «Próximos eventos» de /blog. Cada evento lleva día y mes, título, subtítulo y un enlace (obligatorio) que se abre en una pestaña nueva.</p>
+          <div id="eventsList" class="events-list"></div>
+          <button class="btn" id="addEventBtn" type="button">+ Añadir evento</button>
         </div>
 
         <div class="form-actions">
@@ -114,7 +123,7 @@
     .grid2{display:grid; grid-template-columns:1fr; gap:16px;}
     @media (min-width:700px){.grid2{grid-template-columns:1fr 1fr;}}
     label, .label{display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:.9rem;}
-    input[type=text], input[type=email], input[type=password], input[type=date], textarea{
+    input[type=text], input[type=email], input[type=password], input[type=date], input[type=url], textarea{
       width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px; font:inherit; font-weight:400; background:#fff;
     }
     input:focus, textarea:focus{outline:2px solid var(--coral); outline-offset:1px;}
@@ -158,6 +167,13 @@
     .ql-editor img{max-width:100%; border-radius:8px; cursor:pointer;}
     .ql-editor img.is-selected{outline:3px solid var(--coral); outline-offset:2px;}
     .form-actions-left{display:flex; gap:10px; flex-wrap:wrap;}
+    .events-box{background:#fbf8f3; display:flex; flex-direction:column; gap:14px;}
+    .events-help{margin:0; font-size:.88rem;}
+    .events-list{display:flex; flex-direction:column; gap:14px;}
+    .event-row{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:12px;}
+    .event-top{display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:.9rem;}
+    .event-row.is-invalid{border-color:#c0392b;}
+    .btn.small{padding:6px 12px; font-size:.8rem;}
     .ql-container{position:relative;}
     .img-tools{position:absolute; z-index:5; display:flex; gap:4px; align-items:center; padding:6px 8px; background:#1A1512; color:#fff; border-radius:10px; box-shadow:0 8px 24px -8px rgba(0,0,0,.5); font-size:.8rem;}
     .img-tools[hidden]{display:none;}
@@ -182,6 +198,7 @@
     let coverUrl = null;      // portada actual
     let slugTouched = false;  // el usuario ha escrito el enlace a mano
     let quill = null;
+    let eventsSupported = true; // false si en Supabase aún no se ha ejecutado monthly-events.sql
 
     // ---------- utilidades ----------
     const views = ['loginView', 'listView', 'editView'];
@@ -226,6 +243,7 @@
       const list = $('postList');
       list.textContent = '';
       if (error) { banner($('listMsg'), 'No se han podido cargar las entradas: ' + error.message, 'error'); return; }
+      eventsSupported = data.length ? 'monthly_events' in data[0] : true;
       if (!data.length) { list.textContent = 'Todavía no hay entradas. Pulsa «+ Nueva entrada».'; return; }
       for (const p of data) {
         const row = document.createElement('article');
@@ -237,6 +255,7 @@
         const pill = (txt, cls) => { const s = document.createElement('span'); s.className = 'pill ' + cls; s.textContent = txt; return s; };
         meta.append(pill(p.published ? 'Publicada' : 'Borrador', p.published ? 'pub' : 'draft'));
         if (p.featured) meta.append(pill('★ Destacada', 'feat'));
+        if (p.monthly_events) meta.append(pill('📅 Eventos mensuales', 'feat'));
         const d = document.createElement('span'); d.textContent = new Date(p.published_at + 'T12:00:00').toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
         meta.append(d);
         info.append(h, meta);
@@ -397,13 +416,64 @@
       window.addEventListener('resize', () => { if (sel) colocar(); });
     }
 
+    // ---------- eventos mensuales ----------
+    const isUrl = (u) => /^https?:\/\/\S+$/i.test(u);
+
+    function renumerar() {
+      [...$('eventsList').children].forEach((row, i) => { row.querySelector('.event-num').textContent = 'Evento ' + (i + 1); });
+    }
+
+    function addEventRow(ev = {}) {
+      const row = document.createElement('div');
+      row.className = 'event-row';
+      row.innerHTML = `
+        <div class="event-top"><span class="event-num"></span><button class="btn small danger" type="button">Quitar</button></div>
+        <div class="grid2">
+          <label>Fecha (día y mes)<input type="date" data-f="date" /></label>
+          <label>Título<input type="text" data-f="title" maxlength="120" placeholder="Concierto de jazz" /></label>
+        </div>
+        <div class="grid2">
+          <label>Subtítulo<input type="text" data-f="subtitle" maxlength="160" placeholder="con Ana García · Harlem" /></label>
+          <label>Enlace del botón (obligatorio)<input type="url" data-f="link" placeholder="https://…" /></label>
+        </div>`;
+      row.querySelector('[data-f=date]').value = ev.date || '';
+      row.querySelector('[data-f=title]').value = ev.title || '';
+      row.querySelector('[data-f=subtitle]').value = ev.subtitle || '';
+      row.querySelector('[data-f=link]').value = ev.link || '';
+      row.querySelector('button').addEventListener('click', () => { row.remove(); renumerar(); });
+      $('eventsList').append(row);
+      renumerar();
+    }
+
+    function readEvents() {
+      return [...$('eventsList').children].map((row) => {
+        const f = (k) => row.querySelector(`[data-f=${k}]`).value.trim();
+        return { date: f('date'), title: f('title'), subtitle: f('subtitle'), link: f('link') };
+      }).filter((e) => e.date || e.title || e.subtitle || e.link); // las filas totalmente vacías se ignoran
+    }
+
+    function pintarEventos(list) {
+      $('eventsList').textContent = '';
+      (list || []).forEach((e) => addEventRow(e));
+    }
+
+    function toggleEventsBox() {
+      const on = $('fMonthly').checked && eventsSupported;
+      $('eventsBox').hidden = !on;
+      if (on && !$('eventsList').children.length) addEventRow();
+    }
+    $('fMonthly').addEventListener('change', toggleEventsBox);
+    $('addEventBtn').addEventListener('click', () => addEventRow());
+
     // Vista previa: guarda el borrador actual en el navegador y abre /blog-preview con el diseño real, sin guardar ni publicar nada.
     $('previewBtn').addEventListener('click', () => {
       const draft = {
         title: $('fTitle').value.trim(),
         excerpt: $('fExcerpt').value.trim(),
         image: coverUrl,
-        content: quill.getSemanticHTML().replace(/&nbsp;/g, ' ')
+        content: quill.getSemanticHTML().replace(/&nbsp;/g, ' '),
+        monthly: $('fMonthly').checked && eventsSupported,
+        events: readEvents().filter((e) => e.date && e.title)
       };
       try { localStorage.setItem('blog-preview', JSON.stringify(draft)); }
       catch { return banner($('editMsg'), 'No se ha podido preparar la vista previa en este navegador.', 'error'); }
@@ -424,6 +494,11 @@
       $('fExcerpt').value = post?.excerpt ?? '';
       $('fFeatured').checked = !!post?.featured;
       $('fPublished').checked = post ? !!post.published : false;
+      $('fMonthly').checked = !!post?.monthly_events;
+      $('fMonthly').disabled = !eventsSupported;
+      $('monthlyWarn').hidden = eventsSupported;
+      pintarEventos(Array.isArray(post?.events) ? post.events : []);
+      toggleEventsBox();
       coverUrl = post?.image ?? null;
       pintarPortada();
       $('coverStatus').textContent = 'Se reduce sola a 1600 px de ancho.';
@@ -456,6 +531,25 @@
       if (!title) return banner($('editMsg'), 'Escribe un título.', 'error');
       if (!slug) return banner($('editMsg'), 'El enlace no puede estar vacío.', 'error');
       if (RESERVED.includes(slug)) return banner($('editMsg'), `El enlace «${slug}» está reservado. Elige otro.`, 'error');
+      const monthly = $('fMonthly').checked && eventsSupported;
+      const events = readEvents();
+      if (monthly) {
+        const rows = [...$('eventsList').children];
+        rows.forEach((r) => r.classList.remove('is-invalid'));
+        for (let i = 0; i < events.length; i++) {
+          const e = events[i];
+          let problema = '';
+          if (!e.date) problema = 'falta la fecha';
+          else if (!e.title) problema = 'falta el título';
+          else if (!e.link) problema = 'falta el enlace del botón (es obligatorio)';
+          else if (!isUrl(e.link)) problema = 'el enlace debe empezar por https:// o http://';
+          if (problema) {
+            const filas = rows.filter((r) => [...r.querySelectorAll('[data-f]')].some((x) => x.value.trim()));
+            if (filas[i]) { filas[i].classList.add('is-invalid'); filas[i].scrollIntoView({ block: 'center' }); }
+            return banner($('editMsg'), `Evento ${i + 1}: ${problema}.`, 'error');
+          }
+        }
+      }
       const row = {
         slug, title,
         excerpt: $('fExcerpt').value.trim(),
@@ -464,7 +558,9 @@
         image: coverUrl,
         featured: $('fFeatured').checked,
         published: $('fPublished').checked,
-        published_at: $('fDate').value || today()
+        published_at: $('fDate').value || today(),
+        // Solo se envían si la base de datos ya tiene las columnas (supabase/monthly-events.sql).
+        ...(eventsSupported ? { monthly_events: monthly, events } : {})
       };
       $('saveBtn').disabled = true;
       let saved, error;

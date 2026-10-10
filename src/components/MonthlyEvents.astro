@@ -1,0 +1,37 @@
+---
+// Lista «Eventos mensuales» al final de la entrada que la tiene activa: insignia de fecha (día + mes),
+// título, subtítulo y una flecha que abre el enlace del evento en una pestaña nueva.
+import type { MonthlyEvent } from '../lib/posts';
+
+interface Props {
+  events: MonthlyEvent[];
+}
+
+const { events } = Astro.props;
+
+const dayNum = new Intl.DateTimeFormat('es', { day: 'numeric' });
+const monShort = new Intl.DateTimeFormat('es', { month: 'short' });
+const items = events.map((e) => {
+  const d = new Date(`${e.date}T12:00:00`);
+  return { ...e, num: dayNum.format(d), mon: monShort.format(d).replace('.', '') };
+});
+---
+<section class="monthly-events" id="eventos-mensuales" aria-labelledby="monthlyTitle">
+  <h2 class="section-title" id="monthlyTitle">Eventos mensuales</h2>
+  <ul class="monthly-list">
+    {items.map((e) => (
+      <li class="monthly-item">
+        <time class="monthly-badge" datetime={e.date}><b>{e.num}</b><span>{e.mon}</span></time>
+        <div class="monthly-text">
+          <h3>{e.title}</h3>
+          {e.subtitle && <p>{e.subtitle}</p>}
+        </div>
+        {e.link && (
+          <a class="monthly-go" href={e.link} target="_blank" rel="noopener noreferrer" aria-label={`Más información: ${e.title}`}>
+            <svg class="icon"><use href="#i-arrow" /></svg>
+          </a>
+        )}
+      </li>
+    ))}
+  </ul>
+</section>

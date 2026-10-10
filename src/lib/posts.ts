@@ -1,6 +1,9 @@
 import { getCollection } from 'astro:content';
 import { SUPABASE_URL, SUPABASE_KEY } from './supabase';
 
+// Evento de la lista «Eventos mensuales» de una entrada (date: AAAA-MM-DD).
+export type MonthlyEvent = { date: string; title: string; subtitle: string; link: string };
+
 export type Post = {
   slug: string;
   title: string;
@@ -9,19 +12,41 @@ export type Post = {
   author: string;
   image: string | null;
   featured: boolean;
+  monthlyEvents: boolean; // la entrada tiene activa la lista «Eventos mensuales»
+  events: MonthlyEvent[];
   date: Date;
 };
 
 const toDate = (d: string) => new Date(`${d.slice(0, 10)}T12:00:00`);
 
+// Solo enlaces http(s): evita «javascript:» y similares aunque alguien los guardara.
+const safeUrl = (u: unknown) => {
+  const v = String(u ?? '').trim();
+  return /^https?:\/\//i.test(v) ? v : '';
+};
+
+const toEvents = (raw: unknown): MonthlyEvent[] =>
+  (Array.isArray(raw) ? raw : [])
+    .map((e: any) => ({
+      date: String(e?.date ?? '').slice(0, 10),
+      title: String(e?.title ?? '').trim(),
+      subtitle: String(e?.subtitle ?? '').trim(),
+      link: safeUrl(e?.link)
+    }))
+    .filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.title)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+// Las páginas del blog piden las entradas varias veces durante una misma compilación: se guardan unos segundos.
+let cache: { at: number; value: Promise<Post[]> } | null = null;
+
 // Entradas publicadas, de la más reciente a la más antigua.
 // Se leen de Supabase al compilar la web; si Supabase no responde, se usan las de src/content/blog
 // para que una caída nunca deje el blog vacío.
-export async function getPosts(): Promise<Post[]> {
+async function loadPosts(): Promise<Post[]> {
   try {
     const url =
       `${SUPABASE_URL}/rest/v1/posts` +
-      `?select=slug,title,excerpt,content,author,image,featured,published_at&published=eq.true&order=published_at.desc`;
+      `?select=*&published=eq.true&order=published_at.desc`;
     const res = await fetch(url, { headers: { apikey: SUPABASE_KEY } });
     if (!res.ok) throw new Error(`Supabase ${res.status}`);
     const rows = await res.json();
@@ -34,6 +59,8 @@ export async function getPosts(): Promise<Post[]> {
       author: r.author ?? 'Wilson Silver',
       image: r.image ?? null,
       featured: !!r.featured,
+      monthlyEvents: !!r.monthly_events,
+      events: toEvents(r.events),
       date: toDate(r.published_at)
     }));
   } catch (err) {
@@ -48,10 +75,26 @@ export async function getPosts(): Promise<Post[]> {
         author: p.data.author,
         image: p.data.image ?? null,
         featured: false,
+        monthlyEvents: false,
+        events: [],
         date: p.data.date
       }))
       .sort((a, b) => b.date.valueOf() - a.date.valueOf());
   }
+}
+
+export function getPosts(): Promise<Post[]> {
+  if (!cache || Date.now() - cache.at > 15000) cache = { at: Date.now(), value: loadPosts() };
+  return cache.value;
+}
+
+// Eventos de la entrada que tiene activos los «Eventos mensuales» (solo si está publicada), por fecha.
+export async function getMonthlyEvents(): Promise<MonthlyEvent[]> {
+  const posts = await getPosts();
+  return posts
+    .filter((p) => p.monthlyEvents)
+    .flatMap((p) => p.events)
+    .sort((a, b) => a.date.localeCompare(b.date));
 }
 
 const slugify = (s: string) =>

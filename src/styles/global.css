@@ -1272,6 +1272,33 @@
   }
   @media (prefers-reduced-motion: reduce){.ebook-pop, .ebook-pop-card{transition:none;}}
 
+  /* tarjetas del carrusel que llevan a un enlace (eventos mensuales) */
+  a.upcoming-card{text-decoration:none; color:inherit;}
+  @media (hover:hover){a.upcoming-card:hover h3{color:var(--coral-dark);}}
+
+  /* ---------- eventos mensuales al final de la entrada (lista con insignia de fecha) ---------- */
+  .monthly-events{margin-top:clamp(40px,6vw,64px);}
+  @media (min-width:881px){.monthly-events{max-width:860px;}}
+  .monthly-list{list-style:none; margin:clamp(14px,3vw,24px) 0 0; padding:0;}
+  .monthly-item{
+    display:grid; grid-template-columns:auto 1fr auto; gap:clamp(14px,3vw,24px); align-items:center;
+    padding-block:16px; border-bottom:1px solid color-mix(in srgb, var(--coral) 38%, transparent);
+  }
+  .monthly-badge{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1;
+    width:clamp(68px,17vw,84px); aspect-ratio:1/.92; border-radius:20px; background:var(--coral); color:#fff;
+  }
+  .monthly-badge b{font-family:"Poppins"; font-weight:800; font-size:clamp(1.7rem,6vw,2.2rem);}
+  .monthly-badge span{margin-top:5px; font-size:.78rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;}
+  .monthly-text h3{font-size:clamp(1.05rem,3.4vw,1.3rem); line-height:1.25; color:var(--ink);}
+  .monthly-text p{margin-top:4px; font-size:.95rem; color:var(--ink-soft);}
+  .monthly-go{
+    display:flex; align-items:center; justify-content:center; flex:none; width:44px; height:44px; border-radius:50%;
+    background:var(--coral); color:#fff; text-decoration:none; transition:transform .15s ease, background .15s ease;
+  }
+  .monthly-go .icon{width:20px; height:20px;}
+  @media (hover:hover){.monthly-go:hover{background:var(--coral-dark); transform:scale(1.08);}}
+
   /* ---------- entrada de blog ---------- */
   .blog-post-wrap-tpl{max-width:760px;}
   /* Escritorio: la entrada usa el mismo ancho que el resto de la web (foto y título a todo el ancho);

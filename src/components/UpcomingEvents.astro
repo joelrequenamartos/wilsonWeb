@@ -1,12 +1,22 @@
 ---
-// Próximos eventos en Nueva York. Los datos (de ejemplo) están en src/data/events.ts:
-// 8 eventos, se ven 4 a la vez y el resto con las flechas o deslizando.
+// Próximos eventos en Nueva York. Se mezclan, por fecha:
+//  - los de ejemplo de src/data/events.ts (se quedan como están), y
+//  - TODOS los de la entrada del blog que tiene activo «Eventos mensuales» (si está publicada).
+// Los eventos nuevos llevan su subtítulo y, al pulsarlos, abren su enlace en una pestaña nueva.
+// 4 visibles a la vez en escritorio; el resto con las flechas o deslizando.
 import { rawEvents } from '../data/events';
+import { getMonthlyEvents } from '../lib/posts';
+
+const monthly = await getMonthlyEvents();
+const all = [
+  ...rawEvents.map((e) => ({ date: e.date, title: e.title, meta: `${e.kind} · ${e.place}`, link: '' })),
+  ...monthly.map((e) => ({ date: e.date, title: e.title, meta: e.subtitle, link: e.link }))
+].sort((a, b) => a.date.localeCompare(b.date));
 
 const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
 const dayNum = new Intl.DateTimeFormat('es', { day: 'numeric' });
 const monthShort = new Intl.DateTimeFormat('es', { month: 'short' });
-const events = rawEvents.map((e) => {
+const events = all.map((e) => {
   const d = new Date(`${e.date}T12:00:00`);
   return { ...e, label: day.format(d).replace('.', ''), num: dayNum.format(d), mon: monthShort.format(d).replace('.', '') };
 });
@@ -30,13 +40,21 @@ const events = rawEvents.map((e) => {
 
     <div class="upcoming-scroll" id="upcomingScroll" data-hscroll data-prev="upcomingPrev" data-next="upcomingNext">
       <div class="upcoming-track">
-        {events.map((event) => (
-          <article class="upcoming-card">
-            <div class="upcoming-bigdate" aria-label={event.label}><span class="upcoming-day">{event.num}</span><span class="upcoming-mon">{event.mon}</span></div>
-            <h3>{event.title}</h3>
-            <span class="upcoming-meta">{event.kind} · {event.place}</span>
-          </article>
-        ))}
+        {events.map((event) => {
+          const Tag = event.link ? 'a' : 'article';
+          return (
+            <Tag
+              class="upcoming-card"
+              href={event.link || undefined}
+              target={event.link ? '_blank' : undefined}
+              rel={event.link ? 'noopener noreferrer' : undefined}
+            >
+              <div class="upcoming-bigdate" aria-label={event.label}><span class="upcoming-day">{event.num}</span><span class="upcoming-mon">{event.mon}</span></div>
+              <h3>{event.title}</h3>
+              {event.meta && <span class="upcoming-meta">{event.meta}</span>}
+            </Tag>
+          );
+        })}
       </div>
     </div>
   </div>

@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import BlogTemplate from '../../components/BlogTemplate.astro';
 import UpcomingEvents from '../../components/UpcomingEvents.astro';
 import EbookPopup from '../../components/EbookPopup.astro';
+import MonthlyEvents from '../../components/MonthlyEvents.astro';
 import { getPosts, prepareContent } from '../../lib/posts';
 
 export async function getStaticPaths() {
@@ -28,6 +29,7 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
     <section class="section">
       <div class="wrap blog-post-wrap blog-post-wrap-tpl">
         <BlogTemplate title={post.title} excerpt={post.excerpt} image={post.image ?? undefined} html={html} toc={toc} />
+        {post.monthlyEvents && post.events.length > 0 && <MonthlyEvents events={post.events} />}
       </div>
     </section>
     <UpcomingEvents />

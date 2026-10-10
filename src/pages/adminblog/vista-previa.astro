@@ -36,6 +36,10 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
             </nav>
             <div class="post-body" id="pvBody"></div>
           </article>
+          <section class="monthly-events" id="pvEvents" aria-labelledby="pvEventsTitle" hidden>
+            <h2 class="section-title" id="pvEventsTitle">Eventos mensuales</h2>
+            <ul class="monthly-list" id="pvEventsList"></ul>
+          </section>
         </div>
       </section>
     </main>
@@ -94,6 +98,32 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
         li.append(a); list.append(li);
       });
       $('pvIndex').hidden = !list.children.length;
+
+      // Eventos mensuales (solo si la entrada los tiene activados): mismo diseño que en la web publicada.
+      if (raw.monthly && Array.isArray(raw.events) && raw.events.length) {
+        const dia = new Intl.DateTimeFormat('es', { day: 'numeric' });
+        const mes = new Intl.DateTimeFormat('es', { month: 'short' });
+        const ul = $('pvEventsList');
+        [...raw.events].sort((a, b) => a.date.localeCompare(b.date)).forEach((e) => {
+          const d = new Date(e.date + 'T12:00:00');
+          const li = document.createElement('li'); li.className = 'monthly-item';
+          const badge = document.createElement('time'); badge.className = 'monthly-badge'; badge.dateTime = e.date;
+          const b = document.createElement('b'); b.textContent = dia.format(d);
+          const m = document.createElement('span'); m.textContent = mes.format(d).replace('.', '');
+          badge.append(b, m);
+          const text = document.createElement('div'); text.className = 'monthly-text';
+          const h = document.createElement('h3'); h.textContent = e.title; text.append(h);
+          if (e.subtitle) { const p = document.createElement('p'); p.textContent = e.subtitle; text.append(p); }
+          li.append(badge, text);
+          if (/^https?:\/\//i.test(e.link || '')) {
+            const a = document.createElement('a'); a.className = 'monthly-go'; a.href = e.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+            a.innerHTML = '<svg class="icon"><use href="#i-arrow" /></svg>';
+            li.append(a);
+          }
+          ul.append(li);
+        });
+        $('pvEvents').hidden = false;
+      }
     }
 
     if (inFrame) {
