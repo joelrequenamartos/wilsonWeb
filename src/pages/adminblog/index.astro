@@ -284,7 +284,8 @@
     }
 
     // ---------- aviso de «guardando» ----------
-    // 30 frases: cada vez que se guarda se barajan y salen en orden distinto (la primera nunca repite la del guardado anterior).
+    // 20 frases (10 para Bibiana y 10 normales): cada vez que se guarda se barajan y salen en orden distinto
+    // (la primera nunca repite la del guardado anterior).
     const FRASES = [
       // para Bibiana
       'Bibiana, qué buen trabajo estás haciendo…',
@@ -294,7 +295,10 @@
       'Tómate un cafecito, Bibiana, que vuelvo enseguida…',
       'Bibiana, eres la reina del blog…',
       'Bibiana en racha: otra entrada para la colección…',
-      // para todos
+      'Esto lo ha escrito Bibiana, así que tiene que quedar genial…',
+      'Bibiana, respira hondo, ya casi lo tenemos…',
+      'La web entera aplaude a Bibiana…',
+      // normales
       'Guardando…',
       'Espera un poquito…',
       'Calentando motores…',
@@ -302,22 +306,9 @@
       'Pidiendo un café en Manhattan…',
       'Cruzando el puente de Brooklyn…',
       'Persiguiendo un taxi amarillo…',
-      'Avisando a la Estatua de la Libertad…',
       'Colocando cada coma en su sitio…',
-      'Ya casi está…',
-      'Quitándole el polvo a las palabras…',
-      'Despertando a los servidores…',
-      'Peinando los párrafos…',
-      'Esperando el metro de la línea 7…',
-      'Comprando un perrito caliente…',
-      'Dándole brillo al titular…',
-      'Haciendo cola en el Empire State…',
-      'Buscando la tilde que se escapó…',
       'Saludando a las ardillas de Central Park…',
-      'Echándole azúcar al texto…',
-      'Haciendo magia con los píxeles…',
-      'Ensayando el redoble de tambores…',
-      'Guardando con mucho cariño…'
+      'Ya casi está…'
     ];
     let frasesTimer = null;
     let ultimaPrimera = '';
