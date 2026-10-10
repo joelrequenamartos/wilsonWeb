@@ -1305,7 +1305,7 @@
      el texto se queda en una columna cómoda de leer. En móvil no cambia nada. */
   @media (min-width:881px){
     .blog-post-wrap-tpl{max-width:var(--maxw);}
-    .post .post-cover{aspect-ratio:21/9; max-width:860px;} /* portada más pequeña en escritorio: ancho de la columna de texto */
+    .post .post-cover{aspect-ratio:16/9; max-width:860px;} /* misma proporción que en móvil (16:9), al ancho de la columna de texto */
     .post-summary, .post-index, .post-body{max-width:860px;}
   }
   .post .tour-back{display:flex;}
