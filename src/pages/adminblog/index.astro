@@ -168,6 +168,7 @@
     .ql-editor img.is-selected{outline:3px solid var(--coral); outline-offset:2px;}
     .form-actions-left{display:flex; gap:10px; flex-wrap:wrap;}
     .events-box{background:#fbf8f3; display:flex; flex-direction:column; gap:14px;}
+    .events-box[hidden]{display:none;} /* sin esto, display:flex se impone al atributo hidden y el bloque se veía siempre */
     .events-help{margin:0; font-size:.88rem;}
     .events-list{display:flex; flex-direction:column; gap:14px;}
     .event-row{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:12px;}
@@ -463,7 +464,7 @@
       if (on && !$('eventsList').children.length) addEventRow();
     }
     $('fMonthly').addEventListener('change', toggleEventsBox);
-    $('addEventBtn').addEventListener('click', () => addEventRow());
+    $('addEventBtn').addEventListener('click', () => { if ($('fMonthly').checked) addEventRow(); }); // solo con «Eventos mensuales» activo
 
     // Vista previa: guarda el borrador actual en el navegador y abre /blog-preview con el diseño real, sin guardar ni publicar nada.
     $('previewBtn').addEventListener('click', () => {
