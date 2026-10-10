@@ -284,7 +284,17 @@
     }
 
     // ---------- aviso de «guardando» ----------
+    // 30 frases: cada vez que se guarda se barajan y salen en orden distinto (la primera nunca repite la del guardado anterior).
     const FRASES = [
+      // para Bibiana
+      'Bibiana, qué buen trabajo estás haciendo…',
+      'Guardando tu obra maestra, Bibiana…',
+      'Un segundito, Bibiana, que ya casi…',
+      'Bibiana manda y la web obedece…',
+      'Tómate un cafecito, Bibiana, que vuelvo enseguida…',
+      'Bibiana, eres la reina del blog…',
+      'Bibiana en racha: otra entrada para la colección…',
+      // para todos
       'Guardando…',
       'Espera un poquito…',
       'Calentando motores…',
@@ -293,25 +303,47 @@
       'Cruzando el puente de Brooklyn…',
       'Persiguiendo un taxi amarillo…',
       'Avisando a la Estatua de la Libertad…',
-      'Colocando cada coma…',
-      'Ya casi está…'
+      'Colocando cada coma en su sitio…',
+      'Ya casi está…',
+      'Quitándole el polvo a las palabras…',
+      'Despertando a los servidores…',
+      'Peinando los párrafos…',
+      'Esperando el metro de la línea 7…',
+      'Comprando un perrito caliente…',
+      'Dándole brillo al titular…',
+      'Haciendo cola en el Empire State…',
+      'Buscando la tilde que se escapó…',
+      'Saludando a las ardillas de Central Park…',
+      'Echándole azúcar al texto…',
+      'Haciendo magia con los píxeles…',
+      'Ensayando el redoble de tambores…',
+      'Guardando con mucho cariño…'
     ];
     let frasesTimer = null;
+    let ultimaPrimera = '';
+    function barajar(lista) {
+      const b = [...lista];
+      for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+      return b;
+    }
     function mostrarGuardando() {
       const palabra = $('savingWord');
+      const orden = barajar(FRASES);
+      if (orden[0] === ultimaPrimera) orden.push(orden.shift());
+      ultimaPrimera = orden[0];
       let i = 0;
-      palabra.textContent = FRASES[0];
+      palabra.textContent = orden[0];
       palabra.classList.remove('is-fading');
       $('saving').hidden = false;
       clearInterval(frasesTimer);
       frasesTimer = setInterval(() => {
         palabra.classList.add('is-fading');
         setTimeout(() => {
-          i = (i + 1) % FRASES.length;
-          palabra.textContent = FRASES[i];
+          i = (i + 1) % orden.length;
+          palabra.textContent = orden[i];
           palabra.classList.remove('is-fading');
         }, 220);
-      }, 1700);
+      }, 1600);
     }
     function ocultarGuardando() {
       clearInterval(frasesTimer);
