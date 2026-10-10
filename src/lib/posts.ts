@@ -2,7 +2,8 @@ import { getCollection } from 'astro:content';
 import { SUPABASE_URL, SUPABASE_KEY } from './supabase';
 
 // Evento de la lista «Eventos mensuales» de una entrada (date: AAAA-MM-DD).
-export type MonthlyEvent = { date: string; title: string; subtitle: string; link: string };
+// endDate: fecha final si el evento dura varios días (rango); vacío si es un solo día.
+export type MonthlyEvent = { date: string; endDate: string; title: string; subtitle: string; link: string };
 
 export type Post = {
   slug: string;
@@ -29,10 +30,12 @@ const toEvents = (raw: unknown): MonthlyEvent[] =>
   (Array.isArray(raw) ? raw : [])
     .map((e: any) => ({
       date: String(e?.date ?? '').slice(0, 10),
+      endDate: String(e?.end_date ?? '').slice(0, 10),
       title: String(e?.title ?? '').trim(),
       subtitle: String(e?.subtitle ?? '').trim(),
       link: safeUrl(e?.link)
     }))
+    .map((e) => ({ ...e, endDate: /^\d{4}-\d{2}-\d{2}$/.test(e.endDate) && e.endDate > e.date ? e.endDate : '' }))
     .filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.title)
     .sort((a, b) => a.date.localeCompare(b.date));
 
@@ -81,6 +84,19 @@ async function loadPosts(): Promise<Post[]> {
       }))
       .sort((a, b) => b.date.valueOf() - a.date.valueOf());
   }
+}
+
+// Fecha para la insignia de un evento. Un día: «14» / «oct». Rango del mismo mes: «12-14» / «ago».
+// Rango entre meses: «28-2» / «ago-sept».
+const MES = new Intl.DateTimeFormat('es', { month: 'short' });
+const DIA = new Intl.DateTimeFormat('es', { day: 'numeric' });
+export function formatEventDate(date: string, end = '') {
+  const a = new Date(`${date}T12:00:00`);
+  const mon = (d: Date) => MES.format(d).replace('.', '');
+  if (!end || end <= date) return { num: DIA.format(a), mon: mon(a), range: false };
+  const b = new Date(`${end}T12:00:00`);
+  const sameMonth = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+  return { num: `${DIA.format(a)}-${DIA.format(b)}`, mon: sameMonth ? mon(a) : `${mon(a)}-${mon(b)}`, range: true };
 }
 
 export function getPosts(): Promise<Post[]> {

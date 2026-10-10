@@ -103,13 +103,22 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
       if (raw.monthly && Array.isArray(raw.events) && raw.events.length) {
         const dia = new Intl.DateTimeFormat('es', { day: 'numeric' });
         const mes = new Intl.DateTimeFormat('es', { month: 'short' });
+        const mon = (d) => mes.format(d).replace('.', '');
         const ul = $('pvEventsList');
         [...raw.events].sort((a, b) => a.date.localeCompare(b.date)).forEach((e) => {
           const d = new Date(e.date + 'T12:00:00');
           const li = document.createElement('li'); li.className = 'monthly-item';
           const badge = document.createElement('time'); badge.className = 'monthly-badge'; badge.dateTime = e.date;
-          const b = document.createElement('b'); b.textContent = dia.format(d);
-          const m = document.createElement('span'); m.textContent = mes.format(d).replace('.', '');
+          let num = dia.format(d), mm = mon(d);
+          if (e.end_date && e.end_date > e.date) {
+            // Rango: «12-14» / «ago»; entre meses: «28-2» / «ago-sept»
+            const f = new Date(e.end_date + 'T12:00:00');
+            num = dia.format(d) + '-' + dia.format(f);
+            mm = d.getMonth() === f.getMonth() && d.getFullYear() === f.getFullYear() ? mon(d) : mon(d) + '-' + mon(f);
+            badge.classList.add('is-range');
+          }
+          const b = document.createElement('b'); b.textContent = num;
+          const m = document.createElement('span'); m.textContent = mm;
           badge.append(b, m);
           const text = document.createElement('div'); text.className = 'monthly-text';
           const h = document.createElement('h3'); h.textContent = e.title; text.append(h);

@@ -1206,6 +1206,8 @@
   }
   .upcoming-day{font-family:"Poppins"; font-weight:900; font-size:54cqw; line-height:.9; letter-spacing:-.03em;}
   .upcoming-mon{font-family:"Poppins"; font-weight:800; font-size:21cqw; line-height:1; text-transform:uppercase; letter-spacing:.04em;}
+  .upcoming-day.is-range{font-size:27cqw; letter-spacing:-.04em;}
+  .upcoming-mon.is-range{font-size:14cqw;}
   .upcoming-card h3{margin-top:14px; font-size:.95rem; line-height:1.25;}
   .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono";}
 
@@ -1290,6 +1292,9 @@
   }
   .monthly-badge b{font-family:"Poppins"; font-weight:800; font-size:clamp(1.7rem,6vw,2.2rem);}
   .monthly-badge span{margin-top:5px; font-size:.78rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;}
+  /* rango de fechas («12-14» / «ago»): números algo más pequeños para que quepan en la insignia */
+  .monthly-badge.is-range b{font-size:clamp(1.05rem,3.8vw,1.4rem);}
+  .monthly-badge.is-range span{font-size:.72rem;}
   .monthly-text h3{font-size:clamp(1.05rem,3.4vw,1.3rem); line-height:1.25; color:var(--ink);}
   .monthly-text p{margin-top:4px; font-size:.95rem; color:var(--ink-soft);}
   .monthly-go{

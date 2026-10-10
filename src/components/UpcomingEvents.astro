@@ -2,17 +2,14 @@
 // Próximos eventos: salen TODOS los de la entrada del blog que tiene activo «Eventos mensuales» (si está publicada),
 // ordenados por fecha. Cada tarjeta lleva su subtítulo y, al pulsarla, abre su enlace en una pestaña nueva.
 // Si no hay ninguno, el bloque entero no se muestra. 4 visibles a la vez en escritorio; el resto con las flechas o deslizando.
-import { getMonthlyEvents } from '../lib/posts';
+import { getMonthlyEvents, formatEventDate } from '../lib/posts';
 
 const monthly = await getMonthlyEvents();
-const all = monthly.map((e) => ({ date: e.date, title: e.title, meta: e.subtitle, link: e.link }));
+const all = monthly.map((e) => ({ date: e.date, endDate: e.endDate, title: e.title, meta: e.subtitle, link: e.link }));
 
-const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
-const dayNum = new Intl.DateTimeFormat('es', { day: 'numeric' });
-const monthShort = new Intl.DateTimeFormat('es', { month: 'short' });
 const events = all.map((e) => {
-  const d = new Date(`${e.date}T12:00:00`);
-  return { ...e, label: day.format(d).replace('.', ''), num: dayNum.format(d), mon: monthShort.format(d).replace('.', '') };
+  const f = formatEventDate(e.date, e.endDate);
+  return { ...e, ...f, label: `${f.num} ${f.mon}` };
 });
 ---
 {events.length > 0 && (
@@ -44,7 +41,7 @@ const events = all.map((e) => {
               target={event.link ? '_blank' : undefined}
               rel={event.link ? 'noopener noreferrer' : undefined}
             >
-              <div class="upcoming-bigdate" aria-label={event.label}><span class="upcoming-day">{event.num}</span><span class="upcoming-mon">{event.mon}</span></div>
+              <div class="upcoming-bigdate" aria-label={event.label}><span class:list={['upcoming-day', { 'is-range': event.range }]}>{event.num}</span><span class:list={['upcoming-mon', { 'is-range': event.range && event.mon.includes('-') }]}>{event.mon}</span></div>
               <h3>{event.title}</h3>
               {event.meta && <span class="upcoming-meta">{event.meta}</span>}
             </Tag>

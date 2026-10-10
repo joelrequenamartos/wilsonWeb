@@ -243,7 +243,7 @@
     .cover.is-missing, #editor.is-missing{border-radius:12px;}
     .check.is-off{opacity:.45; cursor:not-allowed;}
     .check.is-off input{cursor:not-allowed;}
-    .events-box[hidden]{display:none;} /* sin esto, display:flex se impone al atributo hidden y el bloque se veía siempre */
+    .events-box[hidden], .grid2[hidden]{display:none;} /* sin esto, display:flex se impone al atributo hidden y el bloque se veía siempre */
     .events-help{margin:0; font-size:.88rem;}
     .events-list{display:flex; flex-direction:column; gap:14px;}
     .event-row{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:12px;}
@@ -832,8 +832,12 @@
       row.innerHTML = `
         <div class="event-top"><span class="event-num"></span><button class="btn small danger" type="button">Quitar</button></div>
         <div class="grid2">
-          <label>Fecha (día y mes)<input type="date" data-f="date" /></label>
+          <label><span data-l="date">Fecha (día y mes)</span><input type="date" data-f="date" /></label>
           <label>Título<input type="text" data-f="title" maxlength="120" placeholder="Concierto de jazz" /></label>
+        </div>
+        <label class="check"><input type="checkbox" data-f="range" /> Dura varios días <small class="muted">(rango de fechas, por ejemplo 12-14 AGO)</small></label>
+        <div class="grid2" data-range-box hidden>
+          <label>Hasta (día y mes)<input type="date" data-f="end_date" /></label>
         </div>
         <div class="grid2">
           <label>Subtítulo<input type="text" data-f="subtitle" maxlength="160" placeholder="con Ana García · Harlem" /></label>
@@ -843,6 +847,23 @@
       row.querySelector('[data-f=title]').value = ev.title || '';
       row.querySelector('[data-f=subtitle]').value = ev.subtitle || '';
       row.querySelector('[data-f=link]').value = ev.link || '';
+      // Rango de fechas: el segundo selector solo aparece si «Dura varios días» está marcado.
+      const rango = row.querySelector('[data-f=range]');
+      const caja = row.querySelector('[data-range-box]');
+      const ini = row.querySelector('[data-f=date]');
+      const fin = row.querySelector('[data-f=end_date]');
+      const aplicarRango = () => {
+        caja.hidden = !rango.checked;
+        row.querySelector('[data-l=date]').textContent = rango.checked ? 'Desde (día y mes)' : 'Fecha (día y mes)';
+        fin.min = ini.value || '';
+        if (!rango.checked) fin.value = '';
+      };
+      fin.value = ev.end_date || '';
+      rango.checked = !!ev.end_date;
+      ini.addEventListener('change', () => { fin.min = ini.value || ''; });
+      rango.addEventListener('change', aplicarRango);
+      aplicarRango();
+      if (ev.end_date) fin.value = ev.end_date;
       row.querySelector('button').addEventListener('click', () => { row.remove(); renumerar(); });
       $('eventsList').append(row);
       renumerar();
@@ -851,7 +872,8 @@
     function readEvents() {
       return [...$('eventsList').children].map((row) => {
         const f = (k) => row.querySelector(`[data-f=${k}]`).value.trim();
-        return { date: f('date'), title: f('title'), subtitle: f('subtitle'), link: f('link') };
+        const rango = row.querySelector('[data-f=range]').checked;
+        return { date: f('date'), end_date: rango ? f('end_date') : '', _rango: rango, title: f('title'), subtitle: f('subtitle'), link: f('link') };
       }).filter((e) => e.date || e.title || e.subtitle || e.link); // las filas totalmente vacías se ignoran
     }
 
@@ -876,7 +898,7 @@
         image: coverUrl,
         content: quill.getSemanticHTML().replace(/&nbsp;/g, ' '),
         monthly: $('fMonthly').checked && eventsSupported,
-        events: readEvents().filter((e) => e.date && e.title)
+        events: readEvents().filter((e) => e.date && e.title).map(({ _rango, ...e }) => e)
       };
       try { localStorage.setItem('blog-preview', JSON.stringify(draft)); }
       catch { return banner($('editMsg'), 'No se ha podido preparar la vista previa en este navegador.', 'error'); }
@@ -971,6 +993,8 @@
           const e = events[i];
           let problema = '';
           if (!e.date) problema = 'falta la fecha';
+          else if (e._rango && !e.end_date) problema = 'falta la fecha final del rango (o desmarca «Dura varios días»)';
+          else if (e._rango && e.end_date <= e.date) problema = 'la fecha final debe ser posterior a la inicial';
           else if (!e.title) problema = 'falta el título';
           else if (publicar_ && !e.subtitle) problema = 'falta el subtítulo';
           else if (!e.link) problema = 'falta el enlace del botón (es obligatorio)';
@@ -992,7 +1016,7 @@
         published: $('fPublished').checked,
         published_at: $('fDate').value || today(),
         // Solo se envían si la base de datos ya tiene las columnas (supabase/monthly-events.sql).
-        ...(eventsSupported ? { monthly_events: monthly, events } : {})
+        ...(eventsSupported ? { monthly_events: monthly, events: events.map(({ _rango, end_date, ...e }) => (end_date ? { ...e, end_date } : e)) } : {})
       };
       $('saveBtn').disabled = true;
       mostrarGuardando();
