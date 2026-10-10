@@ -105,7 +105,7 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
         const mes = new Intl.DateTimeFormat('es', { month: 'short' });
         const mon = (d) => mes.format(d).replace('.', '');
         const ul = $('pvEventsList');
-        [...raw.events].sort((a, b) => a.date.localeCompare(b.date)).forEach((e) => {
+        raw.events.forEach((e) => {
           const d = new Date(e.date + 'T12:00:00');
           const li = document.createElement('li'); li.className = 'monthly-item';
           const badge = document.createElement('time'); badge.className = 'monthly-badge'; badge.dateTime = e.date;

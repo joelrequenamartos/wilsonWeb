@@ -36,8 +36,7 @@ const toEvents = (raw: unknown): MonthlyEvent[] =>
       link: safeUrl(e?.link)
     }))
     .map((e) => ({ ...e, endDate: /^\d{4}-\d{2}-\d{2}$/.test(e.endDate) && e.endDate > e.date ? e.endDate : '' }))
-    .filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.title)
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.title); // se conserva el orden en que se guardaron
 
 // Las páginas del blog piden las entradas varias veces durante una misma compilación: se guardan unos segundos.
 let cache: { at: number; value: Promise<Post[]> } | null = null;
@@ -104,13 +103,12 @@ export function getPosts(): Promise<Post[]> {
   return cache.value;
 }
 
-// Eventos de la entrada que tiene activos los «Eventos mensuales» (solo si está publicada), por fecha.
+// Eventos de la entrada que tiene activos los «Eventos mensuales» (solo si está publicada), en el orden que se les dio.
 export async function getMonthlyEvents(): Promise<MonthlyEvent[]> {
   const posts = await getPosts();
   return posts
     .filter((p) => p.monthlyEvents)
-    .flatMap((p) => p.events)
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .flatMap((p) => p.events);
 }
 
 const slugify = (s: string) =>

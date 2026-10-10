@@ -122,7 +122,7 @@
 
         <div id="eventsBox" class="card events-box" hidden>
           <span class="label">Eventos mensuales</span>
-          <p class="muted events-help">Salen al final de <b>esta</b> entrada y en el carrusel «Próximos eventos» de /blog. Cada evento lleva día y mes, título, subtítulo y un enlace (obligatorio) que se abre en una pestaña nueva.</p>
+          <p class="muted events-help">Salen al final de <b>esta</b> entrada y en el carrusel «Próximos eventos» de /blog. Cada evento lleva día y mes (o un rango de fechas), título, subtítulo y un enlace (obligatorio) que se abre en una pestaña nueva. <b>Se muestran en el orden en que los dejes aquí</b>: arrástralos por el asa ⋮⋮ o usa las flechas.</p>
           <div id="eventsList" class="events-list"></div>
           <button class="btn" id="addEventBtn" type="button">+ Añadir evento</button>
         </div>
@@ -247,7 +247,12 @@
     .events-help{margin:0; font-size:.88rem;}
     .events-list{display:flex; flex-direction:column; gap:14px;}
     .event-row{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:12px;}
-    .event-top{display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:.9rem;}
+    .event-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-weight:700; font-size:.9rem;}
+    .event-head{display:flex; align-items:center; gap:10px;}
+    .event-handle{width:34px; height:36px; font-size:1rem;}
+    .event-tools{display:flex; gap:6px;}
+    .event-tools .btn[disabled]{opacity:.35; cursor:default;}
+    .event-row.is-dragging{position:relative; z-index:20; box-shadow:0 14px 34px -10px rgba(0,0,0,.4); border-color:var(--coral); background:#fffaf5; user-select:none;}
     .event-row.is-invalid{border-color:#c0392b;}
     .btn.small{padding:6px 12px; font-size:.8rem;}
     .ql-container{position:relative;}
@@ -525,49 +530,55 @@
     });
 
     // Arrastrar con el asa (ratón o dedo): la fila sigue al puntero y las demás se apartan.
-    $('postList').addEventListener('pointerdown', (e) => {
-      if (!ordenando) return;
-      const handle = e.target.closest('.drag-handle');
-      if (!handle) return;
-      const row = handle.closest('.post');
-      const list = $('postList');
-      e.preventDefault();
-      handle.setPointerCapture(e.pointerId);
-      const grab = e.clientY - row.getBoundingClientRect().top;
-      let y = e.clientY;
-      let raf = 0;
-      row.classList.add('is-dragging');
+    // Sirve para cualquier lista: asa = selector del asa, fila = selector de cada elemento.
+    function arrastrable(lista, { asa, fila, activo = () => true, alSoltar = () => {} }) {
+      lista.addEventListener('pointerdown', (e) => {
+        if (!activo()) return;
+        const handle = e.target.closest(asa);
+        if (!handle || !lista.contains(handle)) return;
+        const row = handle.closest(fila);
+        const list = lista;
+        e.preventDefault();
+        // Los eventos se escuchan en la ventana (no en el asa): al cambiar la fila de sitio en la página, el navegador
+        // suelta cualquier «captura» del puntero y el arrastre dejaría de seguirlo.
+        const grab = e.clientY - row.getBoundingClientRect().top;
+        let y = e.clientY;
+        let raf = 0;
+        row.classList.add('is-dragging');
 
-      const colocar = () => {
-        const deseada = y - grab;
-        row.style.transform = 'none';
-        const centro = deseada + row.offsetHeight / 2;
-        const otras = [...list.children].filter((r) => r !== row);
-        let idx = 0;
-        for (const o of otras) { const r = o.getBoundingClientRect(); if (r.top + r.height / 2 < centro) idx++; }
-        if (idx !== [...list.children].indexOf(row)) list.insertBefore(row, otras[idx] || null);
-        row.style.transform = `translateY(${deseada - row.getBoundingClientRect().top}px)`;
-      };
-      const tick = () => {
-        if (y < 70) window.scrollBy(0, -14); else if (y > window.innerHeight - 70) window.scrollBy(0, 14); // desplazamiento automático
-        colocar();
+        const colocar = () => {
+          const deseada = y - grab;
+          row.style.transform = 'none';
+          const centro = deseada + row.offsetHeight / 2;
+          const otras = [...list.children].filter((r) => r !== row);
+          let idx = 0;
+          for (const o of otras) { const r = o.getBoundingClientRect(); if (r.top + r.height / 2 < centro) idx++; }
+          if (idx !== [...list.children].indexOf(row)) list.insertBefore(row, otras[idx] || null);
+          row.style.transform = `translateY(${deseada - row.getBoundingClientRect().top}px)`;
+        };
+        const tick = () => {
+          if (y < 70) window.scrollBy(0, -14); else if (y > window.innerHeight - 70) window.scrollBy(0, 14); // desplazamiento automático
+          colocar();
+          raf = requestAnimationFrame(tick);
+        };
+        const mover = (ev) => { y = ev.clientY; };
+        const soltar = () => {
+          cancelAnimationFrame(raf);
+          window.removeEventListener('pointermove', mover);
+          window.removeEventListener('pointerup', soltar);
+          window.removeEventListener('pointercancel', soltar);
+          row.classList.remove('is-dragging');
+          row.style.transform = '';
+          alSoltar();
+        };
+        window.addEventListener('pointermove', mover);
+        window.addEventListener('pointerup', soltar);
+        window.addEventListener('pointercancel', soltar);
         raf = requestAnimationFrame(tick);
-      };
-      const mover = (ev) => { y = ev.clientY; };
-      const soltar = () => {
-        cancelAnimationFrame(raf);
-        handle.removeEventListener('pointermove', mover);
-        handle.removeEventListener('pointerup', soltar);
-        handle.removeEventListener('pointercancel', soltar);
-        row.classList.remove('is-dragging');
-        row.style.transform = '';
-        marcarCambios();
-      };
-      handle.addEventListener('pointermove', mover);
-      handle.addEventListener('pointerup', soltar);
-      handle.addEventListener('pointercancel', soltar);
-      raf = requestAnimationFrame(tick);
-    });
+      });
+    }
+
+    arrastrable($('postList'), { asa: '.drag-handle', fila: '.post', activo: () => ordenando, alSoltar: marcarCambios });
 
     // Guardar: las publicadas reparten entre sí las posiciones que ya tenían (los borradores no se mueven).
     $('orderSave').addEventListener('click', async () => {
@@ -823,14 +834,40 @@
     const isUrl = (u) => /^https?:\/\/\S+$/i.test(u);
 
     function renumerar() {
-      [...$('eventsList').children].forEach((row, i) => { row.querySelector('.event-num').textContent = 'Evento ' + (i + 1); });
+      const filas = [...$('eventsList').children];
+      filas.forEach((row, i) => {
+        row.querySelector('.event-num').textContent = 'Evento ' + (i + 1);
+        row.querySelector('[data-mover=arriba]').disabled = i === 0;
+        row.querySelector('[data-mover=abajo]').disabled = i === filas.length - 1;
+      });
     }
+
+    // Reordenar los eventos: este es el orden en que salen en la entrada, en el carrusel y en la vista previa.
+    $('eventsList').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-mover]');
+      if (!b) return;
+      const row = b.closest('.event-row');
+      const list = $('eventsList');
+      if (b.dataset.mover === 'arriba' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+      else if (b.dataset.mover === 'abajo' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+      renumerar();
+      const mismo = row.querySelector(`[data-mover=${b.dataset.mover}]`);
+      (mismo && !mismo.disabled ? mismo : row.querySelector('.drag-handle')).focus();
+    });
+    arrastrable($('eventsList'), { asa: '.event-handle', fila: '.event-row', alSoltar: renumerar });
 
     function addEventRow(ev = {}) {
       const row = document.createElement('div');
       row.className = 'event-row';
       row.innerHTML = `
-        <div class="event-top"><span class="event-num"></span><button class="btn small danger" type="button">Quitar</button></div>
+        <div class="event-top">
+          <span class="event-head"><button class="drag-handle event-handle" type="button" aria-label="Arrastrar para reordenar">⋮⋮</button><span class="event-num"></span></span>
+          <span class="event-tools">
+            <button class="btn small" type="button" data-mover="arriba" aria-label="Subir">↑</button>
+            <button class="btn small" type="button" data-mover="abajo" aria-label="Bajar">↓</button>
+            <button class="btn small danger" type="button" data-quitar>Quitar</button>
+          </span>
+        </div>
         <div class="grid2">
           <label><span data-l="date">Fecha (día y mes)</span><input type="date" data-f="date" /></label>
           <label>Título<input type="text" data-f="title" maxlength="120" placeholder="Concierto de jazz" /></label>
@@ -864,7 +901,7 @@
       rango.addEventListener('change', aplicarRango);
       aplicarRango();
       if (ev.end_date) fin.value = ev.end_date;
-      row.querySelector('button').addEventListener('click', () => { row.remove(); renumerar(); });
+      row.querySelector('[data-quitar]').addEventListener('click', () => { row.remove(); renumerar(); });
       $('eventsList').append(row);
       renumerar();
     }
