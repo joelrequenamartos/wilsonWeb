@@ -81,7 +81,7 @@
         </div>
 
         <div class="checks">
-          <label class="check"><input type="checkbox" id="fFeatured" /> Destacada <small class="muted">(solo una a la vez: al marcarla se desmarca la anterior)</small></label>
+          <label class="check"><input type="checkbox" id="fFeatured" /> Destacada <small class="muted">(solo con la entrada publicada · solo una a la vez: al marcarla se desmarca la anterior)</small></label>
           <label class="check"><input type="checkbox" id="fPublished" /> Publicada <small class="muted">(para publicar hay que rellenar todo, foto incluida; un borrador puede estar incompleto y no se ve en la web)</small></label>
           <label class="check"><input type="checkbox" id="fMonthly" /> Eventos mensuales <small class="muted">(solo una entrada a la vez: al activarlo aquí se desactiva en la anterior)</small></label>
           <small id="monthlyWarn" class="muted" hidden>⚠ Para usar «Eventos mensuales» hay que ejecutar <b>supabase/monthly-events.sql</b> en Supabase (una sola vez).</small>
@@ -170,6 +170,8 @@
     .events-box{background:#fbf8f3; display:flex; flex-direction:column; gap:14px;}
     .is-missing{border-color:#c0392b !important; outline:2px solid rgba(192,57,43,.28); outline-offset:1px;}
     .cover.is-missing, #editor.is-missing{border-radius:12px;}
+    .check.is-off{opacity:.45; cursor:not-allowed;}
+    .check.is-off input{cursor:not-allowed;}
     .events-box[hidden]{display:none;} /* sin esto, display:flex se impone al atributo hidden y el bloque se veía siempre */
     .events-help{margin:0; font-size:.88rem;}
     .events-list{display:flex; flex-direction:column; gap:14px;}
@@ -420,6 +422,19 @@
       window.addEventListener('resize', () => { if (sel) colocar(); });
     }
 
+    // ---------- «Destacada» solo está disponible con la entrada publicada ----------
+    // Sin publicar se ve apagada y desmarcada; al volver a marcar «Publicada» se reactiva y recupera su valor.
+    let destacadaGuardada = false;
+    function syncDestacada() {
+      const pub = $('fPublished').checked;
+      const f = $('fFeatured');
+      if (!pub && !f.disabled) { destacadaGuardada = f.checked; f.checked = false; }
+      if (pub && f.disabled) f.checked = destacadaGuardada;
+      f.disabled = !pub;
+      f.closest('label').classList.toggle('is-off', !pub);
+    }
+    $('fPublished').addEventListener('change', syncDestacada);
+
     // ---------- eventos mensuales ----------
     const isUrl = (u) => /^https?:\/\/\S+$/i.test(u);
 
@@ -496,8 +511,11 @@
       $('fSlug').value = post?.slug ?? '';
       $('fAuthor').value = post?.author ?? 'Wilson Silver';
       $('fExcerpt').value = post?.excerpt ?? '';
-      $('fFeatured').checked = !!post?.featured;
       $('fPublished').checked = post ? !!post.published : false;
+      destacadaGuardada = !!post?.featured;
+      $('fFeatured').checked = destacadaGuardada && $('fPublished').checked;
+      $('fFeatured').disabled = !$('fPublished').checked;
+      $('fFeatured').closest('label').classList.toggle('is-off', !$('fPublished').checked);
       $('fMonthly').checked = !!post?.monthly_events;
       $('fMonthly').disabled = !eventsSupported;
       $('monthlyWarn').hidden = eventsSupported;
@@ -587,7 +605,7 @@
         content: quill.getSemanticHTML().replace(/&nbsp;/g, ' '), // sin espacios «duros»: así el texto salta de línea
         author: $('fAuthor').value.trim() || 'Wilson Silver',
         image: coverUrl,
-        featured: $('fFeatured').checked,
+        featured: $('fFeatured').checked && $('fPublished').checked, // un borrador nunca es la destacada
         published: $('fPublished').checked,
         published_at: $('fDate').value || today(),
         // Solo se envían si la base de datos ya tiene las columnas (supabase/monthly-events.sql).
