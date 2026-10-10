@@ -215,6 +215,8 @@
       el.textContent = text || '';
       el.className = 'banner' + (kind ? ' ' + kind : '');
       el.hidden = !text;
+      // Un error del formulario sube la página hasta el aviso: si no, se queda arriba sin verse (el botón Guardar está abajo).
+      if (text && kind === 'error' && el.id === 'editMsg') window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // ---------- acceso ----------
@@ -244,6 +246,7 @@
     async function showList(message, kind) {
       show('listView');
       banner($('listMsg'), message, kind);
+      window.scrollTo(0, 0);
       const { data, error } = await sb.from('posts').select('*').order('published_at', { ascending: false });
       const list = $('postList');
       list.textContent = '';
@@ -570,7 +573,6 @@
         const sinTexto = !quill.root.textContent.trim() && !quill.root.querySelector('img'); // se lee de lo que se ve en el editor
         if (sinTexto) marcar($('editor'), 'texto');
         if (falta.length) {
-          document.querySelector('.is-missing').scrollIntoView({ block: 'center', behavior: 'smooth' });
           return banner($('editMsg'), 'Para publicar falta rellenar: ' + falta.join(', ') + '. Si aún no está lista, desmarca «Publicada» y guárdala como borrador.', 'error');
         }
       }
@@ -594,7 +596,7 @@
           else if (!isUrl(e.link)) problema = 'el enlace debe empezar por https:// o http://';
           if (problema) {
             const filas = rows.filter((r) => [...r.querySelectorAll('[data-f]')].some((x) => x.value.trim()));
-            if (filas[i]) { filas[i].classList.add('is-invalid'); filas[i].scrollIntoView({ block: 'center' }); }
+            if (filas[i]) filas[i].classList.add('is-invalid');
             return banner($('editMsg'), `Evento ${i + 1}: ${problema}.`, 'error');
           }
         }
