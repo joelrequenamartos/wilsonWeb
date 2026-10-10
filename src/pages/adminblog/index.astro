@@ -82,7 +82,7 @@
 
         <div class="checks">
           <label class="check"><input type="checkbox" id="fFeatured" /> Destacada <small class="muted">(solo una a la vez: al marcarla se desmarca la anterior)</small></label>
-          <label class="check"><input type="checkbox" id="fPublished" /> Publicada <small class="muted">(si no, queda como borrador y no se ve en la web)</small></label>
+          <label class="check"><input type="checkbox" id="fPublished" /> Publicada <small class="muted">(para publicar hay que rellenar todo, foto incluida; un borrador puede estar incompleto y no se ve en la web)</small></label>
           <label class="check"><input type="checkbox" id="fMonthly" /> Eventos mensuales <small class="muted">(solo una entrada a la vez: al activarlo aquí se desactiva en la anterior)</small></label>
           <small id="monthlyWarn" class="muted" hidden>⚠ Para usar «Eventos mensuales» hay que ejecutar <b>supabase/monthly-events.sql</b> en Supabase (una sola vez).</small>
         </div>
@@ -168,6 +168,8 @@
     .ql-editor img.is-selected{outline:3px solid var(--coral); outline-offset:2px;}
     .form-actions-left{display:flex; gap:10px; flex-wrap:wrap;}
     .events-box{background:#fbf8f3; display:flex; flex-direction:column; gap:14px;}
+    .is-missing{border-color:#c0392b !important; outline:2px solid rgba(192,57,43,.28); outline-offset:1px;}
+    .cover.is-missing, #editor.is-missing{border-radius:12px;}
     .events-box[hidden]{display:none;} /* sin esto, display:flex se impone al atributo hidden y el bloque se veía siempre */
     .events-help{margin:0; font-size:.88rem;}
     .events-list{display:flex; flex-direction:column; gap:14px;}
@@ -315,7 +317,7 @@
     function pintarPortada() {
       $('coverPreview').hidden = !coverUrl;
       $('coverRemove').hidden = !coverUrl;
-      if (coverUrl) $('coverPreview').src = coverUrl;
+      if (coverUrl) { $('coverPreview').src = coverUrl; document.querySelector('.cover').classList.remove('is-missing'); }
     }
 
     $('coverFile').addEventListener('change', async (e) => {
@@ -358,6 +360,7 @@
         }
       });
       iniciarTamanoImagenes();
+      quill.on('text-change', () => $('editor').classList.remove('is-missing'));
     }
 
     // Tamaño de las fotos del texto: al hacer clic en una foto aparece una barrita con 25 % · 50 % · 75 % · 100 % (ancho del texto).
@@ -514,6 +517,7 @@
       window.scrollTo(0, 0);
     }
 
+    $('postForm').addEventListener('input', (e) => { if (e.target.classList) e.target.classList.remove('is-missing'); });
     $('fTitle').addEventListener('input', () => {
       if (!slugTouched) { $('fSlug').value = slugify($('fTitle').value); $('slugPreview').textContent = $('fSlug').value || '…'; }
     });
@@ -532,8 +536,33 @@
       if (!title) return banner($('editMsg'), 'Escribe un título.', 'error');
       if (!slug) return banner($('editMsg'), 'El enlace no puede estar vacío.', 'error');
       if (RESERVED.includes(slug)) return banner($('editMsg'), `El enlace «${slug}» está reservado. Elige otro.`, 'error');
+      const publicar_ = $('fPublished').checked;
+      document.querySelectorAll('.is-missing').forEach((x) => x.classList.remove('is-missing'));
+
+      // Para PUBLICAR, todos los campos son obligatorios (foto incluida). Un borrador puede estar incompleto.
+      if (publicar_) {
+        const falta = [];
+        const marcar = (el, nombre) => { falta.push(nombre); el.classList.add('is-missing'); };
+        if (!title) marcar($('fTitle'), 'título');
+        if (!$('fDate').value) marcar($('fDate'), 'fecha');
+        if (!slug) marcar($('fSlug'), 'enlace');
+        if (!$('fAuthor').value.trim()) marcar($('fAuthor'), 'autor');
+        if (!$('fExcerpt').value.trim()) marcar($('fExcerpt'), 'resumen');
+        if (!coverUrl) marcar(document.querySelector('.cover'), 'foto de portada');
+        const sinTexto = !quill.root.textContent.trim() && !quill.root.querySelector('img'); // se lee de lo que se ve en el editor
+        if (sinTexto) marcar($('editor'), 'texto');
+        if (falta.length) {
+          document.querySelector('.is-missing').scrollIntoView({ block: 'center', behavior: 'smooth' });
+          return banner($('editMsg'), 'Para publicar falta rellenar: ' + falta.join(', ') + '. Si aún no está lista, desmarca «Publicada» y guárdala como borrador.', 'error');
+        }
+      }
+
       const monthly = $('fMonthly').checked && eventsSupported;
       const events = readEvents();
+      if (monthly && publicar_ && !events.length) {
+        $('eventsBox').classList.add('is-missing');
+        return banner($('editMsg'), 'Para publicar con «Eventos mensuales» activo añade al menos un evento (o desmarca esa casilla).', 'error');
+      }
       if (monthly) {
         const rows = [...$('eventsList').children];
         rows.forEach((r) => r.classList.remove('is-invalid'));
@@ -542,6 +571,7 @@
           let problema = '';
           if (!e.date) problema = 'falta la fecha';
           else if (!e.title) problema = 'falta el título';
+          else if (publicar_ && !e.subtitle) problema = 'falta el subtítulo';
           else if (!e.link) problema = 'falta el enlace del botón (es obligatorio)';
           else if (!isUrl(e.link)) problema = 'el enlace debe empezar por https:// o http://';
           if (problema) {
