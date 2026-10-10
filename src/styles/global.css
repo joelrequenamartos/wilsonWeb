@@ -1343,4 +1343,20 @@
   .post-body h2{margin-top:38px; font-size:clamp(1.4rem,4.4vw,1.8rem); line-height:1.2; color:var(--ink);}
   .post-body h3{margin-top:26px; font-size:clamp(1.1rem,3.4vw,1.3rem); line-height:1.3; color:var(--ink);}
   .post-body ul{margin-top:16px; padding-left:1.3em; display:flex; flex-direction:column; gap:8px;}
+  /* botón insertado desde el panel: siempre naranja */
+  .post-body a.blog-btn{
+    display:inline-flex; align-items:center; justify-content:center; margin:22px 12px 0 0; padding:14px 30px; border-radius:100px;
+    background:var(--coral); color:#fff; font-weight:700; font-size:1rem; line-height:1.2; text-decoration:none; text-align:center;
+    box-shadow:0 14px 30px -16px color-mix(in srgb, var(--coral) 80%, transparent); transition:transform .15s ease, background .15s ease;
+  }
+  @media (hover:hover){.post-body a.blog-btn:hover{background:var(--coral-dark); transform:translateY(-2px);}}
+  /* colores del botón (preajustes): fondo naranja (por defecto) · beige · negro; letra blanca (por defecto) · negra · naranja */
+  .post-body a.blog-btn.b-beige{background:#E3D6C0; box-shadow:0 14px 30px -18px rgba(120,100,60,.8);}
+  .post-body a.blog-btn.b-negro{background:var(--ink); box-shadow:0 14px 30px -18px rgba(0,0,0,.7);}
+  .post-body a.blog-btn.t-negro{color:var(--ink);}
+  .post-body a.blog-btn.t-naranja{color:var(--coral);}
+  @media (hover:hover){
+    .post-body a.blog-btn.b-beige:hover{background:#D6C6A8;}
+    .post-body a.blog-btn.b-negro:hover{background:var(--teal);}
+  }
   .post-body blockquote{margin-top:22px; padding:4px 0 4px 18px; border-left:3px solid var(--line); font-size:1.12rem; font-style:italic; color:var(--ink);}

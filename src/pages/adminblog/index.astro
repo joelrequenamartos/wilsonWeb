@@ -138,6 +138,38 @@
     </section>
   </main>
 
+  <!-- Botón del texto: se escribe lo que dice y a dónde lleva; siempre sale como un botón naranja -->
+  <dialog id="btnDialog" class="btn-dialog">
+    <form id="btnForm" class="stack" novalidate>
+      <h2 id="btnDialogTitle">Insertar botón</h2>
+      <label>Texto del botón<input type="text" id="btnText" maxlength="60" placeholder="Reservar el tour" /></label>
+      <label>Enlace<input type="text" id="btnUrl" placeholder="https://…  o  /ebook" />
+        <small class="muted">Empieza por https:// (se abre en pestaña nueva) o por / para una página de esta web, por ejemplo /ebook.</small>
+      </label>
+      <fieldset class="swatches">
+        <legend>Color del botón</legend>
+        <label class="swatch"><input type="radio" name="btnBg" value="naranja" checked /><span class="dot" style="background:#E07A3E"></span>Naranja</label>
+        <label class="swatch"><input type="radio" name="btnBg" value="beige" /><span class="dot" style="background:#E3D6C0"></span>Beige</label>
+        <label class="swatch"><input type="radio" name="btnBg" value="negro" /><span class="dot" style="background:#1A1512"></span>Negro</label>
+      </fieldset>
+      <fieldset class="swatches">
+        <legend>Color de la letra</legend>
+        <label class="swatch"><input type="radio" name="btnFg" value="blanco" checked /><span class="dot" style="background:#FFFFFF"></span>Blanco</label>
+        <label class="swatch"><input type="radio" name="btnFg" value="negro" /><span class="dot" style="background:#1A1512"></span>Negro</label>
+        <label class="swatch"><input type="radio" name="btnFg" value="naranja" /><span class="dot" style="background:#E07A3E"></span>Naranja</label>
+      </fieldset>
+      <div class="btn-dialog-preview"><span class="muted">Así se verá:</span> <a class="blog-btn" id="btnPreview">Botón</a></div>
+      <p class="btn-contrast" id="btnContrast" hidden>⚠ Letra y fondo se parecen demasiado: costará leer el botón.</p>
+      <p class="msg" id="btnMsg" role="alert"></p>
+      <div class="btn-dialog-actions">
+        <button type="button" class="btn danger" id="btnRemove" hidden>Quitar botón</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" id="btnCancel">Cancelar</button>
+        <button type="submit" class="btn primary" id="btnOk">Insertar</button>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Aviso de «guardando»: cubre la pantalla mientras se guarda y se avisa a la web (tarda unos segundos) -->
   <div class="saving" id="saving" role="status" aria-live="polite" hidden>
     <div class="saving-card">
@@ -187,6 +219,32 @@
     .chip[aria-pressed=true]{background:var(--coral); border-color:var(--coral); color:#fff;}
     .chip[hidden]{display:none;}
     .filters .n{font-weight:500; opacity:.7; margin-left:2px;}
+    /* botón dentro del texto: siempre naranja */
+    a.blog-btn{display:inline-flex; align-items:center; justify-content:center; margin:10px 10px 10px 0; padding:12px 26px; border-radius:100px; background:var(--coral); color:#fff; font-weight:700; text-decoration:none !important; cursor:pointer; box-shadow:0 10px 22px -12px rgba(224,122,62,.9);}
+    a.blog-btn.b-beige{background:#E3D6C0; box-shadow:0 10px 22px -12px rgba(120,100,60,.7);}
+    a.blog-btn.b-negro{background:#1A1512; box-shadow:0 10px 22px -12px rgba(0,0,0,.7);}
+    a.blog-btn.t-blanco{color:#FFFFFF !important;}
+    a.blog-btn.t-negro{color:#1A1512 !important;}
+    a.blog-btn.t-naranja{color:#E07A3E !important;}
+    .swatches{border:0; margin:0; padding:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+    .swatches legend{padding:0; margin-bottom:6px; font-weight:600; font-size:.9rem;}
+    .swatch{flex-direction:row; align-items:center; gap:8px; padding:7px 12px 7px 8px; border:1px solid var(--line); border-radius:100px; cursor:pointer; font-weight:600; font-size:.88rem;}
+    .swatch input{position:absolute; opacity:0; pointer-events:none;}
+    .swatch .dot{width:20px; height:20px; border-radius:50%; border:1px solid rgba(26,21,18,.25);}
+    .swatch:has(input:checked){border-color:var(--coral); box-shadow:0 0 0 2px rgba(224,122,62,.3);}
+    .swatch:has(input:focus-visible){outline:2px solid var(--ink);}
+    .btn-contrast{margin:0; padding:8px 12px; border-radius:10px; background:#fdecea; color:#8c2a1f; font-size:.85rem;}
+    .btn-contrast[hidden]{display:none;}
+    .ql-editor a.blog-btn{user-select:none;}
+    .ql-toolbar button.ql-boton{width:auto !important; padding:0 10px !important; font-weight:700; font-size:.78rem; color:var(--coral-d); border:1px solid var(--coral) !important; border-radius:100px !important; margin-left:6px;}
+    .btn-dialog{border:0; border-radius:18px; padding:22px; width:min(480px,92vw); box-shadow:0 30px 80px -20px rgba(0,0,0,.5);}
+    .btn-dialog::backdrop{background:rgba(26,21,18,.5);}
+    .btn-dialog h2{margin:0; font-size:1.25rem;}
+    .btn-dialog small{font-weight:400;}
+    .btn-dialog-preview{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:6px 0;}
+    .btn-dialog-preview a.blog-btn{margin:0; pointer-events:none;}
+    .btn-dialog-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+    .btn-dialog-actions .spacer{flex:1;}
     .saving{position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; background:rgba(246,242,236,.82); backdrop-filter:blur(3px);}
     .saving[hidden]{display:none;}
     .saving-card{display:flex; flex-direction:column; align-items:center; gap:18px; min-width:min(300px,86vw); padding:30px 36px; text-align:center; background:#fff; border-radius:22px; box-shadow:0 24px 60px -20px rgba(0,0,0,.35);}
@@ -728,15 +786,121 @@
     $('coverRemove').addEventListener('click', () => { coverUrl = null; pintarPortada(); });
 
     // ---------- editor ----------
+    // ---------- botón dentro del texto ----------
+    // Elemento propio del editor: se guarda como <a class="blog-btn" href="…">Texto</a> y se pinta siempre como botón naranja.
+    // Colores (preajustes de la web) que lleva un botón, leídos de sus clases: b-naranja|beige|negro y t-blanco|negro|naranja.
+    const coloresBoton = (n) => ({
+      bg: ([...n.classList].find((c) => c.startsWith('b-')) || 'b-naranja').slice(2),
+      fg: ([...n.classList].find((c) => c.startsWith('t-')) || 't-blanco').slice(2)
+    });
+    const COLOR_BG = { naranja: '#E07A3E', beige: '#E3D6C0', negro: '#1A1512' };
+    const COLOR_FG = { blanco: '#FFFFFF', negro: '#1A1512', naranja: '#E07A3E' };
+    const LETRA_POR_FONDO = { naranja: 'blanco', beige: 'negro', negro: 'blanco' };
+    const luz = (hex) => {
+      const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    };
+    const contraste = (a, b) => { const [x, y] = [luz(a), luz(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
+
+    let botonRegistrado = false;
+    function registrarBoton() {
+      if (botonRegistrado) return;
+      botonRegistrado = true;
+      const BlockEmbed = window.Quill.import('blots/block/embed');
+      class BotonBlot extends BlockEmbed {
+        static blotName = 'boton';
+        static tagName = 'a';
+        static className = 'blog-btn';
+        static create(v) {
+          const n = super.create();
+          n.setAttribute('href', v.url);
+          if (/^https?:\/\//i.test(v.url)) { n.setAttribute('target', '_blank'); n.setAttribute('rel', 'noopener noreferrer'); }
+          n.textContent = v.text;
+          n.classList.add('b-' + (v.bg || 'naranja'), 't-' + (v.fg || 'blanco'));
+          return n;
+        }
+        static value(n) { return { url: n.getAttribute('href'), text: n.textContent, ...coloresBoton(n) }; }
+      }
+      window.Quill.register(BotonBlot);
+      window.Quill.import('ui/icons').boton = '+ Botón';
+    }
+
+    const urlBoton = (u) => /^https?:\/\/\S+$/i.test(u) || /^\/(?!\/)\S*$/.test(u);
+
+    // Abre el cuadro; devuelve {text,url}, 'quitar' o null (cancelado).
+    function pedirBoton(actual) {
+      return new Promise((resolve) => {
+        const dlg = $('btnDialog');
+        $('btnDialogTitle').textContent = actual ? 'Editar botón' : 'Insertar botón';
+        $('btnOk').textContent = actual ? 'Guardar' : 'Insertar';
+        $('btnRemove').hidden = !actual;
+        $('btnText').value = actual?.text ?? '';
+        $('btnUrl').value = actual?.url ?? '';
+        $('btnMsg').textContent = '';
+        const radio = (n) => $('btnForm').querySelector(`input[name=${n}]:checked`).value;
+        const marcar = (n, v) => { const r = $('btnForm').querySelector(`input[name=${n}][value=${v}]`); if (r) r.checked = true; };
+        marcar('btnBg', actual?.bg || 'naranja');
+        marcar('btnFg', actual?.fg || 'blanco');
+        const pintar = () => {
+          const bg = radio('btnBg'), fg = radio('btnFg');
+          $('btnPreview').textContent = $('btnText').value.trim() || 'Botón';
+          $('btnPreview').className = `blog-btn b-${bg} t-${fg}`;
+          $('btnContrast').hidden = contraste(COLOR_BG[bg], COLOR_FG[fg]) >= 3;
+        };
+        // Al elegir un fondo, la letra se pone sola en una combinación que se lee bien (se puede cambiar después).
+        const alFondo = () => { marcar('btnFg', LETRA_POR_FONDO[radio('btnBg')]); pintar(); };
+        $('btnForm').querySelectorAll('input[name=btnBg]').forEach((r) => (r.onchange = alFondo));
+        $('btnForm').querySelectorAll('input[name=btnFg]').forEach((r) => (r.onchange = pintar));
+        pintar();
+        const fin = (v) => { dlg.removeEventListener('close', alCerrar); $('btnForm').onsubmit = null; $('btnText').oninput = null; $('btnRemove').onclick = null; $('btnCancel').onclick = null; if (dlg.open) dlg.close(); resolve(v); };
+        const alCerrar = () => fin(null);
+        dlg.addEventListener('close', alCerrar);
+        $('btnText').oninput = pintar;
+        $('btnCancel').onclick = () => fin(null);
+        $('btnRemove').onclick = () => fin('quitar');
+        $('btnForm').onsubmit = (e) => {
+          e.preventDefault();
+          const text = $('btnText').value.trim();
+          const url = $('btnUrl').value.trim();
+          if (!text) return ($('btnMsg').textContent = 'Escribe lo que dirá el botón.');
+          if (!urlBoton(url)) return ($('btnMsg').textContent = 'El enlace debe empezar por https:// o por / (por ejemplo /ebook).');
+          fin({ text, url, bg: radio('btnBg'), fg: radio('btnFg') });
+        };
+        dlg.showModal();
+        $('btnText').focus();
+      });
+    }
+
+    async function insertarBoton() {
+      // Dónde insertarlo: donde esté el cursor; si no hay cursor en el texto, al final.
+      const sel = quill.getSelection(true) || { index: Math.max(0, quill.getLength() - 1) };
+      const v = await pedirBoton(null);
+      if (!v || v === 'quitar') return;
+      quill.insertEmbed(sel.index, 'boton', v, 'user');
+      quill.setSelection(sel.index + 1);
+    }
+
+    async function editarBoton(node) {
+      const blot = window.Quill.find(node);
+      if (!blot) return;
+      const idx = quill.getIndex(blot);
+      const v = await pedirBoton({ text: node.textContent, url: node.getAttribute('href'), ...coloresBoton(node) });
+      if (v === null) return;
+      quill.deleteText(idx, 1, 'user');
+      if (v !== 'quitar') quill.insertEmbed(idx, 'boton', v, 'user');
+    }
+
     function iniciarEditor() {
       if (quill) return;
+      registrarBoton();
       quill = new window.Quill('#editor', {
         theme: 'snow',
         placeholder: 'Escribe aquí tu entrada…',
         modules: {
           toolbar: {
-            container: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['blockquote'], ['image'], ['clean']],
+            container: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['blockquote'], ['image', 'boton'], ['clean']],
             handlers: {
+              boton() { insertarBoton(); },
               image() {
                 const input = document.createElement('input');
                 input.type = 'file'; input.accept = 'image/*';
@@ -755,6 +919,14 @@
             }
           }
         }
+      });
+      // Al recargar una entrada, los <a class="blog-btn"> vuelven a ser botones (y no enlaces sueltos).
+      const Delta = window.Quill.import('delta');
+      quill.clipboard.addMatcher('a.blog-btn', (node) => new Delta().insert({ boton: { text: node.textContent, url: node.getAttribute('href'), ...coloresBoton(node) } }));
+      // Un clic sobre un botón del texto lo abre para editarlo o quitarlo.
+      quill.root.addEventListener('click', (e) => {
+        const a = e.target.closest && e.target.closest('a.blog-btn');
+        if (a) { e.preventDefault(); editarBoton(a); }
       });
       iniciarTamanoImagenes();
       quill.on('text-change', () => $('editor').classList.remove('is-missing'));
