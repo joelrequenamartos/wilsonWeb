@@ -1,37 +1,39 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import BlogTemplate from '../../components/BlogTemplate.astro';
+import UpcomingEvents from '../../components/UpcomingEvents.astro';
+import EbookPopup from '../../components/EbookPopup.astro';
+import MonthlyEvents from '../../components/MonthlyEvents.astro';
+import { getPosts, prepareContent } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  // «todos» está reservado para el listado paginado (/blog/todos)
+  const posts = (await getPosts()).filter((p) => p.slug !== 'todos');
   return posts.map((post) => ({
-    params: { slug: post.id },
+    params: { slug: post.slug },
     props: { post }
   }));
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { html, toc } = prepareContent(post.content);
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
-const dateFmt = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
-<Layout title={`${post.data.title} — Blog Silver Tours NY`} description={post.data.excerpt}>
+<Layout title={`${post.title} — Blog Silver Tours NY`} description={post.excerpt} image={post.image ?? undefined}>
   <Header />
   <main id="main">
     <section class="section">
-      <div class="wrap blog-post-wrap">
-        <a class="tour-back" href="/blog"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al blog</a>
-        <span class="blog-date">{dateFmt.format(post.data.date)} · {post.data.readTime}</span>
-        <h1 class="blog-post-title">{post.data.title}</h1>
-        <div class="blog-post-author">Por {post.data.author}</div>
-        <div class="blog-prose">
-          <Content />
-        </div>
+      <div class="wrap blog-post-wrap blog-post-wrap-tpl">
+        <BlogTemplate title={post.title} excerpt={post.excerpt} image={post.image ?? undefined} html={html} toc={toc} />
+        {post.monthlyEvents && post.events.length > 0 && <MonthlyEvents events={post.events} />}
       </div>
     </section>
+    <UpcomingEvents />
   </main>
+  <EbookPopup />
   <Footer tours={tours} />
 </Layout>

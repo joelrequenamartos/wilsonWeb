@@ -1,0 +1,33 @@
+---
+// Entrada de blog: volver, silverblogny., foto horizontal, título, resumen, índice y texto.
+// El texto (HTML) y el índice (títulos h2/h3) vienen de la entrada guardada en Supabase.
+interface Props {
+  title: string;
+  excerpt: string;
+  image?: string;
+  html: string;
+  toc: { id: string; title: string; level: 2 | 3 }[];
+}
+
+const { title, excerpt, image, html, toc } = Astro.props;
+---
+<article class="post">
+  <a class="tour-back" href="/blog"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al blog</a>
+  <p class="post-brand"><strong>silver</strong>blog<strong>ny</strong><span>.</span></p>
+  {image && <img class="post-cover" src={image} alt="" />}
+  <h1 class="post-title">{title}</h1>
+  <p class="post-summary">{excerpt}</p>
+
+  {toc.length > 0 && (
+    <nav class="post-index" aria-label="En este artículo">
+      <p class="post-index-title"><svg class="icon"><use href="#i-menu" /></svg>En este artículo</p>
+      <ul>
+        {toc.map((item) => (
+          <li class={item.level === 3 ? 'post-index-sub' : undefined}><a href={`#${item.id}`}>{item.title}</a></li>
+        ))}
+      </ul>
+    </nav>
+  )}
+
+  <div class="post-body" set:html={html} />
+</article>

@@ -1,0 +1,54 @@
+---
+// Próximos eventos: salen TODOS los de la entrada del blog que tiene activo «Eventos mensuales» (si está publicada),
+// en el orden que se les dio en el panel. Cada tarjeta lleva su subtítulo y, al pulsarla, abre su enlace en una pestaña nueva.
+// Si no hay ninguno, el bloque entero no se muestra. 4 visibles a la vez en escritorio; el resto con las flechas o deslizando.
+import { getMonthlyEvents, formatEventDate } from '../lib/posts';
+
+const monthly = await getMonthlyEvents();
+const all = monthly.map((e) => ({ date: e.date, endDate: e.endDate, title: e.title, meta: e.subtitle, link: e.link }));
+
+const events = all.map((e) => {
+  const f = formatEventDate(e.date, e.endDate);
+  return { ...e, ...f, label: `${f.num} ${f.mon}` };
+});
+---
+{events.length > 0 && (
+<section class="section section-alt" id="proximos-eventos">
+  <div class="wrap wrap-wide">
+    <div class="section-head-split upcoming-head">
+      <div class="section-head" style="margin-bottom:0;">
+        <span class="eyebrow">Qué hacer en Nueva York</span>
+        <h2 class="section-title">Próximos eventos</h2>
+      </div>
+      <div class="upcoming-nav">
+        <button class="upcoming-nav-btn upcoming-prev" id="upcomingPrev" aria-label="Evento anterior">
+          <svg class="icon"><use href="#i-arrow" /></svg>
+        </button>
+        <button class="upcoming-nav-btn upcoming-next" id="upcomingNext" aria-label="Evento siguiente">
+          <svg class="icon"><use href="#i-arrow" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="upcoming-scroll" id="upcomingScroll" data-hscroll data-prev="upcomingPrev" data-next="upcomingNext">
+      <div class="upcoming-track">
+        {events.map((event) => {
+          const Tag = event.link ? 'a' : 'article';
+          return (
+            <Tag
+              class="upcoming-card"
+              href={event.link || undefined}
+              target={event.link ? '_blank' : undefined}
+              rel={event.link ? 'noopener noreferrer' : undefined}
+            >
+              <div class="upcoming-bigdate" aria-label={event.label}><span class:list={['upcoming-day', { 'is-range': event.range }]}>{event.num}</span><span class:list={['upcoming-mon', { 'is-range': event.range && event.mon.includes('-') }]}>{event.mon}</span></div>
+              <h3>{event.title}</h3>
+              {event.meta && <span class="upcoming-meta">{event.meta}</span>}
+            </Tag>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>
+)}

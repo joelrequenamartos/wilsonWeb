@@ -12,6 +12,8 @@ export default defineConfig({
     })
   ],
   redirects: {
+    // dirección antigua del panel del blog
+    '/panel-blog-x9k3f7': '/adminblog',
     '/tours/tour-privado-espanol': '/tours/la-media-maraton'
   }
 });

@@ -1,0 +1,27 @@
+---
+// Filas del listado de artículos: fecha, foto cuadrada, título y autor.
+import type { Post } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+
+const day = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short' });
+const year = new Intl.DateTimeFormat('es', { year: 'numeric' });
+---
+<div class="blog-agenda-list">
+  {posts.map((post) => (
+    <a class="blog-agenda-row" href={`/blog/${post.slug}`}>
+      <div class="blog-agenda-when">
+        <span class="blog-agenda-date">{day.format(post.date).replace('.', '')} {year.format(post.date)}</span>
+        {post.image && <img class="blog-agenda-photo" src={post.image} alt="" loading="lazy" />}
+      </div>
+      <div class="blog-agenda-body">
+        <h3>{post.title}</h3>
+        <span class="blog-agenda-by">Por {post.author}</span>
+      </div>
+    </a>
+  ))}
+</div>

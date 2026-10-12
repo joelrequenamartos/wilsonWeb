@@ -1,0 +1,43 @@
+---
+import type { Post } from '../lib/posts';
+import BlogRows from './BlogRows.astro';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+
+const featured = posts.find((p) => p.featured);
+const latest = posts.slice(0, 5); // las 5 últimas; el resto, en «Ver todos»
+---
+<section class="section" id="blog">
+  <div class="wrap blog-agenda reveal">
+    <h1 class="blog-agenda-title"><strong>silver</strong>blog<strong>ny</strong><span>.</span></h1>
+    <p class="blog-agenda-sub">Consejos de Wilson y últimas novedades.</p>
+    {featured && (
+      <a class="blog-featured" href={`/blog/${featured.slug}`}>
+        <div class="blog-featured-media">
+          {featured.image && <img src={featured.image} alt="" loading="lazy" />}
+          <span class="blog-featured-tag"><svg class="icon"><use href="#i-fire" /></svg>Destacado</span>
+        </div>
+        <div class="blog-featured-body">
+          <h3>{featured.title}</h3>
+          <span class="blog-agenda-by">Por {featured.author}</span>
+        </div>
+      </a>
+    )}
+    <div class="section-head blog-agenda-head">
+      <span class="eyebrow">Lo que necesitas saber de Nueva York</span>
+      <h2 class="section-title">Últimos artículos</h2>
+    </div>
+    {posts.length === 0 ? (
+      <p class="blog-empty">Estamos preparando los primeros artículos. ¡Vuelve pronto!</p>
+    ) : (
+      <div>
+        <BlogRows posts={latest} />
+        <a class="btn btn-outline blog-all-btn" href="/blog/todos">Ver todos <svg class="icon"><use href="#i-arrow" /></svg></a>
+      </div>
+    )}
+  </div>
+</section>

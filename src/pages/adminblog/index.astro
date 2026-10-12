@@ -1,0 +1,1273 @@
+---
+// Panel del blog (privado): acceso con el usuario de Supabase y gestión de entradas.
+// Todo ocurre en el navegador. Los permisos los imponen las políticas de supabase/schema.sql,
+// así que aunque alguien encuentre esta dirección, sin el usuario administrador no puede leer borradores ni escribir.
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Panel de blog — Silver Tours NY</title>
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- ACCESO -->
+    <section id="loginView" class="card narrow" hidden>
+      <h1>Panel del blog</h1>
+      <p class="muted">Entra con tu correo y contraseña.</p>
+      <form id="loginForm" class="stack">
+        <label>Correo<input type="email" id="loginEmail" autocomplete="username" required /></label>
+        <label>Contraseña<input type="password" id="loginPass" autocomplete="current-password" required /></label>
+        <p class="msg" id="loginMsg" role="alert"></p>
+        <button class="btn primary" type="submit">Entrar</button>
+      </form>
+    </section>
+
+    <!-- LISTA -->
+    <section id="listView" hidden>
+      <header class="bar">
+        <h1>Entradas del blog</h1>
+        <div class="bar-actions">
+          <button class="btn primary" id="newBtn" type="button">+ Nueva entrada</button>
+          <button class="btn" id="orderBtn" type="button" title="Cambiar el orden de las entradas publicadas">↕ Reordenar</button>
+          <button class="btn" id="rebuildBtn" type="button" title="Vuelve a construir la web con lo que hay guardado">Actualizar web</button>
+          <button class="btn ghost" id="logoutBtn" type="button">Salir</button>
+        </div>
+      </header>
+      <p class="banner" id="listMsg" role="status" hidden></p>
+      <div class="pending-bar" id="pendingBar" hidden>
+        <span id="pendingText"></span>
+        <button class="btn primary" id="pendingBtn" type="button">Actualizar web ahora</button>
+      </div>
+      <p class="banner" id="stateWarn" hidden>⚠ Para que los cambios se publiquen solo al pulsar «Actualizar web», hay que ejecutar <b>supabase/publish-state.sql</b> en Supabase (una sola vez). Mientras tanto, cada guardado actualiza la web.</p>
+      <p class="banner" id="orderWarn" hidden>⚠ Para poder reordenar hay que ejecutar <b>supabase/order.sql</b> en Supabase (una sola vez).</p>
+
+      <div class="order-bar" id="orderBar">
+        <p><b>Modo reordenar.</b> Arrastra las entradas por el asa <span aria-hidden="true">⋮⋮</span> o usa las flechas. Solo se pueden mover las <b>publicadas</b>; el orden vale también para el blog público.</p>
+        <div class="order-actions">
+          <button class="btn primary" id="orderSave" type="button" disabled>Guardar orden</button>
+          <button class="btn" id="orderReset" type="button" title="Ordena las entradas de la última creada a la primera">Orden de creación</button>
+          <button class="btn ghost" id="orderCancel" type="button">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="filters" id="filters" hidden>
+        <div class="seg" role="group" aria-label="Estado de la entrada">
+          <button type="button" data-estado="todas" class="is-active">Todas <span class="n"></span></button>
+          <button type="button" data-estado="publicadas">Publicadas <span class="n"></span></button>
+          <button type="button" data-estado="borradores">Borradores <span class="n"></span></button>
+        </div>
+        <button type="button" class="chip" data-toggle="destacada" aria-pressed="false">★ Destacada <span class="n"></span></button>
+        <button type="button" class="chip" id="chipMensual" data-toggle="mensual" aria-pressed="false">📅 Evento mensual <span class="n"></span></button>
+        <button type="button" class="btn ghost small" id="clearFilters" hidden>Quitar filtros</button>
+      </div>
+      <p class="muted" id="filterEmpty" hidden>Ninguna entrada coincide con esos filtros.</p>
+      <div id="postList" class="posts"></div>
+    </section>
+
+    <!-- EDITAR / CREAR -->
+    <section id="editView" hidden>
+      <header class="bar">
+        <h1 id="editTitle">Nueva entrada</h1>
+        <button class="btn ghost" id="backBtn" type="button">← Volver a la lista</button>
+      </header>
+      <p class="banner error" id="editMsg" role="alert" hidden></p>
+
+      <form id="postForm" class="card stack" novalidate>
+        <div class="grid2">
+          <label>Título<input type="text" id="fTitle" maxlength="160" /></label>
+          <label>Fecha<input type="date" id="fDate" /></label>
+        </div>
+        <div class="grid2">
+          <label>Enlace de la entrada
+            <input type="text" id="fSlug" maxlength="120" placeholder="se-genera-desde-el-titulo" />
+            <small id="slugHelp" class="muted">Sale del título. /blog/<span id="slugPreview">…</span></small>
+          </label>
+          <label>Autor<input type="text" id="fAuthor" maxlength="80" value="Wilson Silver" /></label>
+        </div>
+        <label>Resumen
+          <textarea id="fExcerpt" rows="3" maxlength="400" placeholder="Una o dos frases que se ven en Google y bajo el título."></textarea>
+        </label>
+
+        <div class="cover">
+          <span class="label">Foto de portada</span>
+          <div class="cover-row">
+            <img id="coverPreview" alt="" hidden />
+            <div class="cover-actions">
+              <label class="btn">Subir foto<input type="file" id="coverFile" accept="image/*" hidden /></label>
+              <button class="btn ghost" id="coverRemove" type="button" hidden>Quitar</button>
+              <small class="muted" id="coverStatus">Se reduce sola a 1600 px de ancho.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="fFeatured" /> Destacada <small class="muted">(solo con la entrada publicada · solo una a la vez: al marcarla se desmarca la anterior)</small></label>
+          <label class="check"><input type="checkbox" id="fPublished" /> Publicada <small class="muted">(para publicar hay que rellenar todo, foto incluida; un borrador puede estar incompleto y no se ve en la web)</small></label>
+          <label class="check"><input type="checkbox" id="fMonthly" /> Eventos mensuales <small class="muted">(solo una entrada a la vez: al activarlo aquí se desactiva en la anterior)</small></label>
+          <small id="monthlyWarn" class="muted" hidden>⚠ Para usar «Eventos mensuales» hay que ejecutar <b>supabase/monthly-events.sql</b> en Supabase (una sola vez).</small>
+        </div>
+
+        <div>
+          <span class="label">Texto</span>
+          <div id="editor"></div>
+        </div>
+
+        <div id="eventsBox" class="card events-box" hidden>
+          <span class="label">Eventos mensuales</span>
+          <p class="muted events-help">Salen al final de <b>esta</b> entrada y en el carrusel «Próximos eventos» de /blog. Cada evento lleva día y mes (o un rango de fechas), título, subtítulo y un enlace (obligatorio) que se abre en una pestaña nueva. <b>Se muestran en el orden en que los dejes aquí</b>: arrástralos por el asa ⋮⋮ o usa las flechas.</p>
+          <div id="eventsList" class="events-list"></div>
+          <button class="btn" id="addEventBtn" type="button">+ Añadir evento</button>
+        </div>
+
+        <div class="form-actions">
+          <div class="form-actions-left">
+            <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
+            <button class="btn" id="previewBtn" type="button" title="Abre una pestaña con cómo se verá la entrada, sin guardar ni publicar nada">👁 Vista previa</button>
+          </div>
+          <button class="btn danger" id="deleteBtn" type="button" hidden>Borrar entrada</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Botón del texto: se escribe lo que dice y a dónde lleva; siempre sale como un botón naranja -->
+  <dialog id="btnDialog" class="btn-dialog">
+    <form id="btnForm" class="stack" novalidate>
+      <h2 id="btnDialogTitle">Insertar botón</h2>
+      <label>Texto del botón<input type="text" id="btnText" maxlength="60" placeholder="Reservar el tour" /></label>
+      <label>Enlace<input type="text" id="btnUrl" placeholder="https://…  o  /ebook" />
+        <small class="muted">Empieza por https:// (se abre en pestaña nueva) o por / para una página de esta web, por ejemplo /ebook.</small>
+      </label>
+      <fieldset class="swatches">
+        <legend>Color del botón</legend>
+        <label class="swatch"><input type="radio" name="btnBg" value="naranja" checked /><span class="dot" style="background:#E07A3E"></span>Naranja</label>
+        <label class="swatch"><input type="radio" name="btnBg" value="beige" /><span class="dot" style="background:#E3D6C0"></span>Beige</label>
+        <label class="swatch"><input type="radio" name="btnBg" value="negro" /><span class="dot" style="background:#1A1512"></span>Negro</label>
+      </fieldset>
+      <fieldset class="swatches">
+        <legend>Color de la letra</legend>
+        <label class="swatch"><input type="radio" name="btnFg" value="blanco" checked /><span class="dot" style="background:#FFFFFF"></span>Blanco</label>
+        <label class="swatch"><input type="radio" name="btnFg" value="negro" /><span class="dot" style="background:#1A1512"></span>Negro</label>
+        <label class="swatch"><input type="radio" name="btnFg" value="naranja" /><span class="dot" style="background:#E07A3E"></span>Naranja</label>
+      </fieldset>
+      <div class="btn-dialog-preview"><span class="muted">Así se verá:</span> <a class="blog-btn" id="btnPreview">Botón</a></div>
+      <p class="btn-contrast" id="btnContrast" hidden>⚠ Letra y fondo se parecen demasiado: costará leer el botón.</p>
+      <p class="msg" id="btnMsg" role="alert"></p>
+      <div class="btn-dialog-actions">
+        <button type="button" class="btn danger" id="btnRemove" hidden>Quitar botón</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" id="btnCancel">Cancelar</button>
+        <button type="submit" class="btn primary" id="btnOk">Insertar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Aviso de «guardando»: cubre la pantalla mientras se guarda y se avisa a la web (tarda unos segundos) -->
+  <div class="saving" id="saving" role="status" aria-live="polite" hidden>
+    <div class="saving-card">
+      <span class="spinner" aria-hidden="true"></span>
+      <p id="savingWord">Guardando…</p>
+    </div>
+  </div>
+
+  <style is:global>
+    :root{ --ink:#1A1512; --soft:#5C5147; --mute:#948879; --line:rgba(26,21,18,.16); --coral:#E07A3E; --coral-d:#A8501E; --bg:#F6F2EC; }
+    *{box-sizing:border-box;}
+    body{margin:0; font-family:"Poppins",system-ui,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5;}
+    .app{max-width:980px; margin:0 auto; padding:24px 16px 80px;}
+    h1{font-size:clamp(1.5rem,4vw,2rem); margin:0; letter-spacing:-.01em;}
+    .muted{color:var(--mute); font-weight:400;}
+    .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:clamp(16px,3vw,28px);}
+    .narrow{max-width:420px; margin:12vh auto 0;}
+    .stack{display:flex; flex-direction:column; gap:16px;}
+    .grid2{display:grid; grid-template-columns:1fr; gap:16px;}
+    @media (min-width:700px){.grid2{grid-template-columns:1fr 1fr;}}
+    label, .label{display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:.9rem;}
+    input[type=text], input[type=email], input[type=password], input[type=date], input[type=url], textarea{
+      width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px; font:inherit; font-weight:400; background:#fff;
+    }
+    input:focus, textarea:focus{outline:2px solid var(--coral); outline-offset:1px;}
+    input[disabled]{background:#f1ede6; color:var(--soft);}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 18px; border-radius:100px;
+      border:1px solid var(--line); background:#fff; color:var(--ink); font:inherit; font-weight:600; font-size:.9rem; cursor:pointer;
+    }
+    .btn.primary{background:var(--coral); border-color:var(--coral); color:#fff;}
+    .btn.danger{background:#fff; border-color:#c0392b; color:#c0392b;}
+    .btn.ghost{background:transparent;}
+    .btn[disabled]{opacity:.55; cursor:default;}
+    .bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+    .bar-actions{display:flex; gap:8px; flex-wrap:wrap;}
+    .banner{margin:0 0 16px; padding:12px 16px; border-radius:12px; background:#fff3e8; border:1px solid #f0cfae; font-size:.92rem;}
+    .banner.error{background:#fdecea; border-color:#f3b9b2; color:#8c2a1f;}
+    .banner.ok{background:#e8f6ee; border-color:#b5e0c6; color:#14653a;}
+    .msg{margin:0; font-size:.9rem; color:#c0392b; min-height:1.2em;}
+    .filters{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+    .filters[hidden]{display:none;}
+    .seg{display:inline-flex; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
+    .seg button, .chip{border:0; background:transparent; font:inherit; font-weight:600; font-size:.85rem; padding:7px 14px; border-radius:100px; cursor:pointer; color:var(--ink);}
+    .seg button.is-active{background:var(--coral); color:#fff;}
+    .chip{background:#fff; border:1px solid var(--line);}
+    .chip[aria-pressed=true]{background:var(--coral); border-color:var(--coral); color:#fff;}
+    .chip[hidden]{display:none;}
+    .filters .n{font-weight:500; opacity:.7; margin-left:2px;}
+    /* botón dentro del texto: siempre naranja */
+    a.blog-btn{display:inline-flex; align-items:center; justify-content:center; margin:10px 10px 10px 0; padding:12px 26px; border-radius:100px; background:var(--coral); color:#fff; font-weight:700; text-decoration:none !important; cursor:pointer; box-shadow:0 10px 22px -12px rgba(224,122,62,.9);}
+    a.blog-btn.b-beige{background:#E3D6C0; box-shadow:0 10px 22px -12px rgba(120,100,60,.7);}
+    a.blog-btn.b-negro{background:#1A1512; box-shadow:0 10px 22px -12px rgba(0,0,0,.7);}
+    a.blog-btn.t-blanco{color:#FFFFFF !important;}
+    a.blog-btn.t-negro{color:#1A1512 !important;}
+    a.blog-btn.t-naranja{color:#E07A3E !important;}
+    .swatches{border:0; margin:0; padding:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+    .swatches legend{padding:0; margin-bottom:6px; font-weight:600; font-size:.9rem;}
+    .swatch{flex-direction:row; align-items:center; gap:8px; padding:7px 12px 7px 8px; border:1px solid var(--line); border-radius:100px; cursor:pointer; font-weight:600; font-size:.88rem;}
+    .swatch input{position:absolute; opacity:0; pointer-events:none;}
+    .swatch .dot{width:20px; height:20px; border-radius:50%; border:1px solid rgba(26,21,18,.25);}
+    .swatch:has(input:checked){border-color:var(--coral); box-shadow:0 0 0 2px rgba(224,122,62,.3);}
+    .swatch:has(input:focus-visible){outline:2px solid var(--ink);}
+    .btn-contrast{margin:0; padding:8px 12px; border-radius:10px; background:#fdecea; color:#8c2a1f; font-size:.85rem;}
+    .btn-contrast[hidden]{display:none;}
+    .ql-editor a.blog-btn{user-select:none;}
+    .ql-toolbar button.ql-boton{width:auto !important; padding:0 10px !important; font-weight:700; font-size:.78rem; color:var(--coral-d); border:1px solid var(--coral) !important; border-radius:100px !important; margin-left:6px;}
+    .btn-dialog{border:0; border-radius:18px; padding:22px; width:min(480px,92vw); box-shadow:0 30px 80px -20px rgba(0,0,0,.5);}
+    .btn-dialog::backdrop{background:rgba(26,21,18,.5);}
+    .btn-dialog h2{margin:0; font-size:1.25rem;}
+    .btn-dialog small{font-weight:400;}
+    .btn-dialog-preview{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:6px 0;}
+    .btn-dialog-preview a.blog-btn{margin:0; pointer-events:none;}
+    .btn-dialog-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+    .btn-dialog-actions .spacer{flex:1;}
+    .saving{position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; background:rgba(246,242,236,.82); backdrop-filter:blur(3px);}
+    .saving[hidden]{display:none;}
+    .saving-card{display:flex; flex-direction:column; align-items:center; gap:18px; min-width:min(300px,86vw); padding:30px 36px; text-align:center; background:#fff; border-radius:22px; box-shadow:0 24px 60px -20px rgba(0,0,0,.35);}
+    .spinner{width:54px; height:54px; border-radius:50%; border:6px solid #f3d9c6; border-top-color:var(--coral); animation:spin .9s linear infinite;}
+    .saving-card p{margin:0; min-height:1.6em; font-weight:700; font-size:1.15rem; transition:opacity .22s ease;}
+    .saving-card p.is-fading{opacity:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @media (prefers-reduced-motion: reduce){.spinner{animation-duration:2.6s;}}
+    .pending-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:12px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-weight:600; font-size:.95rem;}
+    .pending-bar[hidden]{display:none;}
+    .is-ordering .pending-bar{display:none !important;}
+    .order-bar{display:none; flex-direction:column; gap:12px; margin-bottom:16px; padding:14px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-size:.92rem;}
+    .order-bar p{margin:0;}
+    .order-actions{display:flex; gap:8px; flex-wrap:wrap;}
+    .is-ordering .order-bar{display:flex;}
+    .is-ordering .bar-actions, .is-ordering .filters, .is-ordering #filterEmpty{display:none !important;}
+    .post.post-order{grid-template-columns:40px 56px 1fr auto; user-select:none;}
+    .drag-handle{
+      display:flex; align-items:center; justify-content:center; width:40px; height:48px; border:0; border-radius:10px;
+      background:#f1ede6; color:var(--soft); font-size:1.2rem; letter-spacing:-.15em; cursor:grab; touch-action:none;
+    }
+    .drag-handle:active{cursor:grabbing;}
+    .order-arrows{display:flex; flex-direction:column; gap:4px;}
+    .order-arrows button{width:34px; height:30px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size:.95rem;}
+    .order-arrows button[disabled]{opacity:.35; cursor:default;}
+    .post.is-dragging{position:relative; z-index:20; box-shadow:0 14px 34px -10px rgba(0,0,0,.4); border-color:var(--coral); background:#fffaf5;}
+    .posts{display:flex; flex-direction:column; gap:10px;}
+    .post{display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px;}
+    .post img, .post .ph{width:64px; height:64px; border-radius:10px; object-fit:cover; background:#ece6dc;}
+    .post h2{font-size:1rem; margin:0 0 4px; line-height:1.3;}
+    .post .meta{display:flex; gap:8px; flex-wrap:wrap; font-size:.78rem; color:var(--soft); align-items:center;}
+    .pill{padding:2px 9px; border-radius:100px; font-weight:600; font-size:.72rem; background:#ece6dc;}
+    .pill.pub{background:#e1f3e8; color:#14653a;}
+    .pill.draft{background:#f3e9d6; color:#8a5a12;}
+    .pill.feat{background:#ffe4d0; color:var(--coral-d);}
+    .post-actions{display:flex; gap:8px;}
+    @media (max-width:600px){.post{grid-template-columns:56px 1fr;} .post-actions{grid-column:1 / -1;} .post img,.post .ph{width:56px;height:56px;}}
+    .cover-row{display:flex; gap:16px; align-items:center; flex-wrap:wrap;}
+    #coverPreview{width:200px; aspect-ratio:16/9; object-fit:cover; border-radius:12px; border:1px solid var(--line);}
+    .cover-actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+    .checks{display:flex; flex-direction:column; gap:10px;}
+    .check{flex-direction:row; align-items:center; gap:8px; font-weight:600;}
+    .check input{width:18px; height:18px; accent-color:var(--coral);}
+    .form-actions{display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;}
+    #editor{min-height:340px; font-family:"Poppins",sans-serif; font-size:1rem; background:#fff;}
+    .ql-toolbar.ql-snow{border-radius:10px 10px 0 0; border-color:var(--line); background:#fff;}
+    .ql-container.ql-snow{border-radius:0 0 10px 10px; border-color:var(--line);}
+    .ql-editor{min-height:340px; line-height:1.7;}
+    .ql-editor img{max-width:100%; border-radius:8px; cursor:pointer;}
+    .ql-editor img.is-selected{outline:3px solid var(--coral); outline-offset:2px;}
+    .form-actions-left{display:flex; gap:10px; flex-wrap:wrap;}
+    .events-box{background:#fbf8f3; display:flex; flex-direction:column; gap:14px;}
+    .is-missing{border-color:#c0392b !important; outline:2px solid rgba(192,57,43,.28); outline-offset:1px;}
+    .cover.is-missing, #editor.is-missing{border-radius:12px;}
+    .check.is-off{opacity:.45; cursor:not-allowed;}
+    .check.is-off input{cursor:not-allowed;}
+    .events-box[hidden], .grid2[hidden]{display:none;} /* sin esto, display:flex se impone al atributo hidden y el bloque se veía siempre */
+    .events-help{margin:0; font-size:.88rem;}
+    .events-list{display:flex; flex-direction:column; gap:14px;}
+    .event-row{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:12px;}
+    .event-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-weight:700; font-size:.9rem;}
+    .event-head{display:flex; align-items:center; gap:10px;}
+    .event-handle{width:34px; height:36px; font-size:1rem;}
+    .event-tools{display:flex; gap:6px;}
+    .event-tools .btn[disabled]{opacity:.35; cursor:default;}
+    .event-row.is-dragging{position:relative; z-index:20; box-shadow:0 14px 34px -10px rgba(0,0,0,.4); border-color:var(--coral); background:#fffaf5; user-select:none;}
+    .event-row.is-invalid{border-color:#c0392b;}
+    .btn.small{padding:6px 12px; font-size:.8rem;}
+    .ql-container{position:relative;}
+    .img-tools{position:absolute; z-index:5; display:flex; gap:4px; align-items:center; padding:6px 8px; background:#1A1512; color:#fff; border-radius:10px; box-shadow:0 8px 24px -8px rgba(0,0,0,.5); font-size:.8rem;}
+    .img-tools[hidden]{display:none;}
+    .img-tools button{border:0; background:transparent; color:#fff; padding:5px 9px; border-radius:7px; font:inherit; font-weight:600; cursor:pointer;}
+    .img-tools button:hover, .img-tools button.is-active{background:var(--coral);}
+    .img-tools .sep{width:1px; height:18px; background:rgba(255,255,255,.3); margin:0 2px;}
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js" is:inline></script>
+
+  <script>
+    import { createClient } from '@supabase/supabase-js';
+    import { SUPABASE_URL, SUPABASE_KEY } from '../../lib/supabase';
+
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const $ = (id) => document.getElementById(id);
+    const BUCKET = 'blog-images';
+    const RESERVED = ['todos']; // /blog/todos es el listado paginado
+
+    let session = null;
+    let editing = null;       // entrada que se está editando (null = nueva)
+    let coverUrl = null;      // portada actual
+    let slugTouched = false;  // el usuario ha escrito el enlace a mano
+    let quill = null;
+    let positionSupported = true; // false si en Supabase aún no se ha ejecutado order.sql
+    let eventsSupported = true; // false si en Supabase aún no se ha ejecutado monthly-events.sql
+
+    // ---------- utilidades ----------
+    const views = ['loginView', 'listView', 'editView'];
+    const show = (id) => views.forEach((v) => ($(v).hidden = v !== id));
+    const slugify = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const today = () => new Date().toISOString().slice(0, 10);
+
+    function banner(el, text, kind) {
+      el.textContent = text || '';
+      el.className = 'banner' + (kind ? ' ' + kind : '');
+      el.hidden = !text;
+      // Un error del formulario sube la página hasta el aviso: si no, se queda arriba sin verse (el botón Guardar está abajo).
+      if (text && kind === 'error' && el.id === 'editMsg') window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------- aviso de «guardando» ----------
+    // 20 frases (10 para Bibiana y 10 normales): cada vez que se guarda se barajan y salen en orden distinto
+    // (la primera nunca repite la del guardado anterior).
+    const FRASES = [
+      // para Bibiana
+      'Bibiana, qué buen trabajo estás haciendo…',
+      'Guardando tu obra maestra, Bibiana…',
+      'Un segundito, Bibiana, que ya casi…',
+      'Bibiana manda y la web obedece…',
+      'Tómate un cafecito, Bibiana, que vuelvo enseguida…',
+      'Bibiana, eres la reina del blog…',
+      'Bibiana en racha: otra entrada para la colección…',
+      'Esto lo ha escrito Bibiana, así que tiene que quedar genial…',
+      'Bibiana, respira hondo, ya casi lo tenemos…',
+      'La web entera aplaude a Bibiana…',
+      // normales
+      'Guardando…',
+      'Espera un poquito…',
+      'Calentando motores…',
+      'Contando los rascacielos…',
+      'Pidiendo un café en Manhattan…',
+      'Cruzando el puente de Brooklyn…',
+      'Persiguiendo un taxi amarillo…',
+      'Colocando cada coma en su sitio…',
+      'Saludando a las ardillas de Central Park…',
+      'Ya casi está…'
+    ];
+    let frasesTimer = null;
+    let ultimaPrimera = '';
+    function barajar(lista) {
+      const b = [...lista];
+      for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+      return b;
+    }
+    function mostrarGuardando() {
+      const palabra = $('savingWord');
+      const orden = barajar(FRASES);
+      if (orden[0] === ultimaPrimera) orden.push(orden.shift());
+      ultimaPrimera = orden[0];
+      let i = 0;
+      palabra.textContent = orden[0];
+      palabra.classList.remove('is-fading');
+      $('saving').hidden = false;
+      clearInterval(frasesTimer);
+      frasesTimer = setInterval(() => {
+        palabra.classList.add('is-fading');
+        setTimeout(() => {
+          i = (i + 1) % orden.length;
+          palabra.textContent = orden[i];
+          palabra.classList.remove('is-fading');
+        }, 220);
+      }, 1600);
+    }
+    function ocultarGuardando() {
+      clearInterval(frasesTimer);
+      $('saving').hidden = true;
+    }
+
+    // ---------- acceso ----------
+    async function esAdmin() {
+      const { data, error } = await sb.rpc('is_admin');
+      return !error && data === true;
+    }
+
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('loginMsg').textContent = '';
+      const { data, error } = await sb.auth.signInWithPassword({ email: $('loginEmail').value.trim(), password: $('loginPass').value });
+      if (error) { $('loginMsg').textContent = 'Correo o contraseña incorrectos.'; return; }
+      session = data.session;
+      if (!(await esAdmin())) {
+        await sb.auth.signOut(); session = null;
+        $('loginMsg').textContent = 'Este usuario no tiene permiso para gestionar el blog.';
+        return;
+      }
+      $('loginPass').value = '';
+      await showList();
+    });
+
+    $('logoutBtn').addEventListener('click', async () => {
+      if (estadoWeb.supported && estadoWeb.pending > 0 && !confirm('Hay cambios guardados sin publicar en la web. ¿Salir igualmente? (Seguirán pendientes hasta que pulses «Actualizar web».)')) return;
+      await sb.auth.signOut(); session = null; show('loginView');
+    });
+
+    // ---------- lista ----------
+    let todas = [];
+    const filtros = { estado: 'todas', destacada: false, mensual: false };
+
+    // ¿La entrada cumple los filtros? Estado (una opción) + «Destacada» y «Evento mensual» (se combinan: deben cumplirse los activos).
+    const cumple = (p, f) =>
+      (f.estado === 'todas' || (f.estado === 'publicadas' ? p.published : !p.published)) &&
+      (!f.destacada || p.featured) &&
+      (!f.mensual || p.monthly_events);
+
+    function pintarFiltros() {
+      const caja = $('filters');
+      caja.hidden = !todas.length;
+      $('chipMensual').hidden = !eventsSupported;
+      if (!eventsSupported) filtros.mensual = false;
+      // Los números dicen cuántas entradas saldrían al elegir cada opción con el resto de filtros activos.
+      caja.querySelectorAll('[data-estado]').forEach((b) => {
+        b.classList.toggle('is-active', filtros.estado === b.dataset.estado);
+        b.querySelector('.n').textContent = todas.filter((p) => cumple(p, { ...filtros, estado: b.dataset.estado })).length;
+      });
+      caja.querySelectorAll('[data-toggle]').forEach((b) => {
+        const k = b.dataset.toggle;
+        b.setAttribute('aria-pressed', String(filtros[k]));
+        b.querySelector('.n').textContent = todas.filter((p) => cumple(p, { ...filtros, [k]: true })).length;
+      });
+      $('clearFilters').hidden = filtros.estado === 'todas' && !filtros.destacada && !filtros.mensual;
+    }
+
+    function renderList() {
+      pintarFiltros();
+      const list = $('postList');
+      list.textContent = '';
+      if (!todas.length) { list.textContent = 'Todavía no hay entradas. Pulsa «+ Nueva entrada».'; $('filterEmpty').hidden = true; return; }
+      const visibles = todas.filter((p) => cumple(p, filtros));
+      $('filterEmpty').hidden = visibles.length > 0;
+      for (const p of visibles) {
+        const row = document.createElement('article');
+        row.className = 'post';
+        const thumb = p.image ? Object.assign(document.createElement('img'), { src: p.image, alt: '' }) : Object.assign(document.createElement('div'), { className: 'ph' });
+        const info = document.createElement('div');
+        const h = document.createElement('h2'); h.textContent = p.title;
+        const meta = document.createElement('div'); meta.className = 'meta';
+        const pill = (txt, cls) => { const s = document.createElement('span'); s.className = 'pill ' + cls; s.textContent = txt; return s; };
+        meta.append(pill(p.published ? 'Publicada' : 'Borrador', p.published ? 'pub' : 'draft'));
+        if (p.featured) meta.append(pill('★ Destacada', 'feat'));
+        if (p.monthly_events) meta.append(pill('📅 Eventos mensuales', 'feat'));
+        const d = document.createElement('span'); d.textContent = new Date(p.published_at + 'T12:00:00').toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+        meta.append(d);
+        info.append(h, meta);
+        const actions = document.createElement('div'); actions.className = 'post-actions';
+        const edit = document.createElement('button'); edit.className = 'btn'; edit.type = 'button'; edit.textContent = 'Editar';
+        edit.addEventListener('click', () => openEditor(p));
+        actions.append(edit);
+        row.append(thumb, info, actions);
+        list.append(row);
+      }
+    }
+
+    // ---------- modo reordenar (solo las publicadas) ----------
+    let ordenando = false;
+    let ordenInicial = [];
+
+    const idsEnOrden = () => [...$('postList').children].map((r) => r.dataset.id);
+
+    function marcarCambios() {
+      $('orderSave').disabled = idsEnOrden().join() === ordenInicial.join();
+      const filas = [...$('postList').children];
+      filas.forEach((r, i) => {
+        r.querySelector('[data-mover=arriba]').disabled = i === 0;
+        r.querySelector('[data-mover=abajo]').disabled = i === filas.length - 1;
+      });
+    }
+
+    function filaOrden(p) {
+      const row = document.createElement('article');
+      row.className = 'post post-order';
+      row.dataset.id = p.id;
+      const handle = document.createElement('button');
+      handle.type = 'button'; handle.className = 'drag-handle'; handle.textContent = '⋮⋮';
+      handle.setAttribute('aria-label', 'Arrastrar para reordenar');
+      const thumb = p.image ? Object.assign(document.createElement('img'), { src: p.image, alt: '' }) : Object.assign(document.createElement('div'), { className: 'ph' });
+      const info = document.createElement('div');
+      const h = document.createElement('h2'); h.textContent = p.title;
+      const meta = document.createElement('div'); meta.className = 'meta';
+      const f = document.createElement('span');
+      f.textContent = new Date(p.published_at + 'T12:00:00').toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+      meta.append(f);
+      if (p.featured) { const s = document.createElement('span'); s.className = 'pill feat'; s.textContent = '★ Destacada'; meta.append(s); }
+      info.append(h, meta);
+      const arrows = document.createElement('div'); arrows.className = 'order-arrows';
+      for (const [dir, txt, label] of [['arriba', '↑', 'Subir'], ['abajo', '↓', 'Bajar']]) {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.mover = dir; b.textContent = txt; b.setAttribute('aria-label', label);
+        arrows.append(b);
+      }
+      row.append(handle, thumb, info, arrows);
+      return row;
+    }
+
+    function entrarOrden() {
+      if (!positionSupported) return;
+      ordenando = true;
+      $('listView').classList.add('is-ordering');
+      banner($('listMsg'), '');
+      const list = $('postList');
+      list.textContent = '';
+      const publicadas = todas.filter((p) => p.published);
+      if (!publicadas.length) { list.textContent = 'No hay entradas publicadas que reordenar.'; $('orderSave').disabled = true; return; }
+      publicadas.forEach((p) => list.append(filaOrden(p)));
+      ordenInicial = idsEnOrden();
+      marcarCambios();
+      window.scrollTo(0, 0);
+    }
+
+    function salirOrden() {
+      ordenando = false;
+      $('listView').classList.remove('is-ordering');
+    }
+
+    $('orderBtn').addEventListener('click', entrarOrden);
+    $('orderCancel').addEventListener('click', () => { salirOrden(); renderList(); });
+
+    // Volver al orden de creación: la última creada, primera (se aplica al pulsar «Guardar orden»).
+    $('orderReset').addEventListener('click', () => {
+      const porId = new Map(todas.map((p) => [String(p.id), p]));
+      const list = $('postList');
+      [...list.children]
+        .sort((a, b) => {
+          const A = porId.get(a.dataset.id), B = porId.get(b.dataset.id);
+          return String(B.created_at).localeCompare(String(A.created_at)) || String(B.published_at).localeCompare(String(A.published_at));
+        })
+        .forEach((r) => list.append(r));
+      marcarCambios();
+    });
+
+    // Flechas ↑ ↓
+    $('postList').addEventListener('click', (e) => {
+      if (!ordenando) return;
+      const b = e.target.closest('[data-mover]');
+      if (!b) return;
+      const row = b.closest('.post');
+      const list = $('postList');
+      if (b.dataset.mover === 'arriba' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+      else if (b.dataset.mover === 'abajo' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+      marcarCambios();
+      const activo = row.querySelector(`[data-mover=${b.dataset.mover}]`);
+      if (activo && !activo.disabled) activo.focus();
+      else row.querySelector('.drag-handle').focus();
+    });
+
+    // Arrastrar con el asa (ratón o dedo): la fila sigue al puntero y las demás se apartan.
+    // Sirve para cualquier lista: asa = selector del asa, fila = selector de cada elemento.
+    function arrastrable(lista, { asa, fila, activo = () => true, alSoltar = () => {} }) {
+      lista.addEventListener('pointerdown', (e) => {
+        if (!activo()) return;
+        const handle = e.target.closest(asa);
+        if (!handle || !lista.contains(handle)) return;
+        const row = handle.closest(fila);
+        const list = lista;
+        e.preventDefault();
+        // Los eventos se escuchan en la ventana (no en el asa): al cambiar la fila de sitio en la página, el navegador
+        // suelta cualquier «captura» del puntero y el arrastre dejaría de seguirlo.
+        const grab = e.clientY - row.getBoundingClientRect().top;
+        let y = e.clientY;
+        let raf = 0;
+        row.classList.add('is-dragging');
+
+        const colocar = () => {
+          const deseada = y - grab;
+          row.style.transform = 'none';
+          const centro = deseada + row.offsetHeight / 2;
+          const otras = [...list.children].filter((r) => r !== row);
+          let idx = 0;
+          for (const o of otras) { const r = o.getBoundingClientRect(); if (r.top + r.height / 2 < centro) idx++; }
+          if (idx !== [...list.children].indexOf(row)) list.insertBefore(row, otras[idx] || null);
+          row.style.transform = `translateY(${deseada - row.getBoundingClientRect().top}px)`;
+        };
+        const tick = () => {
+          if (y < 70) window.scrollBy(0, -14); else if (y > window.innerHeight - 70) window.scrollBy(0, 14); // desplazamiento automático
+          colocar();
+          raf = requestAnimationFrame(tick);
+        };
+        const mover = (ev) => { y = ev.clientY; };
+        const soltar = () => {
+          cancelAnimationFrame(raf);
+          window.removeEventListener('pointermove', mover);
+          window.removeEventListener('pointerup', soltar);
+          window.removeEventListener('pointercancel', soltar);
+          row.classList.remove('is-dragging');
+          row.style.transform = '';
+          alSoltar();
+        };
+        window.addEventListener('pointermove', mover);
+        window.addEventListener('pointerup', soltar);
+        window.addEventListener('pointercancel', soltar);
+        raf = requestAnimationFrame(tick);
+      });
+    }
+
+    arrastrable($('postList'), { asa: '.drag-handle', fila: '.post', activo: () => ordenando, alSoltar: marcarCambios });
+
+    // Guardar: las publicadas reparten entre sí las posiciones que ya tenían (los borradores no se mueven).
+    $('orderSave').addEventListener('click', async () => {
+      const porId = new Map(todas.map((p) => [String(p.id), p]));
+      const ids = idsEnOrden();
+      let huecos = ids.map((id) => porId.get(id).position).filter((n) => n != null).sort((a, b) => a - b);
+      if (huecos.length !== ids.length) huecos = ids.map((_, i) => i + 1);
+      const cambios = ids.map((id, i) => ({ id, position: huecos[i] })).filter((c) => porId.get(c.id).position !== c.position);
+      $('orderSave').disabled = true;
+      mostrarGuardando();
+      const res = await Promise.all(cambios.map((c) => sb.from('posts').update({ position: c.position }).eq('id', c.id)));
+      const fallo = res.find((r) => r.error);
+      if (fallo) { $('orderSave').disabled = false; ocultarGuardando(); return banner($('listMsg'), 'No se ha podido guardar el orden: ' + fallo.error.message, 'error'); }
+      const r = cambios.length ? await registrarCambio() : { ok: true, msg: '' };
+      await showList('Orden guardado. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    async function showList(message, kind) {
+      show('listView');
+      banner($('listMsg'), message, kind);
+      window.scrollTo(0, 0);
+      cargarEstadoWeb();
+      const { data, error } = await sb.from('posts').select('*').order('published_at', { ascending: false });
+      if (error) { $('postList').textContent = ''; banner($('listMsg'), 'No se han podido cargar las entradas: ' + error.message, 'error'); return; }
+      eventsSupported = data.length ? 'monthly_events' in data[0] : true;
+      positionSupported = data.length ? 'position' in data[0] : true;
+      // Orden manual (posición; las sin posición, al final y por creación). Sin la columna, por fecha como antes.
+      todas = positionSupported
+        ? [...data].sort((a, b) => ((a.position ?? 1e9) - (b.position ?? 1e9)) || String(b.created_at).localeCompare(String(a.created_at)))
+        : data;
+      $('orderBtn').hidden = !positionSupported;
+      $('orderWarn').hidden = positionSupported;
+      salirOrden();
+      renderList(); // los filtros elegidos se mantienen al volver de editar
+    }
+
+    $('filters').addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.estado) filtros.estado = b.dataset.estado;
+      else if (b.dataset.toggle) filtros[b.dataset.toggle] = !filtros[b.dataset.toggle];
+      else if (b.id === 'clearFilters') Object.assign(filtros, { estado: 'todas', destacada: false, mensual: false });
+      renderList();
+    });
+
+    $('newBtn').addEventListener('click', () => openEditor(null));
+    $('backBtn').addEventListener('click', () => showList());
+
+    // ---------- publicar (reconstruir la web) ----------
+    // Avisa a Vercel para que reconstruya la web con lo que hay en la base de datos.
+    async function publicar() {
+      try {
+        const r = await fetch('/api/publish', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token } });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) return { ok: true, msg: 'La web se está actualizando: los cambios se verán en /blog en 1-2 minutos.' };
+        if (j.error === 'not-configured') return { ok: false, msg: 'Falta conectar la publicación con Vercel (variable DEPLOY_HOOK_URL).' };
+        return { ok: false, msg: 'No se ha podido avisar a la web (' + (j.error || r.status) + ').' };
+      } catch { return { ok: false, msg: 'No se ha podido avisar a la web (sin conexión).' }; }
+    }
+
+    // ---------- cambios pendientes de publicar ----------
+    // Guardar NO actualiza la web: suma un cambio pendiente. La web solo se reconstruye al pulsar «Actualizar web».
+    // El contador vive en Supabase (tabla site_state), así que se ve igual desde cualquier dispositivo.
+    let estadoWeb = { supported: false, pending: 0 };
+
+    async function cargarEstadoWeb() {
+      const { data, error } = await sb.from('site_state').select('pending').maybeSingle();
+      estadoWeb.supported = !error && !!data;
+      estadoWeb.pending = data?.pending ?? 0;
+      pintarPendientes();
+    }
+
+    function pintarPendientes() {
+      const n = estadoWeb.pending;
+      $('pendingBar').hidden = !(estadoWeb.supported && n > 0);
+      $('pendingText').textContent = `Hay ${n} ${n === 1 ? 'cambio guardado' : 'cambios guardados'} sin publicar en la web.`;
+      $('stateWarn').hidden = estadoWeb.supported;
+      $('rebuildBtn').classList.toggle('primary', estadoWeb.supported && n > 0);
+    }
+
+    // Un cambio que afecta a la web pública. Con el SQL ejecutado, queda pendiente; sin él, se publica al guardar como antes.
+    async function registrarCambio() {
+      if (!estadoWeb.supported) return await publicar();
+      const { error } = await sb.rpc('mark_site_dirty');
+      await cargarEstadoWeb();
+      if (error) return { ok: false, msg: 'Guardado, pero no se ha podido anotar como pendiente (' + error.message + ').' };
+      return { ok: true, msg: 'Aún no se ve en la web: pulsa «Actualizar web» cuando termines.' };
+    }
+
+    // «Actualizar web»: reconstruye la web y pone el contador a cero.
+    async function actualizarWeb() {
+      mostrarGuardando();
+      const r = await publicar();
+      if (r.ok && estadoWeb.supported) await sb.rpc('mark_site_published');
+      await cargarEstadoWeb();
+      ocultarGuardando();
+      banner($('listMsg'), r.msg, r.ok ? 'ok' : 'error');
+      if (r.ok) window.scrollTo(0, 0);
+      return r;
+    }
+
+    $('rebuildBtn').addEventListener('click', actualizarWeb);
+    $('pendingBtn').addEventListener('click', actualizarWeb);
+
+    // Al cerrar la pestaña con cambios sin publicar, el navegador pide confirmación (el texto lo pone el propio navegador).
+    window.addEventListener('beforeunload', (e) => {
+      if (estadoWeb.supported && estadoWeb.pending > 0) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    // ---------- fotos ----------
+    async function prepararImagen(file) {
+      if (file.type === 'image/gif' || file.type === 'image/svg+xml') return { blob: file, ext: file.type === 'image/gif' ? 'gif' : 'svg', type: file.type };
+      const bmp = await createImageBitmap(file);
+      const scale = Math.min(1, 1600 / bmp.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * scale);
+      canvas.height = Math.round(bmp.height * scale);
+      canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.85));
+      return { blob, ext: 'jpg', type: 'image/jpeg' };
+    }
+
+    async function subirImagen(file, carpeta) {
+      const img = await prepararImagen(file);
+      const nombre = slugify(file.name.replace(/\.[^.]+$/, '')) || 'foto';
+      const path = `${carpeta}/${Date.now()}-${nombre}.${img.ext}`;
+      const { error } = await sb.storage.from(BUCKET).upload(path, img.blob, { contentType: img.type, upsert: false });
+      if (error) throw error;
+      return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    }
+
+    function pintarPortada() {
+      $('coverPreview').hidden = !coverUrl;
+      $('coverRemove').hidden = !coverUrl;
+      if (coverUrl) { $('coverPreview').src = coverUrl; document.querySelector('.cover').classList.remove('is-missing'); }
+    }
+
+    $('coverFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      $('coverStatus').textContent = 'Subiendo…';
+      try { coverUrl = await subirImagen(file, 'portadas'); pintarPortada(); $('coverStatus').textContent = 'Foto subida.'; }
+      catch (err) { $('coverStatus').textContent = 'No se ha podido subir: ' + (err.message || err); }
+      e.target.value = '';
+    });
+    $('coverRemove').addEventListener('click', () => { coverUrl = null; pintarPortada(); });
+
+    // ---------- editor ----------
+    // ---------- botón dentro del texto ----------
+    // Elemento propio del editor: se guarda como <a class="blog-btn" href="…">Texto</a> y se pinta siempre como botón naranja.
+    // Colores (preajustes de la web) que lleva un botón, leídos de sus clases: b-naranja|beige|negro y t-blanco|negro|naranja.
+    const coloresBoton = (n) => ({
+      bg: ([...n.classList].find((c) => c.startsWith('b-')) || 'b-naranja').slice(2),
+      fg: ([...n.classList].find((c) => c.startsWith('t-')) || 't-blanco').slice(2)
+    });
+    const COLOR_BG = { naranja: '#E07A3E', beige: '#E3D6C0', negro: '#1A1512' };
+    const COLOR_FG = { blanco: '#FFFFFF', negro: '#1A1512', naranja: '#E07A3E' };
+    const LETRA_POR_FONDO = { naranja: 'blanco', beige: 'negro', negro: 'blanco' };
+    const luz = (hex) => {
+      const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    };
+    const contraste = (a, b) => { const [x, y] = [luz(a), luz(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
+
+    let botonRegistrado = false;
+    function registrarBoton() {
+      if (botonRegistrado) return;
+      botonRegistrado = true;
+      const BlockEmbed = window.Quill.import('blots/block/embed');
+      class BotonBlot extends BlockEmbed {
+        static blotName = 'boton';
+        static tagName = 'a';
+        static className = 'blog-btn';
+        static create(v) {
+          const n = super.create();
+          n.setAttribute('href', v.url);
+          if (/^https?:\/\//i.test(v.url)) { n.setAttribute('target', '_blank'); n.setAttribute('rel', 'noopener noreferrer'); }
+          n.textContent = v.text;
+          n.classList.add('b-' + (v.bg || 'naranja'), 't-' + (v.fg || 'blanco'));
+          return n;
+        }
+        static value(n) { return { url: n.getAttribute('href'), text: n.textContent, ...coloresBoton(n) }; }
+      }
+      window.Quill.register(BotonBlot);
+      window.Quill.import('ui/icons').boton = '+ Botón';
+    }
+
+    const urlBoton = (u) => /^https?:\/\/\S+$/i.test(u) || /^\/(?!\/)\S*$/.test(u);
+
+    // Abre el cuadro; devuelve {text,url}, 'quitar' o null (cancelado).
+    function pedirBoton(actual) {
+      return new Promise((resolve) => {
+        const dlg = $('btnDialog');
+        $('btnDialogTitle').textContent = actual ? 'Editar botón' : 'Insertar botón';
+        $('btnOk').textContent = actual ? 'Guardar' : 'Insertar';
+        $('btnRemove').hidden = !actual;
+        $('btnText').value = actual?.text ?? '';
+        $('btnUrl').value = actual?.url ?? '';
+        $('btnMsg').textContent = '';
+        const radio = (n) => $('btnForm').querySelector(`input[name=${n}]:checked`).value;
+        const marcar = (n, v) => { const r = $('btnForm').querySelector(`input[name=${n}][value=${v}]`); if (r) r.checked = true; };
+        marcar('btnBg', actual?.bg || 'naranja');
+        marcar('btnFg', actual?.fg || 'blanco');
+        const pintar = () => {
+          const bg = radio('btnBg'), fg = radio('btnFg');
+          $('btnPreview').textContent = $('btnText').value.trim() || 'Botón';
+          $('btnPreview').className = `blog-btn b-${bg} t-${fg}`;
+          $('btnContrast').hidden = contraste(COLOR_BG[bg], COLOR_FG[fg]) >= 3;
+        };
+        // Al elegir un fondo, la letra se pone sola en una combinación que se lee bien (se puede cambiar después).
+        const alFondo = () => { marcar('btnFg', LETRA_POR_FONDO[radio('btnBg')]); pintar(); };
+        $('btnForm').querySelectorAll('input[name=btnBg]').forEach((r) => (r.onchange = alFondo));
+        $('btnForm').querySelectorAll('input[name=btnFg]').forEach((r) => (r.onchange = pintar));
+        pintar();
+        const fin = (v) => { dlg.removeEventListener('close', alCerrar); $('btnForm').onsubmit = null; $('btnText').oninput = null; $('btnRemove').onclick = null; $('btnCancel').onclick = null; if (dlg.open) dlg.close(); resolve(v); };
+        const alCerrar = () => fin(null);
+        dlg.addEventListener('close', alCerrar);
+        $('btnText').oninput = pintar;
+        $('btnCancel').onclick = () => fin(null);
+        $('btnRemove').onclick = () => fin('quitar');
+        $('btnForm').onsubmit = (e) => {
+          e.preventDefault();
+          const text = $('btnText').value.trim();
+          const url = $('btnUrl').value.trim();
+          if (!text) return ($('btnMsg').textContent = 'Escribe lo que dirá el botón.');
+          if (!urlBoton(url)) return ($('btnMsg').textContent = 'El enlace debe empezar por https:// o por / (por ejemplo /ebook).');
+          fin({ text, url, bg: radio('btnBg'), fg: radio('btnFg') });
+        };
+        dlg.showModal();
+        $('btnText').focus();
+      });
+    }
+
+    async function insertarBoton() {
+      // Dónde insertarlo: donde esté el cursor; si no hay cursor en el texto, al final.
+      const sel = quill.getSelection(true) || { index: Math.max(0, quill.getLength() - 1) };
+      const v = await pedirBoton(null);
+      if (!v || v === 'quitar') return;
+      quill.insertEmbed(sel.index, 'boton', v, 'user');
+      quill.setSelection(sel.index + 1);
+    }
+
+    async function editarBoton(node) {
+      const blot = window.Quill.find(node);
+      if (!blot) return;
+      const idx = quill.getIndex(blot);
+      const v = await pedirBoton({ text: node.textContent, url: node.getAttribute('href'), ...coloresBoton(node) });
+      if (v === null) return;
+      quill.deleteText(idx, 1, 'user');
+      if (v !== 'quitar') quill.insertEmbed(idx, 'boton', v, 'user');
+    }
+
+    function iniciarEditor() {
+      if (quill) return;
+      registrarBoton();
+      quill = new window.Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Escribe aquí tu entrada…',
+        modules: {
+          toolbar: {
+            container: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['blockquote'], ['image', 'boton'], ['clean']],
+            handlers: {
+              boton() { insertarBoton(); },
+              image() {
+                const input = document.createElement('input');
+                input.type = 'file'; input.accept = 'image/*';
+                input.onchange = async () => {
+                  const file = input.files[0];
+                  if (!file) return;
+                  try {
+                    const url = await subirImagen(file, 'texto');
+                    const at = quill.getSelection(true).index;
+                    quill.insertEmbed(at, 'image', url, 'user');
+                    quill.setSelection(at + 1);
+                  } catch (err) { banner($('editMsg'), 'No se ha podido subir la foto: ' + (err.message || err), 'error'); }
+                };
+                input.click();
+              }
+            }
+          }
+        }
+      });
+      // Al recargar una entrada, los <a class="blog-btn"> vuelven a ser botones (y no enlaces sueltos).
+      const Delta = window.Quill.import('delta');
+      quill.clipboard.addMatcher('a.blog-btn', (node) => new Delta().insert({ boton: { text: node.textContent, url: node.getAttribute('href'), ...coloresBoton(node) } }));
+      // Un clic sobre un botón del texto lo abre para editarlo o quitarlo.
+      quill.root.addEventListener('click', (e) => {
+        const a = e.target.closest && e.target.closest('a.blog-btn');
+        if (a) { e.preventDefault(); editarBoton(a); }
+      });
+      iniciarTamanoImagenes();
+      quill.on('text-change', () => $('editor').classList.remove('is-missing'));
+    }
+
+    // Tamaño de las fotos del texto: al hacer clic en una foto aparece una barrita con 25 % · 50 % · 75 % · 100 % (ancho del texto).
+    function iniciarTamanoImagenes() {
+      const cont = quill.container;
+      const bar = document.createElement('div');
+      bar.className = 'img-tools'; bar.hidden = true;
+      let sel = null;
+      const botones = [['25 %', '25%'], ['50 %', '50%'], ['75 %', '75%'], ['100 %', false]];
+      for (const [txt, val] of botones) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = txt; b.dataset.w = val === false ? '' : val;
+        b.addEventListener('mousedown', (e) => e.preventDefault());
+        b.addEventListener('click', () => {
+          if (!sel) return;
+          const blot = window.Quill.find(sel);
+          if (!blot) return;
+          quill.formatText(quill.getIndex(blot), 1, 'width', val, 'user');
+          colocar();
+        });
+        bar.append(b);
+      }
+      const sep = document.createElement('span'); sep.className = 'sep'; bar.append(sep);
+      const del = document.createElement('button');
+      del.type = 'button'; del.textContent = 'Quitar foto';
+      del.addEventListener('mousedown', (e) => e.preventDefault());
+      del.addEventListener('click', () => {
+        if (!sel) return;
+        const blot = window.Quill.find(sel);
+        if (blot) quill.deleteText(quill.getIndex(blot), 1, 'user');
+        ocultar();
+      });
+      bar.append(del);
+      cont.append(bar);
+
+      function colocar() {
+        if (!sel || !sel.isConnected) return ocultar();
+        const c = cont.getBoundingClientRect();
+        const r = sel.getBoundingClientRect();
+        bar.hidden = false;
+        bar.style.top = Math.max(4, r.top - c.top + cont.scrollTop - bar.offsetHeight - 6) + 'px';
+        bar.style.left = Math.max(4, r.left - c.left) + 'px';
+        const actual = sel.getAttribute('width') || '';
+        bar.querySelectorAll('button[data-w]').forEach((b) => b.classList.toggle('is-active', b.dataset.w === actual));
+      }
+      function ocultar() {
+        if (sel) sel.classList.remove('is-selected');
+        sel = null; bar.hidden = true;
+      }
+      quill.root.addEventListener('click', (e) => {
+        if (e.target.tagName === 'IMG') {
+          if (sel) sel.classList.remove('is-selected');
+          sel = e.target; sel.classList.add('is-selected'); colocar();
+        } else ocultar();
+      });
+      quill.on('text-change', () => { if (sel) colocar(); });
+      window.addEventListener('resize', () => { if (sel) colocar(); });
+    }
+
+    // ---------- «Destacada» solo está disponible con la entrada publicada ----------
+    // Sin publicar se ve apagada y desmarcada; al volver a marcar «Publicada» se reactiva y recupera su valor.
+    let destacadaGuardada = false;
+    function syncDestacada() {
+      const pub = $('fPublished').checked;
+      const f = $('fFeatured');
+      if (!pub && !f.disabled) { destacadaGuardada = f.checked; f.checked = false; }
+      if (pub && f.disabled) f.checked = destacadaGuardada;
+      f.disabled = !pub;
+      f.closest('label').classList.toggle('is-off', !pub);
+    }
+    $('fPublished').addEventListener('change', syncDestacada);
+
+    // ---------- eventos mensuales ----------
+    const isUrl = (u) => /^https?:\/\/\S+$/i.test(u);
+
+    function renumerar() {
+      const filas = [...$('eventsList').children];
+      filas.forEach((row, i) => {
+        row.querySelector('.event-num').textContent = 'Evento ' + (i + 1);
+        row.querySelector('[data-mover=arriba]').disabled = i === 0;
+        row.querySelector('[data-mover=abajo]').disabled = i === filas.length - 1;
+      });
+    }
+
+    // Reordenar los eventos: este es el orden en que salen en la entrada, en el carrusel y en la vista previa.
+    $('eventsList').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-mover]');
+      if (!b) return;
+      const row = b.closest('.event-row');
+      const list = $('eventsList');
+      if (b.dataset.mover === 'arriba' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+      else if (b.dataset.mover === 'abajo' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+      renumerar();
+      const mismo = row.querySelector(`[data-mover=${b.dataset.mover}]`);
+      (mismo && !mismo.disabled ? mismo : row.querySelector('.drag-handle')).focus();
+    });
+    arrastrable($('eventsList'), { asa: '.event-handle', fila: '.event-row', alSoltar: renumerar });
+
+    function addEventRow(ev = {}) {
+      const row = document.createElement('div');
+      row.className = 'event-row';
+      row.innerHTML = `
+        <div class="event-top">
+          <span class="event-head"><button class="drag-handle event-handle" type="button" aria-label="Arrastrar para reordenar">⋮⋮</button><span class="event-num"></span></span>
+          <span class="event-tools">
+            <button class="btn small" type="button" data-mover="arriba" aria-label="Subir">↑</button>
+            <button class="btn small" type="button" data-mover="abajo" aria-label="Bajar">↓</button>
+            <button class="btn small danger" type="button" data-quitar>Quitar</button>
+          </span>
+        </div>
+        <div class="grid2">
+          <label><span data-l="date">Fecha (día y mes)</span><input type="date" data-f="date" /></label>
+          <label>Título<input type="text" data-f="title" maxlength="120" placeholder="Concierto de jazz" /></label>
+        </div>
+        <label class="check"><input type="checkbox" data-f="range" /> Dura varios días <small class="muted">(rango de fechas, por ejemplo 12-14 AGO)</small></label>
+        <div class="grid2" data-range-box hidden>
+          <label>Hasta (día y mes)<input type="date" data-f="end_date" /></label>
+        </div>
+        <div class="grid2">
+          <label>Subtítulo<input type="text" data-f="subtitle" maxlength="160" placeholder="con Ana García · Harlem" /></label>
+          <label>Enlace del botón (obligatorio)<input type="url" data-f="link" placeholder="https://…" /></label>
+        </div>`;
+      row.querySelector('[data-f=date]').value = ev.date || '';
+      row.querySelector('[data-f=title]').value = ev.title || '';
+      row.querySelector('[data-f=subtitle]').value = ev.subtitle || '';
+      row.querySelector('[data-f=link]').value = ev.link || '';
+      // Rango de fechas: el segundo selector solo aparece si «Dura varios días» está marcado.
+      const rango = row.querySelector('[data-f=range]');
+      const caja = row.querySelector('[data-range-box]');
+      const ini = row.querySelector('[data-f=date]');
+      const fin = row.querySelector('[data-f=end_date]');
+      const aplicarRango = () => {
+        caja.hidden = !rango.checked;
+        row.querySelector('[data-l=date]').textContent = rango.checked ? 'Desde (día y mes)' : 'Fecha (día y mes)';
+        fin.min = ini.value || '';
+        if (!rango.checked) fin.value = '';
+      };
+      fin.value = ev.end_date || '';
+      rango.checked = !!ev.end_date;
+      ini.addEventListener('change', () => { fin.min = ini.value || ''; });
+      rango.addEventListener('change', aplicarRango);
+      aplicarRango();
+      if (ev.end_date) fin.value = ev.end_date;
+      row.querySelector('[data-quitar]').addEventListener('click', () => { row.remove(); renumerar(); });
+      $('eventsList').append(row);
+      renumerar();
+    }
+
+    function readEvents() {
+      return [...$('eventsList').children].map((row) => {
+        const f = (k) => row.querySelector(`[data-f=${k}]`).value.trim();
+        const rango = row.querySelector('[data-f=range]').checked;
+        return { date: f('date'), end_date: rango ? f('end_date') : '', _rango: rango, title: f('title'), subtitle: f('subtitle'), link: f('link') };
+      }).filter((e) => e.date || e.title || e.subtitle || e.link); // las filas totalmente vacías se ignoran
+    }
+
+    function pintarEventos(list) {
+      $('eventsList').textContent = '';
+      (list || []).forEach((e) => addEventRow(e));
+    }
+
+    function toggleEventsBox() {
+      const on = $('fMonthly').checked && eventsSupported;
+      $('eventsBox').hidden = !on;
+      if (on && !$('eventsList').children.length) addEventRow();
+    }
+    $('fMonthly').addEventListener('change', toggleEventsBox);
+    $('addEventBtn').addEventListener('click', () => { if ($('fMonthly').checked) addEventRow(); }); // solo con «Eventos mensuales» activo
+
+    // Vista previa: guarda el borrador actual en el navegador y abre /blog-preview con el diseño real, sin guardar ni publicar nada.
+    $('previewBtn').addEventListener('click', () => {
+      const draft = {
+        title: $('fTitle').value.trim(),
+        excerpt: $('fExcerpt').value.trim(),
+        image: coverUrl,
+        content: quill.getSemanticHTML().replace(/&nbsp;/g, ' '),
+        monthly: $('fMonthly').checked && eventsSupported,
+        events: readEvents().filter((e) => e.date && e.title).map(({ _rango, ...e }) => e)
+      };
+      try { localStorage.setItem('blog-preview', JSON.stringify(draft)); }
+      catch { return banner($('editMsg'), 'No se ha podido preparar la vista previa en este navegador.', 'error'); }
+      window.open('/adminblog/vista-previa', '_blank');
+    });
+
+    function openEditor(post) {
+      editing = post;
+      slugTouched = !!post;
+      banner($('editMsg'), '');
+      show('editView');
+      iniciarEditor();
+      $('editTitle').textContent = post ? 'Editar entrada' : 'Nueva entrada';
+      $('fTitle').value = post?.title ?? '';
+      $('fDate').value = post?.published_at ?? today();
+      $('fSlug').value = post?.slug ?? '';
+      $('fAuthor').value = post?.author ?? 'Wilson Silver';
+      $('fExcerpt').value = post?.excerpt ?? '';
+      $('fPublished').checked = post ? !!post.published : false;
+      destacadaGuardada = !!post?.featured;
+      $('fFeatured').checked = destacadaGuardada && $('fPublished').checked;
+      $('fFeatured').disabled = !$('fPublished').checked;
+      $('fFeatured').closest('label').classList.toggle('is-off', !$('fPublished').checked);
+      $('fMonthly').checked = !!post?.monthly_events;
+      $('fMonthly').disabled = !eventsSupported;
+      $('monthlyWarn').hidden = eventsSupported;
+      pintarEventos(Array.isArray(post?.events) ? post.events : []);
+      toggleEventsBox();
+      coverUrl = post?.image ?? null;
+      pintarPortada();
+      $('coverStatus').textContent = 'Se reduce sola a 1600 px de ancho.';
+      quill.setContents([]);
+      if (post?.content) quill.clipboard.dangerouslyPasteHTML(post.content);
+      // El enlace queda bloqueado cuando la entrada ya está publicada (para no romper enlaces compartidos).
+      const bloqueado = !!post && post.published;
+      $('fSlug').disabled = bloqueado;
+      $('slugHelp').firstChild.textContent = bloqueado ? 'Bloqueado porque ya está publicada. /blog/' : 'Sale del título. /blog/';
+      $('slugPreview').textContent = $('fSlug').value || '…';
+      $('deleteBtn').hidden = !post;
+      window.scrollTo(0, 0);
+    }
+
+    $('postForm').addEventListener('input', (e) => { if (e.target.classList) e.target.classList.remove('is-missing'); });
+    $('fTitle').addEventListener('input', () => {
+      if (!slugTouched) { $('fSlug').value = slugify($('fTitle').value); $('slugPreview').textContent = $('fSlug').value || '…'; }
+    });
+    $('fSlug').addEventListener('input', () => {
+      slugTouched = true;
+      $('fSlug').value = slugify($('fSlug').value);
+      $('slugPreview').textContent = $('fSlug').value || '…';
+    });
+
+    // ---------- guardar ----------
+    $('postForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      banner($('editMsg'), '');
+      const title = $('fTitle').value.trim();
+      const slug = $('fSlug').value.trim() || slugify(title);
+      if (!title) return banner($('editMsg'), 'Escribe un título.', 'error');
+      if (!slug) return banner($('editMsg'), 'El enlace no puede estar vacío.', 'error');
+      if (RESERVED.includes(slug)) return banner($('editMsg'), `El enlace «${slug}» está reservado. Elige otro.`, 'error');
+      const publicar_ = $('fPublished').checked;
+      document.querySelectorAll('.is-missing').forEach((x) => x.classList.remove('is-missing'));
+
+      // Para PUBLICAR, todos los campos son obligatorios (foto incluida). Un borrador puede estar incompleto.
+      if (publicar_) {
+        const falta = [];
+        const marcar = (el, nombre) => { falta.push(nombre); el.classList.add('is-missing'); };
+        if (!title) marcar($('fTitle'), 'título');
+        if (!$('fDate').value) marcar($('fDate'), 'fecha');
+        if (!slug) marcar($('fSlug'), 'enlace');
+        if (!$('fAuthor').value.trim()) marcar($('fAuthor'), 'autor');
+        if (!$('fExcerpt').value.trim()) marcar($('fExcerpt'), 'resumen');
+        if (!coverUrl) marcar(document.querySelector('.cover'), 'foto de portada');
+        const sinTexto = !quill.root.textContent.trim() && !quill.root.querySelector('img'); // se lee de lo que se ve en el editor
+        if (sinTexto) marcar($('editor'), 'texto');
+        if (falta.length) {
+          return banner($('editMsg'), 'Para publicar falta rellenar: ' + falta.join(', ') + '. Si aún no está lista, desmarca «Publicada» y guárdala como borrador.', 'error');
+        }
+      }
+
+      const monthly = $('fMonthly').checked && eventsSupported;
+      const events = readEvents();
+      if (monthly && publicar_ && !events.length) {
+        $('eventsBox').classList.add('is-missing');
+        return banner($('editMsg'), 'Para publicar con «Eventos mensuales» activo añade al menos un evento (o desmarca esa casilla).', 'error');
+      }
+      if (monthly) {
+        const rows = [...$('eventsList').children];
+        rows.forEach((r) => r.classList.remove('is-invalid'));
+        for (let i = 0; i < events.length; i++) {
+          const e = events[i];
+          let problema = '';
+          if (!e.date) problema = 'falta la fecha';
+          else if (e._rango && !e.end_date) problema = 'falta la fecha final del rango (o desmarca «Dura varios días»)';
+          else if (e._rango && e.end_date <= e.date) problema = 'la fecha final debe ser posterior a la inicial';
+          else if (!e.title) problema = 'falta el título';
+          else if (publicar_ && !e.subtitle) problema = 'falta el subtítulo';
+          else if (!e.link) problema = 'falta el enlace del botón (es obligatorio)';
+          else if (!isUrl(e.link)) problema = 'el enlace debe empezar por https:// o http://';
+          if (problema) {
+            const filas = rows.filter((r) => [...r.querySelectorAll('[data-f]')].some((x) => x.value.trim()));
+            if (filas[i]) filas[i].classList.add('is-invalid');
+            return banner($('editMsg'), `Evento ${i + 1}: ${problema}.`, 'error');
+          }
+        }
+      }
+      const row = {
+        slug, title,
+        excerpt: $('fExcerpt').value.trim(),
+        content: quill.getSemanticHTML().replace(/&nbsp;/g, ' '), // sin espacios «duros»: así el texto salta de línea
+        author: $('fAuthor').value.trim() || 'Wilson Silver',
+        image: coverUrl,
+        featured: $('fFeatured').checked && $('fPublished').checked, // un borrador nunca es la destacada
+        published: $('fPublished').checked,
+        published_at: $('fDate').value || today(),
+        // Solo se envían si la base de datos ya tiene las columnas (supabase/monthly-events.sql).
+        ...(eventsSupported ? { monthly_events: monthly, events: events.map(({ _rango, end_date, ...e }) => (end_date ? { ...e, end_date } : e)) } : {})
+      };
+      $('saveBtn').disabled = true;
+      mostrarGuardando();
+      let saved, error;
+      if (editing) ({ data: saved, error } = await sb.from('posts').update(row).eq('id', editing.id).select().single());
+      else ({ data: saved, error } = await sb.from('posts').insert(row).select().single());
+      if (error) {
+        $('saveBtn').disabled = false;
+        ocultarGuardando();
+        const dup = error.code === '23505';
+        return banner($('editMsg'), dup ? 'Ya existe una entrada con ese enlace. Cambia el título o el enlace.' : 'No se ha podido guardar: ' + error.message, 'error');
+      }
+      // Solo una destacada a la vez.
+      if (row.featured) await sb.from('posts').update({ featured: false }).neq('id', saved.id).eq('featured', true);
+      // Solo cuenta como cambio de la web si la entrada está publicada (antes o después) o activa los eventos mensuales.
+      const afectaWeb = !!(row.published || editing?.published || (row.monthly_events && !editing?.monthly_events));
+      const r = afectaWeb ? await registrarCambio() : { ok: true, msg: '' };
+      $('saveBtn').disabled = false;
+      await showList(afectaWeb ? 'Entrada guardada. ' + r.msg : 'Borrador guardado. No cambia la web pública.', r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- borrar ----------
+    $('deleteBtn').addEventListener('click', async () => {
+      if (!editing) return;
+      if (!confirm(`¿Borrar «${editing.title}»? No se puede deshacer.`)) return;
+      mostrarGuardando();
+      const { error } = await sb.from('posts').delete().eq('id', editing.id);
+      if (error) { ocultarGuardando(); return banner($('editMsg'), 'No se ha podido borrar: ' + error.message, 'error'); }
+      const r = editing.published ? await registrarCambio() : { ok: true, msg: '' };
+      await showList('Entrada borrada. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- arranque ----------
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      session = data.session;
+      sb.auth.onAuthStateChange((_ev, s) => { session = s; });
+      if (session && (await esAdmin())) await showList();
+      else show('loginView');
+    })();
+  </script>
+</body>
+</html>
