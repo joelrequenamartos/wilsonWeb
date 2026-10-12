@@ -1212,6 +1212,7 @@
   .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono";}
 
   /* ---------- botón «Ver todos» y página de todos los artículos (10 por página) ---------- */
+  .blog-empty{margin-top:8px; padding:28px 0; font-size:1.1rem; color:var(--ink-soft);}
   .blog-all-btn{margin-top:18px;}
   .blog-all{max-width:880px;}
   .blog-all .tour-back{display:flex;}

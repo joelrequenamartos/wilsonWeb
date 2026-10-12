@@ -27,7 +27,7 @@ const numbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
       <div class="wrap blog-all">
         <a class="tour-back" href="/blog"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-arrow" /></svg>Volver al blog</a>
         <h1 class="blog-all-title">Todos los artículos</h1>
-        <BlogRows posts={page.data} />
+        {page.data.length === 0 ? <p class="blog-empty">Todavía no hay artículos publicados.</p> : <BlogRows posts={page.data} />}
 
         {page.lastPage > 1 && (
           <nav class="blog-pager" aria-label="Paginación">

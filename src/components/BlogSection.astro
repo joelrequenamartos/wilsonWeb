@@ -31,9 +31,13 @@ const latest = posts.slice(0, 5); // las 5 últimas; el resto, en «Ver todos»
       <span class="eyebrow">Lo que necesitas saber de Nueva York</span>
       <h2 class="section-title">Últimos artículos</h2>
     </div>
-    <div>
-      <BlogRows posts={latest} />
-      <a class="btn btn-outline blog-all-btn" href="/blog/todos">Ver todos <svg class="icon"><use href="#i-arrow" /></svg></a>
-    </div>
+    {posts.length === 0 ? (
+      <p class="blog-empty">Estamos preparando los primeros artículos. ¡Vuelve pronto!</p>
+    ) : (
+      <div>
+        <BlogRows posts={latest} />
+        <a class="btn btn-outline blog-all-btn" href="/blog/todos">Ver todos <svg class="icon"><use href="#i-arrow" /></svg></a>
+      </div>
+    )}
   </div>
 </section>

@@ -42,8 +42,8 @@ const toEvents = (raw: unknown): MonthlyEvent[] =>
 let cache: { at: number; value: Promise<Post[]> } | null = null;
 
 // Entradas publicadas, de la más reciente a la más antigua.
-// Se leen de Supabase al compilar la web; si Supabase no responde, se usan las de src/content/blog
-// para que una caída nunca deje el blog vacío.
+// Se leen de Supabase al compilar la web; si Supabase FALLA (no responde, error), se usan las de src/content/blog
+// para que una caída no rompa el blog. Si responde bien y no hay ninguna publicada, el blog queda vacío.
 async function loadPosts(): Promise<Post[]> {
   try {
     // Orden manual del panel (columna «position»). Si esa columna aún no existe en Supabase, se ordena por fecha.
@@ -52,7 +52,8 @@ async function loadPosts(): Promise<Post[]> {
     if (res.status === 400) res = await fetch(`${base}&order=published_at.desc`, { headers: { apikey: SUPABASE_KEY } });
     if (!res.ok) throw new Error(`Supabase ${res.status}`);
     const rows = await res.json();
-    if (!Array.isArray(rows) || rows.length === 0) throw new Error('sin entradas publicadas');
+    if (!Array.isArray(rows)) throw new Error('respuesta inesperada de Supabase');
+    // Si Supabase responde bien y no hay ninguna publicada, el blog está vacío (no se usa el respaldo antiguo).
     return rows.map((r: any) => ({
       slug: r.slug,
       title: r.title,
