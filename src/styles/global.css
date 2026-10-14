@@ -377,7 +377,15 @@
   .promo-modal{display:none; position:fixed; inset:0; z-index:210; background:rgba(13,11,9,.72); align-items:center; justify-content:center; padding:24px;}
   .promo-modal[data-open="true"]{display:flex;}
   .promo-card{position:relative; background:var(--surface); border-radius:var(--radius-lg); box-shadow:0 24px 60px -20px rgba(0,0,0,.5); max-width:480px; width:100%; max-height:84vh; overflow-y:auto; padding:30px 26px 26px; display:flex; flex-direction:column; gap:12px; align-items:flex-start;}
-  .promo-tag{font-family:"Space Mono"; font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--coral-dark); background:rgba(224,122,62,.14); padding:5px 11px; border-radius:100px;}
+  .promo-tag{font-family:"Space Mono"; font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:#1f9d55; padding:5px 11px; border-radius:100px;}
+  .promo-badge{
+    position:absolute; top:10px; right:10px; z-index:2; background:#1f9d55; color:#fff;
+    font-family:"Space Mono"; font-size:.66rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    padding:6px 11px; border-radius:100px; box-shadow:0 6px 14px -6px rgba(0,0,0,.45); line-height:1;
+  }
+  .promo-text img{max-width:100%; height:auto; border-radius:12px; display:block; margin:.5em 0;}
+  .promo-text .ql-align-center{text-align:center;} .promo-text .ql-align-right{text-align:right;} .promo-text .ql-align-justify{text-align:justify;}
+  .promo-text img.ql-align-center{margin-inline:auto;}
   .promo-card h3{font-size:1.3rem; padding-right:34px;}
   .promo-text{color:var(--ink-soft); line-height:1.6; width:100%;}
   .promo-text p{margin:0 0 .7em;}

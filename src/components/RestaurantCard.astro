@@ -18,6 +18,7 @@ const web = restaurant.website;
 <article class="rest-card" data-cuisine={restaurant.cuisine} data-name={restaurant.name}>
   <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]}>
     {banner && <div class="rest-bg" style={`background-image:url('${banner}');${adjustStyle(restaurant.adjust?.banner) ?? ''}`}></div>}
+    {promo && <span class="promo-badge">Descuento disponible</span>}
     <span class="rest-logo">
       {logo ? <img src={logo} alt={`Logo de ${restaurant.name}`} loading="lazy" style={logoStyle(restaurant.adjust?.logo)} /> : <svg class="icon" aria-hidden="true"><use href="#i-fork" /></svg>}
     </span>

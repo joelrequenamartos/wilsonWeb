@@ -157,7 +157,7 @@
 
         <div class="card-prev-wrap">
           <span class="label">Así se verá en la tarjeta</span>
-          <div class="card-prev" id="cardPrev"><div class="bg" id="cpBg"></div><span class="lg"><img id="cpLogo" alt="" hidden /><span id="cpIcon">🍴</span></span></div>
+          <div class="card-prev" id="cardPrev"><span class="cp-badge">Descuento disponible</span><div class="bg" id="cpBg"></div><span class="lg"><img id="cpLogo" alt="" hidden /><span id="cpIcon">🍴</span></span></div>
         </div>
 
         <div class="grid2">
@@ -286,9 +286,11 @@
     .logo-prev, .banner-prev{display:flex; align-items:center; justify-content:center; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
     .promo-box{margin:6px 0 16px;}
     .promo-box[hidden]{display:none;}
+    #promoEditor .ql-editor img{max-width:100%; height:auto; border-radius:10px;}
     #promoEditor{min-height:150px; background:#fff; font-size:1rem; font-family:inherit;}
     .promo-box .ql-toolbar{border-radius:12px 12px 0 0; background:#fff;}
     .promo-box .ql-container{border-radius:0 0 12px 12px; font-family:inherit;}
+    .pill.promo{background:#e3f5ea; color:#14653a;}
     .adjust{display:grid; gap:8px; margin-top:10px;}
     .adjust label{display:grid; grid-template-columns:78px 1fr 46px; align-items:center; gap:8px; font-size:.82rem; font-weight:600; margin:0;}
     .adjust label output{order:3; font-weight:400; color:var(--soft); text-align:right; font-size:.78rem;}
@@ -296,6 +298,8 @@
     .adjust[hidden]{display:none;}
     .card-prev-wrap{margin:4px 0 16px;}
     .card-prev{position:relative; height:132px; max-width:380px; border-radius:14px; overflow:hidden; isolation:isolate; display:flex; align-items:center; padding:0 18px; background:linear-gradient(135deg,#C25F26,#E07A3E); margin-top:6px;}
+    .card-prev .cp-badge{display:none; position:absolute; top:10px; right:10px; z-index:2; background:#1f9d55; color:#fff; font-size:.62rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:6px 11px; border-radius:100px; line-height:1;}
+    .card-prev.has-promo .cp-badge{display:block;}
     .card-prev .bg{position:absolute; inset:0; z-index:-2; background-size:cover; background-position:center;}
     .card-prev.has-bg::before{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(13,11,9,.5) 0%, rgba(13,11,9,.12) 65%, rgba(13,11,9,.04) 100%);}
     .card-prev .lg{width:80px; height:80px; flex:none; display:flex; align-items:center; justify-content:center; background:transparent; font-size:2rem;}
@@ -526,7 +530,7 @@
         if (r.neighborhood) meta.append(pill('📍 ' + r.neighborhood));
         meta.append(pill(r.price));
         if (r.featured_rank != null) meta.append(pill('★ Banner · puesto ' + r.featured_rank, 'feat'));
-        if (r.has_promo) meta.append(pill('🏷 Promoción'));
+        if (r.has_promo) meta.append(pill('Descuento disponible', 'promo'));
         if (!r.published) meta.append(pill('Oculto', 'hide'));
         info.append(h, meta);
         const actions = document.createElement('div'); actions.className = 'rest-actions';
@@ -789,12 +793,35 @@
       quillPromo = new window.Quill('#promoEditor', {
         theme: 'snow',
         placeholder: 'Escribe aquí la promoción…',
-        modules: { toolbar: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['clean']] }
+        modules: {
+          toolbar: {
+            container: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], [{ align: [] }], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['image'], ['clean']],
+            handlers: {
+              image() {
+                const input = document.createElement('input');
+                input.type = 'file'; input.accept = 'image/*';
+                input.onchange = async () => {
+                  const file = input.files[0];
+                  if (!file) return;
+                  try {
+                    banner($('editMsg'), '');
+                    const url = await subirImagen(file, 'promo');
+                    const at = quillPromo.getSelection(true).index;
+                    quillPromo.insertEmbed(at, 'image', url, 'user');
+                    quillPromo.setSelection(at + 1);
+                  } catch (err) { banner($('editMsg'), 'No se ha podido subir la foto: ' + (err.message || err), 'error'); }
+                };
+                input.click();
+              }
+            }
+          }
+        }
       });
     }
     function syncPromo() {
       const on = $('fPromo').checked;
       $('promoBox').hidden = !on;
+      $('cardPrev').classList.toggle('has-promo', on);
       if (on) iniciarPromo();
     }
     $('fPromo').addEventListener('change', syncPromo);

@@ -100,7 +100,7 @@ export function safeUrl(u: unknown): string | null {
 
 // El texto de la promoción lo escribe el administrador, pero se limpia igualmente: solo etiquetas de texto
 // básicas y enlaces http(s)/mailto/tel.
-const TAGS = new Set(['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'a', 'h2', 'h3', 'blockquote']);
+const TAGS = new Set(['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'a', 'h2', 'h3', 'blockquote', 'img']);
 export function cleanPromo(html: string): string {
   return html
     .replace(/<(script|style|iframe|object|embed)[\s\S]*?<\/\1\s*>/gi, '')
@@ -108,7 +108,15 @@ export function cleanPromo(html: string): string {
       tag = tag.toLowerCase();
       if (!TAGS.has(tag)) return '';
       if (m.startsWith('</')) return `</${tag}>`;
-      if (tag !== 'a') return `<${tag}>`;
+      if (tag === 'img') {
+        const src = /src\s*=\s*("([^"]*)"|'([^']*)')/i.exec(attrs);
+        const v = (src?.[2] ?? src?.[3] ?? '').trim();
+        return /^https?:\/\//i.test(v) ? `<img src="${v.replace(/"/g, '&quot;')}" alt="" loading="lazy">` : '';
+      }
+      if (tag !== 'a') {
+        const al = /ql-align-(center|right|justify)/.exec(attrs);
+        return al ? `<${tag} class="ql-align-${al[1]}">` : `<${tag}>`;
+      }
       const href = /href\s*=\s*("([^"]*)"|'([^']*)')/i.exec(attrs);
       const v = (href?.[2] ?? href?.[3] ?? '').trim();
       return /^(https?:|mailto:|tel:)/i.test(v) ? `<a href="${v.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">` : '<a>';
