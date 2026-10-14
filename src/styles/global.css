@@ -355,7 +355,7 @@
   .art-place3{background:linear-gradient(135deg,#A8501E,#E07A3E);}
 
   /* ---------- restaurants ---------- */
-  .rest-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow); transition:transform .2s ease;}
+  .rest-card{position:relative; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow); transition:transform .2s ease;}
   @media (hover:hover){.rest-card:hover{transform:translateY(-5px);}}
   /* cabecera de la tarjeta: foto de comida por detrás (si hay) y el logo a la izquierda */
   .rest-art{height:132px; display:flex; align-items:center; justify-content:flex-start; padding:0 18px; color:#fff; position:relative; isolation:isolate; overflow:hidden;}
@@ -369,6 +369,24 @@
   .rest-body{padding:16px 18px 20px; display:flex; flex-direction:column; gap:8px;}
   .rest-top{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
   .rest-top h3{font-size:1.05rem;}
+  /* Toda la tarjeta es clicable: el enlace del nombre se estira sobre ella */
+  .rest-link{all:unset; cursor:pointer; color:inherit; font:inherit;}
+  .rest-link::after{content:""; position:absolute; inset:0; z-index:3;}
+  .rest-link:focus-visible{outline:3px solid var(--coral); outline-offset:3px; border-radius:4px;}
+  @media (hover:hover){.rest-card:has(.rest-link):hover .rest-top h3{color:var(--coral-dark);}}
+  .promo-modal{display:none; position:fixed; inset:0; z-index:210; background:rgba(13,11,9,.72); align-items:center; justify-content:center; padding:24px;}
+  .promo-modal[data-open="true"]{display:flex;}
+  .promo-card{position:relative; background:var(--surface); border-radius:var(--radius-lg); box-shadow:0 24px 60px -20px rgba(0,0,0,.5); max-width:480px; width:100%; max-height:84vh; overflow-y:auto; padding:30px 26px 26px; display:flex; flex-direction:column; gap:12px; align-items:flex-start;}
+  .promo-tag{font-family:"Space Mono"; font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--coral-dark); background:rgba(224,122,62,.14); padding:5px 11px; border-radius:100px;}
+  .promo-card h3{font-size:1.3rem; padding-right:34px;}
+  .promo-text{color:var(--ink-soft); line-height:1.6; width:100%;}
+  .promo-text p{margin:0 0 .7em;}
+  .promo-text ul, .promo-text ol{margin:0 0 .7em 1.2em;}
+  .promo-text ul{list-style:disc;} .promo-text ol{list-style:decimal;}
+  .promo-text a{color:var(--coral-dark); text-decoration:underline;}
+  .promo-text h2, .promo-text h3{margin:.4em 0 .4em; font-size:1.05rem; color:var(--ink);}
+  .promo-close{position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; background:var(--bg-alt); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);}
+  .promo-close .icon{width:18px; height:18px;}
   .price-tag{font-family:"Space Mono"; font-weight:700; color:var(--teal-dark); font-size:.85rem;}
   .rest-tags{display:flex; flex-wrap:wrap; gap:8px; font-size:.76rem; color:var(--ink-mute); font-weight:600;}
   .rest-tags span{background:var(--bg-alt); padding:3px 9px; border-radius:100px;}

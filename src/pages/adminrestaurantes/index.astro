@@ -12,6 +12,7 @@
   <title>Panel de restaurantes — Silver Tours NY</title>
   <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" />
 </head>
 <body>
@@ -174,6 +175,19 @@
           </div>
         </div>
 
+        <label>Enlace de la web del restaurante <small class="muted">(al hacer clic en la tarjeta se abre esta página)</small>
+          <input type="text" id="fWebsite" inputmode="url" maxlength="300" placeholder="https://www.restaurante.com" />
+        </label>
+
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="fPromo" /> Tiene promoción <small class="muted">(en vez de ir directo a la web, se abre una ventana con tu texto y el botón «Ir a la web»)</small></label>
+        </div>
+        <div id="promoBox" class="promo-box" hidden>
+          <span class="label">Texto de la promoción</span>
+          <div id="promoEditor"></div>
+          <small class="muted">Al final de la ventana aparece siempre el botón «Ir a la web», que usa el enlace de arriba.</small>
+        </div>
+
         <div class="form-actions">
           <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
           <button class="btn danger" id="deleteBtn" type="button" hidden>Borrar restaurante</button>
@@ -270,6 +284,11 @@
     @media (min-width:700px){.images{grid-template-columns:1fr 1.4fr;}}
     .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
     .logo-prev, .banner-prev{display:flex; align-items:center; justify-content:center; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
+    .promo-box{margin:6px 0 16px;}
+    .promo-box[hidden]{display:none;}
+    #promoEditor{min-height:150px; background:#fff; font-size:1rem; font-family:inherit;}
+    .promo-box .ql-toolbar{border-radius:12px 12px 0 0; background:#fff;}
+    .promo-box .ql-container{border-radius:0 0 12px 12px; font-family:inherit;}
     .adjust{display:grid; gap:8px; margin-top:10px;}
     .adjust label{display:grid; grid-template-columns:78px 1fr 46px; align-items:center; gap:8px; font-size:.82rem; font-weight:600; margin:0;}
     .adjust label output{order:3; font-weight:400; color:var(--soft); text-align:right; font-size:.78rem;}
@@ -303,6 +322,7 @@
     @media (prefers-reduced-motion: reduce){.spinner{animation-duration:2.6s;}}
   </style>
 
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js" is:inline></script>
   <script>
     import { createClient } from '@supabase/supabase-js';
     import { SUPABASE_URL, SUPABASE_KEY } from '../../lib/supabase';
@@ -506,6 +526,7 @@
         if (r.neighborhood) meta.append(pill('📍 ' + r.neighborhood));
         meta.append(pill(r.price));
         if (r.featured_rank != null) meta.append(pill('★ Banner · puesto ' + r.featured_rank, 'feat'));
+        if (r.has_promo) meta.append(pill('🏷 Promoción'));
         if (!r.published) meta.append(pill('Oculto', 'hide'));
         info.append(h, meta);
         const actions = document.createElement('div'); actions.className = 'rest-actions';
@@ -761,6 +782,29 @@
       $(tipo + 'Remove').addEventListener('click', () => { if (tipo === 'logo') logoUrl = null; else bannerUrl = null; ajuste[tipo] = AJ0()[tipo]; pintarImagenes(); });
     }
 
+    // ---------- promoción (mini editor de texto) ----------
+    let quillPromo = null;
+    function iniciarPromo() {
+      if (quillPromo || !window.Quill) return;
+      quillPromo = new window.Quill('#promoEditor', {
+        theme: 'snow',
+        placeholder: 'Escribe aquí la promoción…',
+        modules: { toolbar: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['clean']] }
+      });
+    }
+    function syncPromo() {
+      const on = $('fPromo').checked;
+      $('promoBox').hidden = !on;
+      if (on) iniciarPromo();
+    }
+    $('fPromo').addEventListener('change', syncPromo);
+    const normalizarUrl = (v) => {
+      v = (v || '').trim();
+      if (!v) return '';
+      if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+      try { const u = new URL(v); return /^https?:$/.test(u.protocol) && u.hostname.includes('.') ? u.toString() : null; } catch { return null; }
+    };
+
     // ---------- editor ----------
     // El puesto del banner solo existe para restaurantes visibles; al ocultar uno se apaga y al volver a mostrarlo se recupera.
     let rangoGuardado = '';
@@ -792,6 +836,10 @@
       logoUrl = r?.logo ?? null;
       bannerUrl = r?.banner ?? null;
       ajuste = ajusteDe(r?.img_adjust);
+      $('fWebsite').value = r?.website ?? '';
+      $('fPromo').checked = !!r?.has_promo;
+      syncPromo();
+      if (quillPromo) { quillPromo.setContents([]); if (r?.has_promo && r.promo_html) quillPromo.clipboard.dangerouslyPasteHTML(r.promo_html); }
       pintarImagenes();
       $('logoStatus').textContent = 'Mejor cuadrado o con fondo transparente (PNG).';
       $('bannerStatus').textContent = 'Horizontal; se reduce sola a 1600 px de ancho.';
@@ -828,6 +876,14 @@
         if (falta.length) return banner($('editMsg'), 'Para que sea visible falta rellenar: ' + falta.join(', ') + '. Si aún no está listo, desmarca «Visible en la web».', 'error');
       }
 
+      const webRaw = $('fWebsite').value.trim();
+      const website = normalizarUrl(webRaw);
+      if (webRaw && website === null) { $('fWebsite').classList.add('is-missing'); return banner($('editMsg'), 'El enlace de la web no es válido. Ejemplo: https://www.restaurante.com', 'error'); }
+      const tienePromo = $('fPromo').checked;
+      const promoVacia = !quillPromo || !quillPromo.getText().trim();
+      if (tienePromo && !website) { $('fWebsite').classList.add('is-missing'); return banner($('editMsg'), 'Con promoción hace falta el enlace de la web: es el del botón «Ir a la web».', 'error'); }
+      if (tienePromo && promoVacia) { $('promoEditor').classList.add('is-missing'); return banner($('editMsg'), 'Escribe el texto de la promoción, o desmarca «Tiene promoción».', 'error'); }
+
       const cuisine = $('fCuisine').value;
       const row = {
         name,
@@ -839,6 +895,9 @@
         logo: logoUrl,
         banner: bannerUrl,
         ...((hayAjuste() || (editing && 'img_adjust' in editing)) ? { img_adjust: hayAjuste() ? ajuste : null } : {}),
+        ...((website || tienePromo || (editing && 'website' in editing))
+          ? { website: website || null, has_promo: tienePromo, promo_html: tienePromo ? quillPromo.getSemanticHTML().replace(/&nbsp;/g, ' ') : null }
+          : {}),
         featured_rank: visible && $('fRank').value ? Number($('fRank').value) : null,
         published: visible
       };
@@ -852,7 +911,7 @@
         $('saveBtn').disabled = false;
         ocultarGuardando();
         const dup = error.code === '23505';
-        return banner($('editMsg'), dup ? 'Ya existe un restaurante con ese identificador. Cambia el nombre o el identificador.' : /img_adjust/.test(error.message) ? 'Para guardar el ajuste de las imágenes hay que ejecutar una vez supabase/restaurants-images.sql en Supabase (SQL Editor → Run).' : 'No se ha podido guardar: ' + error.message, 'error');
+        return banner($('editMsg'), dup ? 'Ya existe un restaurante con ese identificador. Cambia el nombre o el identificador.' : /img_adjust/.test(error.message) ? 'Para guardar el ajuste de las imágenes hay que ejecutar una vez supabase/restaurants-images.sql en Supabase (SQL Editor → Run).' : /website|has_promo|promo_html/.test(error.message) ? 'Para guardar el enlace y la promoción hay que ejecutar una vez supabase/restaurants-links.sql en Supabase (SQL Editor → Run).' : 'No se ha podido guardar: ' + error.message, 'error');
       }
       // Solo cuenta como cambio de la web si es visible (antes o después) o si toca el banner de otro.
       const afectaWeb = !!(row.published || editing?.published);

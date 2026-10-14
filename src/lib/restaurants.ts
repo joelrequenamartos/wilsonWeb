@@ -18,6 +18,9 @@ export type Restaurant = {
   banner: string | null; // foto de comida subida desde el panel
   featuredRank?: number; // puesto (1-3) en el banner destacado de la home
   adjust?: { logo?: ImgAdjust; banner?: ImgAdjust }; // zoom y posición de las imágenes
+  website?: string;      // enlace propio del restaurante (la tarjeta entera lleva ahí)
+  hasPromo?: boolean;    // con promoción: la tarjeta abre una ventana con promoHtml y el botón «Ir a la web»
+  promoHtml?: string;    // texto de la promoción (HTML ya limpio)
 };
 
 // Zoom (1 = tamaño normal) y desplazamiento en % del marco (x: derecha, y: abajo)
@@ -61,7 +64,10 @@ async function load(): Promise<RestaurantEntry[]> {
         logo: r.logo || null,
         banner: r.banner || null,
         featuredRank: r.featured_rank ?? undefined,
-        adjust: r.img_adjust && typeof r.img_adjust === 'object' ? r.img_adjust : undefined
+        adjust: r.img_adjust && typeof r.img_adjust === 'object' ? r.img_adjust : undefined,
+        website: safeUrl(r.website) ?? undefined,
+        hasPromo: !!r.has_promo && !!(r.promo_html || '').trim(),
+        promoHtml: r.has_promo ? cleanPromo(r.promo_html || '') : undefined
       }
     }));
   } catch (err) {
@@ -83,4 +89,29 @@ export function logoStyle(a?: ImgAdjust | null): string {
   const t = z === 1 && x === 0 && y === 0 ? '' : `transform:translate(${x}%,${y}%) scale(${z});`;
   const f = s === 0 ? '' : `filter:drop-shadow(0 ${(2 + s * 0.06).toFixed(1)}px ${(4 + s * 0.1).toFixed(1)}px rgba(0,0,0,${(s / 100 * 0.9).toFixed(2)}))`;
   return t + f;
+}
+
+// Solo http(s); cualquier otra cosa (javascript:, data:…) se descarta.
+export function safeUrl(u: unknown): string | null {
+  if (typeof u !== 'string') return null;
+  const v = u.trim();
+  return /^https?:\/\/[^\s]+$/i.test(v) ? v : null;
+}
+
+// El texto de la promoción lo escribe el administrador, pero se limpia igualmente: solo etiquetas de texto
+// básicas y enlaces http(s)/mailto/tel.
+const TAGS = new Set(['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'a', 'h2', 'h3', 'blockquote']);
+export function cleanPromo(html: string): string {
+  return html
+    .replace(/<(script|style|iframe|object|embed)[\s\S]*?<\/\1\s*>/gi, '')
+    .replace(/<\/?([a-z0-9]+)([^>]*)>/gi, (m, tag: string, attrs: string) => {
+      tag = tag.toLowerCase();
+      if (!TAGS.has(tag)) return '';
+      if (m.startsWith('</')) return `</${tag}>`;
+      if (tag !== 'a') return `<${tag}>`;
+      const href = /href\s*=\s*("([^"]*)"|'([^']*)')/i.exec(attrs);
+      const v = (href?.[2] ?? href?.[3] ?? '').trim();
+      return /^(https?:|mailto:|tel:)/i.test(v) ? `<a href="${v.replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">` : '<a>';
+    })
+    .replace(/&nbsp;/g, ' ');
 }

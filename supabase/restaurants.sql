@@ -59,6 +59,11 @@ create trigger restaurants_one_featured_rank before insert or update of featured
 -- Ajuste de imágenes (zoom y posición del logo y de la foto)
 alter table public.restaurants add column if not exists img_adjust jsonb;
 
+-- Enlace propio y promoción (ventana emergente)
+alter table public.restaurants add column if not exists website text;
+alter table public.restaurants add column if not exists has_promo boolean not null default false;
+alter table public.restaurants add column if not exists promo_html text;
+
 alter table public.restaurants enable row level security;
 
 drop policy if exists "publico lee los visibles" on public.restaurants;

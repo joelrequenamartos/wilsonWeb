@@ -12,6 +12,8 @@ const { restaurant } = Astro.props;
 // (las del panel tienen prioridad; si no hay, se buscan por nombre de archivo)
 const logo = restaurant.logo || restaurantImage(restaurant.id, 'logo');
 const banner = restaurant.banner || restaurantImage(restaurant.id, 'banner');
+const promo = restaurant.hasPromo && restaurant.promoHtml;
+const web = restaurant.website;
 ---
 <article class="rest-card" data-cuisine={restaurant.cuisine} data-name={restaurant.name}>
   <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]}>
@@ -21,8 +23,11 @@ const banner = restaurant.banner || restaurantImage(restaurant.id, 'banner');
     </span>
   </div>
   <div class="rest-body">
-    <div class="rest-top"><h3>{restaurant.name}</h3><span class="price-tag">{restaurant.price}</span></div>
+    <div class="rest-top"><h3>{promo
+        ? <button type="button" class="rest-link" data-promo data-web={web}>{restaurant.name}</button>
+        : web ? <a class="rest-link" href={web} target="_blank" rel="noopener noreferrer">{restaurant.name}</a> : restaurant.name}</h3><span class="price-tag">{restaurant.price}</span></div>
     <div class="rest-tags"><span>{restaurant.cuisineLabel}</span><span>📍 {restaurant.neighborhood}</span></div>
     <p class="rest-note">{restaurant.note}</p>
   </div>
+  {promo && <template class="rest-promo-tpl" set:html={restaurant.promoHtml}></template>}
 </article>

@@ -361,6 +361,39 @@
 
   applyRestFilter();
 
+  // Tarjetas con promoción: ventana con el texto y el botón «Ir a la web»
+  var promoModal = document.getElementById('promoModal');
+  if(promoModal && restGridEl){
+    var promoTitle = document.getElementById('promoTitle');
+    var promoText = document.getElementById('promoText');
+    var promoGo = document.getElementById('promoGo');
+    var promoLast = null;
+    var closePromo = function(){
+      promoModal.setAttribute('data-open', 'false');
+      promoModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if(promoLast){ promoLast.focus(); promoLast = null; }
+    };
+    restGridEl.addEventListener('click', function(e){
+      var btn = e.target.closest('[data-promo]');
+      if(!btn) return;
+      var card = btn.closest('.rest-card');
+      var tpl = card && card.querySelector('.rest-promo-tpl');
+      promoTitle.textContent = btn.textContent;
+      promoText.innerHTML = tpl ? tpl.innerHTML : '';
+      promoGo.href = btn.getAttribute('data-web') || '#';
+      promoGo.hidden = !btn.getAttribute('data-web');
+      promoLast = btn;
+      promoModal.setAttribute('data-open', 'true');
+      promoModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('promoClose').focus();
+    });
+    document.getElementById('promoClose').addEventListener('click', closePromo);
+    promoModal.addEventListener('click', function(e){ if(e.target === promoModal) closePromo(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && promoModal.getAttribute('data-open') === 'true') closePromo(); });
+  }
+
   var adBanner = document.getElementById('destBanner');
   if(adBanner){
     var adTrack = document.getElementById('destTrack');
