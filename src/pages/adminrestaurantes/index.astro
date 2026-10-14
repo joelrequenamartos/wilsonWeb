@@ -129,6 +129,12 @@
               <button class="btn ghost small" id="logoRemove" type="button" hidden>Quitar</button>
             </div>
             <small class="muted" id="logoStatus">Mejor cuadrado o con fondo transparente (PNG).</small>
+            <div class="adjust" id="logoAdjust" hidden>
+              <label>Zoom <output id="logoZoomV"></output><input type="range" id="logoZoom" min="50" max="300" step="5" value="100" /></label>
+              <label>Horizontal <output id="logoXV"></output><input type="range" id="logoX" min="-50" max="50" step="1" value="0" /></label>
+              <label>Vertical <output id="logoYV"></output><input type="range" id="logoY" min="-50" max="50" step="1" value="0" /></label>
+              <button class="btn ghost small" id="logoReset" type="button">Restablecer</button>
+            </div>
           </div>
           <div class="img-box" id="bannerBox">
             <span class="label">Foto de comida <small class="muted">(va por detrás del logo)</small></span>
@@ -138,7 +144,18 @@
               <button class="btn ghost small" id="bannerRemove" type="button" hidden>Quitar</button>
             </div>
             <small class="muted" id="bannerStatus">Horizontal; se reduce sola a 1600 px de ancho.</small>
+            <div class="adjust" id="bannerAdjust" hidden>
+              <label>Zoom <output id="bannerZoomV"></output><input type="range" id="bannerZoom" min="100" max="300" step="5" value="100" /></label>
+              <label>Horizontal <output id="bannerXV"></output><input type="range" id="bannerX" min="-50" max="50" step="1" value="0" /></label>
+              <label>Vertical <output id="bannerYV"></output><input type="range" id="bannerY" min="-50" max="50" step="1" value="0" /></label>
+              <button class="btn ghost small" id="bannerReset" type="button">Restablecer</button>
+            </div>
           </div>
+        </div>
+
+        <div class="card-prev-wrap">
+          <span class="label">Así se verá en la tarjeta</span>
+          <div class="card-prev" id="cardPrev"><div class="bg" id="cpBg"></div><span class="lg"><img id="cpLogo" alt="" hidden /><span id="cpIcon">🍴</span></span></div>
         </div>
 
         <div class="grid2">
@@ -224,7 +241,7 @@
     .rest{display:grid; grid-template-columns:96px 1fr auto; gap:14px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px;}
     .rest .thumb{position:relative; width:96px; height:64px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#C25F26,#E07A3E); display:flex; align-items:center;}
     .rest .thumb .bg{position:absolute; inset:0; background-size:cover; background-position:center;}
-    .rest .thumb .lg{position:relative; margin-left:8px; width:40px; height:40px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:4px;}
+    .rest .thumb .lg{overflow:hidden; position:relative; margin-left:8px; width:40px; height:40px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:4px;}
     .rest .thumb .lg img{width:100%; height:100%; object-fit:contain;}
     .rest .thumb .lg span{font-size:1rem;}
     .rest h2{font-size:1rem; margin:0 0 4px; line-height:1.3;}
@@ -252,6 +269,18 @@
     @media (min-width:700px){.images{grid-template-columns:1fr 1.4fr;}}
     .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
     .logo-prev, .banner-prev{display:flex; align-items:center; justify-content:center; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
+    .adjust{display:grid; gap:8px; margin-top:10px;}
+    .adjust label{display:grid; grid-template-columns:78px 1fr 46px; align-items:center; gap:8px; font-size:.82rem; font-weight:600; margin:0;}
+    .adjust label output{order:3; font-weight:400; color:var(--soft); text-align:right; font-size:.78rem;}
+    .adjust input[type=range]{width:100%; padding:0; accent-color:var(--coral);}
+    .adjust[hidden]{display:none;}
+    .card-prev-wrap{margin:4px 0 16px;}
+    .card-prev{position:relative; height:132px; max-width:380px; border-radius:14px; overflow:hidden; isolation:isolate; display:flex; align-items:center; padding:0 18px; background:linear-gradient(135deg,#C25F26,#E07A3E); margin-top:6px;}
+    .card-prev .bg{position:absolute; inset:0; z-index:-2; background-size:cover; background-position:center;}
+    .card-prev.has-bg::before{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(13,11,9,.5) 0%, rgba(13,11,9,.12) 65%, rgba(13,11,9,.04) 100%);}
+    .card-prev .lg{width:80px; height:80px; flex:none; display:flex; align-items:center; justify-content:center; padding:9px; background:#fff; border-radius:20px; overflow:hidden; box-shadow:0 12px 26px -12px rgba(0,0,0,.55); font-size:1.6rem;}
+    .card-prev .lg img{width:100%; height:100%; object-fit:contain; display:block;}
+    .logo-prev{overflow:hidden;}
     .logo-prev{width:110px; height:110px; padding:10px;}
     .logo-prev img{width:100%; height:100%; object-fit:contain;}
     .banner-prev{width:100%; aspect-ratio:16/7;}
@@ -288,6 +317,18 @@
     let editing = null;    // restaurante en edición (null = nuevo)
     let logoUrl = null;
     let bannerUrl = null;
+    const AJ0 = () => ({ logo: { z: 1, x: 0, y: 0 }, banner: { z: 1, x: 0, y: 0 } });
+    let ajuste = AJ0();
+    const estiloAj = (a) => (a && (a.z !== 1 || a.x || a.y) ? `translate(${a.x || 0}%,${a.y || 0}%) scale(${a.z || 1})` : '');
+    const ajusteDe = (obj) => {
+      const base = AJ0();
+      for (const t of ['logo', 'banner']) {
+        const a = obj?.[t];
+        if (a && typeof a === 'object') base[t] = { z: Number(a.z) || 1, x: Number(a.x) || 0, y: Number(a.y) || 0 };
+      }
+      return base;
+    };
+    const hayAjuste = () => ['logo', 'banner'].some((t) => ajuste[t].z !== 1 || ajuste[t].x || ajuste[t].y);
     let idTouched = false;
     let tablaLista = true;
 
@@ -437,9 +478,9 @@
 
     function miniatura(r) {
       const t = document.createElement('div'); t.className = 'thumb';
-      if (r.banner) { const bg = document.createElement('div'); bg.className = 'bg'; bg.style.backgroundImage = `url('${r.banner}')`; t.append(bg); }
+      if (r.banner) { const bg = document.createElement('div'); bg.className = 'bg'; bg.style.backgroundImage = `url('${r.banner}')`; bg.style.transform = estiloAj(ajusteDe(r.img_adjust).banner); t.append(bg); }
       const lg = document.createElement('div'); lg.className = 'lg';
-      if (r.logo) { const im = document.createElement('img'); im.src = r.logo; im.alt = ''; lg.append(im); }
+      if (r.logo) { const im = document.createElement('img'); im.src = r.logo; im.alt = ''; im.style.transform = estiloAj(ajusteDe(r.img_adjust).logo); lg.append(im); }
       else { const s = document.createElement('span'); s.textContent = '🍴'; lg.append(s); }
       t.append(lg);
       return t;
@@ -655,6 +696,31 @@
       return { blob: await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.85)), ext: 'jpg', type: 'image/jpeg' };
     }
 
+    function pintarAjuste() {
+      for (const t of ['logo', 'banner']) {
+        const a = ajuste[t];
+        const url = t === 'logo' ? logoUrl : bannerUrl;
+        $(t + 'Adjust').hidden = !url;
+        $(t + 'Zoom').value = Math.round(a.z * 100); $(t + 'ZoomV').textContent = Math.round(a.z * 100) + '%';
+        $(t + 'X').value = a.x; $(t + 'XV').textContent = a.x;
+        $(t + 'Y').value = a.y; $(t + 'YV').textContent = a.y;
+      }
+      const l = estiloAj(ajuste.logo), b = estiloAj(ajuste.banner);
+      $('logoPreview').style.transform = l;
+      $('bannerPreview').style.transform = b;
+      $('cpBg').style.backgroundImage = bannerUrl ? `url('${bannerUrl}')` : '';
+      $('cpBg').style.transform = b;
+      $('cardPrev').classList.toggle('has-bg', !!bannerUrl);
+      $('cpLogo').hidden = !logoUrl; $('cpIcon').hidden = !!logoUrl;
+      if (logoUrl) $('cpLogo').src = logoUrl;
+      $('cpLogo').style.transform = l;
+    }
+    for (const t of ['logo', 'banner']) {
+      const leer = () => { ajuste[t] = { z: Number($(t + 'Zoom').value) / 100, x: Number($(t + 'X').value), y: Number($(t + 'Y').value) }; pintarAjuste(); };
+      ['Zoom', 'X', 'Y'].forEach((k) => $(t + k).addEventListener('input', leer));
+      $(t + 'Reset').addEventListener('click', () => { ajuste[t] = { z: 1, x: 0, y: 0 }; pintarAjuste(); });
+    }
+
     async function subirImagen(file, tipo) {
       const base = editing?.id || slugify($('fId').value.trim() || $('fName').value.trim());
       if (!base) throw new Error('Escribe primero el nombre del restaurante.');
@@ -666,6 +732,7 @@
     }
 
     function pintarImagenes() {
+      pintarAjuste();
       $('logoPreview').hidden = !logoUrl; $('logoEmpty').hidden = !!logoUrl; $('logoRemove').hidden = !logoUrl;
       if (logoUrl) $('logoPreview').src = logoUrl;
       $('bannerPreview').hidden = !bannerUrl; $('bannerEmpty').hidden = !!bannerUrl; $('bannerRemove').hidden = !bannerUrl;
@@ -681,12 +748,13 @@
         try {
           const url = await subirImagen(file, tipo);
           if (tipo === 'logo') logoUrl = url; else bannerUrl = url;
+          ajuste[tipo] = { z: 1, x: 0, y: 0 };
           pintarImagenes();
           est.textContent = 'Imagen subida.';
         } catch (err) { est.textContent = 'No se ha podido subir: ' + (err.message || err); }
         e.target.value = '';
       });
-      $(tipo + 'Remove').addEventListener('click', () => { if (tipo === 'logo') logoUrl = null; else bannerUrl = null; pintarImagenes(); });
+      $(tipo + 'Remove').addEventListener('click', () => { if (tipo === 'logo') logoUrl = null; else bannerUrl = null; ajuste[tipo] = { z: 1, x: 0, y: 0 }; pintarImagenes(); });
     }
 
     // ---------- editor ----------
@@ -719,6 +787,7 @@
       $('fNote').value = r?.note ?? '';
       logoUrl = r?.logo ?? null;
       bannerUrl = r?.banner ?? null;
+      ajuste = ajusteDe(r?.img_adjust);
       pintarImagenes();
       $('logoStatus').textContent = 'Mejor cuadrado o con fondo transparente (PNG).';
       $('bannerStatus').textContent = 'Horizontal; se reduce sola a 1600 px de ancho.';
@@ -765,6 +834,7 @@
         note: $('fNote').value.trim(),
         logo: logoUrl,
         banner: bannerUrl,
+        ...((hayAjuste() || (editing && 'img_adjust' in editing)) ? { img_adjust: hayAjuste() ? ajuste : null } : {}),
         featured_rank: visible && $('fRank').value ? Number($('fRank').value) : null,
         published: visible
       };
@@ -778,7 +848,7 @@
         $('saveBtn').disabled = false;
         ocultarGuardando();
         const dup = error.code === '23505';
-        return banner($('editMsg'), dup ? 'Ya existe un restaurante con ese identificador. Cambia el nombre o el identificador.' : 'No se ha podido guardar: ' + error.message, 'error');
+        return banner($('editMsg'), dup ? 'Ya existe un restaurante con ese identificador. Cambia el nombre o el identificador.' : /img_adjust/.test(error.message) ? 'Para guardar el ajuste de las imágenes hay que ejecutar una vez supabase/restaurants-images.sql en Supabase (SQL Editor → Run).' : 'No se ha podido guardar: ' + error.message, 'error');
       }
       // Solo cuenta como cambio de la web si es visible (antes o después) o si toca el banner de otro.
       const afectaWeb = !!(row.published || editing?.published);

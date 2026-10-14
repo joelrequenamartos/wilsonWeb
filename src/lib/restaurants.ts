@@ -17,7 +17,20 @@ export type Restaurant = {
   logo: string | null;   // imagen subida desde el panel
   banner: string | null; // foto de comida subida desde el panel
   featuredRank?: number; // puesto (1-3) en el banner destacado de la home
+  adjust?: { logo?: ImgAdjust; banner?: ImgAdjust }; // zoom y posición de las imágenes
 };
+
+// Zoom (1 = tamaño normal) y desplazamiento en % del marco (x: derecha, y: abajo)
+export type ImgAdjust = { z?: number; x?: number; y?: number };
+
+const num = (v: unknown, d: number) => (typeof v === 'number' && isFinite(v) ? v : d);
+// Estilo CSS de una imagen ajustada; vacío si está sin tocar
+export function adjustStyle(a?: ImgAdjust | null): string | undefined {
+  if (!a) return undefined;
+  const z = num(a.z, 1), x = num(a.x, 0), y = num(a.y, 0);
+  if (z === 1 && x === 0 && y === 0) return undefined;
+  return `transform:translate(${x}%,${y}%) scale(${z})`;
+}
 
 // Misma forma que una entrada de colección, para que los componentes sigan usando restaurant.data.*
 export type RestaurantEntry = { id: string; data: Restaurant };
@@ -47,7 +60,8 @@ async function load(): Promise<RestaurantEntry[]> {
         art: r.art || 'art-food1',
         logo: r.logo || null,
         banner: r.banner || null,
-        featuredRank: r.featured_rank ?? undefined
+        featuredRank: r.featured_rank ?? undefined,
+        adjust: r.img_adjust && typeof r.img_adjust === 'object' ? r.img_adjust : undefined
       }
     }));
   } catch (err) {

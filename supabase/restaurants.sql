@@ -56,6 +56,9 @@ create trigger restaurants_one_featured_rank before insert or update of featured
   for each row execute function public.one_featured_rank();
 
 -- 4) Permisos: el público solo lee los visibles; solo el administrador escribe -----------------
+-- Ajuste de imágenes (zoom y posición del logo y de la foto)
+alter table public.restaurants add column if not exists img_adjust jsonb;
+
 alter table public.restaurants enable row level security;
 
 drop policy if exists "publico lee los visibles" on public.restaurants;

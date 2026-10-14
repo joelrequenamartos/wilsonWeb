@@ -1,5 +1,6 @@
 ---
 import type { Restaurant } from '../lib/restaurants';
+import { adjustStyle } from '../lib/restaurants';
 import { restaurantImage } from '../lib/restaurantImages';
 
 interface Props {
@@ -13,9 +14,10 @@ const logo = restaurant.logo || restaurantImage(restaurant.id, 'logo');
 const banner = restaurant.banner || restaurantImage(restaurant.id, 'banner');
 ---
 <article class="rest-card" data-cuisine={restaurant.cuisine} data-name={restaurant.name}>
-  <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]} style={banner ? `background-image:url('${banner}')` : undefined}>
+  <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]}>
+    {banner && <div class="rest-bg" style={`background-image:url('${banner}');${adjustStyle(restaurant.adjust?.banner) ?? ''}`}></div>}
     <span class="rest-logo">
-      {logo ? <img src={logo} alt={`Logo de ${restaurant.name}`} loading="lazy" /> : <svg class="icon" aria-hidden="true"><use href="#i-fork" /></svg>}
+      {logo ? <img src={logo} alt={`Logo de ${restaurant.name}`} loading="lazy" style={adjustStyle(restaurant.adjust?.logo)} /> : <svg class="icon" aria-hidden="true"><use href="#i-fork" /></svg>}
     </span>
   </div>
   <div class="rest-body">
