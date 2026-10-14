@@ -37,6 +37,7 @@
         <div class="bar-actions">
           <button class="btn primary" id="newBtn" type="button">+ Nuevo restaurante</button>
           <button class="btn" id="orderBtn" type="button" title="Cambiar el orden de los restaurantes">↕ Reordenar</button>
+          <button class="btn" id="cuisinesBtn" type="button" title="Añadir, renombrar o borrar tipos de cocina">🍴 Cocinas</button>
           <button class="btn" id="rebuildBtn" type="button" title="Vuelve a construir la web con lo que hay guardado">Actualizar web</button>
           <button class="btn ghost" id="logoutBtn" type="button">Salir</button>
         </div>
@@ -78,6 +79,27 @@
       </div>
       <p class="muted" id="filterEmpty" hidden>Ningún restaurante coincide con esos filtros.</p>
       <div id="restList" class="rests"></div>
+    </section>
+
+    <!-- COCINAS -->
+    <section id="cuisinesView" hidden>
+      <header class="bar">
+        <h1>Tipos de cocina</h1>
+        <button class="btn ghost" id="cuisBack" type="button">← Volver a la lista</button>
+      </header>
+      <p class="banner" id="cuisMsg" role="status" hidden></p>
+      <div class="card stack">
+        <p class="muted">Son las pestañas del filtro de la página de Restaurantes y las opciones del editor. Cambia el nombre, el orden, añade o borra. Una cocina con restaurantes no se puede borrar: primero cámbialos a otra.</p>
+        <div id="cuisList" class="cuis-list"></div>
+        <form id="cuisAdd" class="cuis-add">
+          <input type="text" id="cuisNew" maxlength="40" placeholder="Nueva cocina (por ejemplo, Japonesa)" aria-label="Nombre de la nueva cocina" />
+          <button class="btn primary" type="submit">+ Añadir</button>
+        </form>
+        <div class="card setup" id="cuisSetup" hidden>
+          <h2>Falta un paso en Supabase</h2>
+          <p>Para poder editar las cocinas hay que ejecutar <b>supabase/restaurants-cuisines.sql</b> en el SQL Editor de Supabase (una sola vez). Mientras tanto se usan las de siempre.</p>
+        </div>
+      </div>
     </section>
 
     <!-- EDITAR / CREAR -->
@@ -284,6 +306,12 @@
     @media (min-width:700px){.images{grid-template-columns:1fr 1.4fr;}}
     .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
     .logo-prev, .banner-prev{display:flex; align-items:center; justify-content:center; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
+    .cuis-list{display:grid; gap:8px;}
+    .cuis-row{display:grid; grid-template-columns:1fr auto auto auto; gap:8px; align-items:center;}
+    .cuis-row input{padding:8px 12px; border-radius:10px;}
+    .cuis-row .n{font-size:.78rem; color:var(--soft); white-space:nowrap;}
+    .cuis-add{display:flex; gap:8px; margin-top:6px;}
+    .cuis-add input{flex:1;}
     .promo-box{margin:6px 0 16px;}
     .promo-box[hidden]{display:none;}
     #promoEditor .ql-editor img{max-width:100%; height:auto; border-radius:10px; cursor:pointer;}
@@ -367,7 +395,7 @@
     let tablaLista = true;
 
     // ---------- utilidades ----------
-    const views = ['loginView', 'listView', 'editView'];
+    const views = ['loginView', 'listView', 'editView', 'cuisinesView'];
     const show = (id) => views.forEach((v) => ($(v).hidden = v !== id));
     const slugify = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
@@ -492,8 +520,26 @@
       (!f.destacados || r.featured_rank != null) &&
       (!f.texto || norm(r.name).includes(norm(f.texto)));
 
-    $('filterCuisine').append(...Object.entries(CUISINES).map(([k, v]) => Object.assign(document.createElement('option'), { value: k, textContent: v })));
-    $('fCuisine').append(...Object.entries(CUISINES).map(([k, v]) => Object.assign(document.createElement('option'), { value: k, textContent: v })));
+    // ---------- cocinas (tabla «cuisines»; si no existe aún, las de siempre) ----------
+    let cocinas = Object.entries(CUISINES).map(([id, label], i) => ({ id, label, position: i + 1 }));
+    let tablaCocinas = false;
+    const etiquetaCocina = (id) => cocinas.find((c) => c.id === id)?.label || CUISINES[id] || id;
+    const opcion = (value, text) => Object.assign(document.createElement('option'), { value, textContent: text });
+    function pintarCocinas() {
+      const f = $('filterCuisine'), e = $('fCuisine');
+      const fv = f.value, ev = e.value;
+      f.textContent = ''; e.textContent = '';
+      f.append(opcion('', 'Todas las cocinas'));
+      for (const c of cocinas) { f.append(opcion(c.id, c.label)); e.append(opcion(c.id, c.label)); }
+      f.value = fv; if (f.value !== fv) { f.value = ''; filtros.cocina = ''; }
+      e.value = ev;
+    }
+    async function cargarCocinas() {
+      const { data, error } = await sb.from('cuisines').select('*').order('position', { ascending: true, nullsFirst: false }).order('label');
+      if (!error && Array.isArray(data)) { cocinas = data; tablaCocinas = true; }
+      else { cocinas = Object.entries(CUISINES).map(([id, label], i) => ({ id, label, position: i + 1 })); tablaCocinas = false; }
+      pintarCocinas();
+    }
 
     function pintarFiltros() {
       const caja = $('filters');
@@ -534,7 +580,7 @@
         const info = document.createElement('div');
         const h = document.createElement('h2'); h.textContent = r.name;
         const meta = document.createElement('div'); meta.className = 'meta';
-        meta.append(pill(r.cuisine_label || CUISINES[r.cuisine] || r.cuisine));
+        meta.append(pill(r.cuisine_label || etiquetaCocina(r.cuisine)));
         if (r.neighborhood) meta.append(pill('📍 ' + r.neighborhood));
         meta.append(pill(r.price));
         if (r.featured_rank != null) meta.append(pill('★ Banner · puesto ' + r.featured_rank, 'feat'));
@@ -563,6 +609,7 @@
 
     async function showList(message, kind) {
       show('listView');
+      await cargarCocinas();
       banner($('listMsg'), message, kind);
       window.scrollTo(0, 0);
       cargarEstadoWeb();
@@ -611,7 +658,7 @@
       const info = document.createElement('div');
       const h = document.createElement('h2'); h.textContent = r.name;
       const meta = document.createElement('div'); meta.className = 'meta';
-      meta.append(pill(r.cuisine_label || CUISINES[r.cuisine] || r.cuisine));
+      meta.append(pill(r.cuisine_label || etiquetaCocina(r.cuisine)));
       if (!r.published) meta.append(pill('Oculto', 'hide'));
       info.append(h, meta);
       const arrows = document.createElement('div'); arrows.className = 'order-arrows';
@@ -937,7 +984,8 @@
       $('fId').value = r?.id ?? '';
       $('fId').disabled = !!r;
       $('idHelp').textContent = r ? 'No se puede cambiar una vez creado.' : 'Sale del nombre y no se puede cambiar una vez creado.';
-      $('fCuisine').value = r?.cuisine ?? 'pizza';
+      if (r && !cocinas.some((c) => c.id === r.cuisine)) $('fCuisine').append(opcion(r.cuisine, r.cuisine)); // cocina ya borrada
+      $('fCuisine').value = r?.cuisine ?? cocinas[0]?.id ?? '';
       $('fLabel').value = r?.cuisine_label ?? '';
       $('fHood').value = r?.neighborhood ?? '';
       $('fPrice').value = r?.price ?? '$$';
@@ -997,7 +1045,7 @@
       const row = {
         name,
         cuisine,
-        cuisine_label: $('fLabel').value.trim() || CUISINES[cuisine],
+        cuisine_label: $('fLabel').value.trim(),
         neighborhood: $('fHood').value.trim(),
         price: $('fPrice').value,
         note: $('fNote').value.trim(),
@@ -1040,6 +1088,98 @@
       const r = editing.published ? await registrarCambio() : { ok: true, msg: '' };
       await showList('Restaurante borrado. ' + r.msg, r.ok ? 'ok' : 'error');
       ocultarGuardando();
+    });
+
+    // ---------- gestionar cocinas ----------
+    async function cambioWebCocinas(texto) {
+      const r = await registrarCambio();
+      banner($('cuisMsg'), texto + ' ' + r.msg, r.ok ? 'ok' : 'error');
+    }
+    function usadas(id) { return todos.filter((r) => r.cuisine === id).length; }
+    function pintarGestor() {
+      $('cuisSetup').hidden = tablaCocinas;
+      $('cuisAdd').hidden = !tablaCocinas;
+      const list = $('cuisList');
+      list.textContent = '';
+      cocinas.forEach((c, i) => {
+        const row = document.createElement('div'); row.className = 'cuis-row';
+        const input = document.createElement('input'); input.type = 'text'; input.value = c.label; input.maxLength = 40; input.disabled = !tablaCocinas;
+        input.setAttribute('aria-label', 'Nombre de la cocina ' + c.label);
+        const guardar = async () => {
+          const v = input.value.trim();
+          if (!v) { input.value = c.label; return banner($('cuisMsg'), 'El nombre no puede estar vacío.', 'error'); }
+          if (v === c.label) return;
+          if (cocinas.some((o) => o.id !== c.id && o.label.toLowerCase() === v.toLowerCase())) { input.value = c.label; return banner($('cuisMsg'), 'Ya existe una cocina con ese nombre.', 'error'); }
+          mostrarGuardando();
+          const { error } = await sb.from('cuisines').update({ label: v }).eq('id', c.id);
+          if (!error) await sb.from('restaurants').update({ cuisine_label: v }).eq('cuisine', c.id).eq('cuisine_label', c.label);
+          ocultarGuardando();
+          if (error) { input.value = c.label; return banner($('cuisMsg'), 'No se ha podido renombrar: ' + error.message, 'error'); }
+          const antes = c.label; c.label = v;
+          await cambioWebCocinas(`«${antes}» ahora es «${v}».`);
+          pintarCocinas(); pintarGestor();
+        };
+        input.addEventListener('change', guardar);
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+        const n = document.createElement('span'); n.className = 'n';
+        const k = usadas(c.id); n.textContent = k === 1 ? '1 restaurante' : k + ' restaurantes';
+        const mover = (dir, txt, label, off) => {
+          const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost small'; b.textContent = txt; b.setAttribute('aria-label', label); b.disabled = !tablaCocinas || off;
+          b.addEventListener('click', async () => {
+            const o = cocinas[i + dir];
+            mostrarGuardando();
+            const [a, bb] = await Promise.all([
+              sb.from('cuisines').update({ position: o.position ?? i + dir + 1 }).eq('id', c.id),
+              sb.from('cuisines').update({ position: c.position ?? i + 1 }).eq('id', o.id)
+            ]);
+            ocultarGuardando();
+            if (a.error || bb.error) return banner($('cuisMsg'), 'No se ha podido cambiar el orden.', 'error');
+            await cargarCocinas(); pintarGestor();
+            await cambioWebCocinas('Orden cambiado.');
+          });
+          return b;
+        };
+        const del = document.createElement('button'); del.type = 'button'; del.className = 'btn danger small'; del.textContent = 'Borrar'; del.disabled = !tablaCocinas;
+        del.addEventListener('click', async () => {
+          const u = usadas(c.id);
+          if (u > 0) return banner($('cuisMsg'), `No se puede borrar «${c.label}»: la usan ${u} ${u === 1 ? 'restaurante' : 'restaurantes'}. Cámbialos primero a otra cocina.`, 'error');
+          if (!confirm(`¿Borrar la cocina «${c.label}»?`)) return;
+          mostrarGuardando();
+          const { error } = await sb.from('cuisines').delete().eq('id', c.id);
+          ocultarGuardando();
+          if (error) return banner($('cuisMsg'), 'No se ha podido borrar: ' + error.message, 'error');
+          await cargarCocinas(); pintarGestor();
+          await cambioWebCocinas(`Cocina «${c.label}» borrada.`);
+        });
+        row.append(input, n, mover(-1, '↑', 'Subir', i === 0), mover(1, '↓', 'Bajar', i === cocinas.length - 1));
+        row.append(del);
+        row.style.gridTemplateColumns = '1fr auto auto auto auto';
+        list.append(row);
+      });
+    }
+    $('cuisinesBtn').addEventListener('click', async () => {
+      show('cuisinesView');
+      banner($('cuisMsg'), '');
+      window.scrollTo(0, 0);
+      await cargarCocinas();
+      pintarGestor();
+    });
+    $('cuisBack').addEventListener('click', () => showList());
+    $('cuisAdd').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const v = $('cuisNew').value.trim();
+      if (!v) return;
+      const id = slugify(v);
+      if (!id) return banner($('cuisMsg'), 'Escribe un nombre válido.', 'error');
+      if (cocinas.some((c) => c.id === id || c.label.toLowerCase() === v.toLowerCase())) return banner($('cuisMsg'), 'Ya existe una cocina con ese nombre.', 'error');
+      const pos = Math.max(0, ...cocinas.map((c) => c.position ?? 0)) + 1;
+      mostrarGuardando();
+      const { error } = await sb.from('cuisines').insert({ id, label: v, position: pos });
+      ocultarGuardando();
+      if (error) return banner($('cuisMsg'), 'No se ha podido añadir: ' + error.message, 'error');
+      $('cuisNew').value = '';
+      await cargarCocinas(); pintarGestor();
+      await cambioWebCocinas(`Cocina «${v}» añadida.`);
     });
 
     // ---------- arranque ----------

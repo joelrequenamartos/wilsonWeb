@@ -38,6 +38,27 @@ export function adjustStyle(a?: ImgAdjust | null): string | undefined {
 // Misma forma que una entrada de colección, para que los componentes sigan usando restaurant.data.*
 export type RestaurantEntry = { id: string; data: Restaurant };
 
+export type Cuisine = { id: string; label: string };
+
+let cuisineCache: { at: number; value: Promise<Cuisine[]> } | null = null;
+// Cocinas (pestañas del filtro) en el orden del panel; si la tabla no existe aún, las de siempre.
+async function loadCuisines(): Promise<Cuisine[]> {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/cuisines?select=id,label,position&order=position.asc.nullslast,label.asc`;
+    const res = await fetch(url, { headers: { apikey: SUPABASE_KEY } });
+    if (!res.ok) throw new Error(`Supabase ${res.status}`);
+    const rows = await res.json();
+    if (!Array.isArray(rows)) throw new Error('respuesta inesperada de Supabase');
+    return rows.map((r: any) => ({ id: String(r.id), label: String(r.label) }));
+  } catch {
+    return Object.entries(CUISINES).map(([id, label]) => ({ id, label }));
+  }
+}
+export function getCuisines(): Promise<Cuisine[]> {
+  if (!cuisineCache || Date.now() - cuisineCache.at > 15000) cuisineCache = { at: Date.now(), value: loadCuisines() };
+  return cuisineCache.value;
+}
+
 let cache: { at: number; value: Promise<RestaurantEntry[]> } | null = null;
 
 // Restaurantes visibles, en el orden elegido en el panel. Se leen de Supabase al compilar la web;
@@ -49,6 +70,7 @@ async function load(): Promise<RestaurantEntry[]> {
     if (!res.ok) throw new Error(`Supabase ${res.status}`);
     const rows = await res.json();
     if (!Array.isArray(rows)) throw new Error('respuesta inesperada de Supabase');
+    const labels = Object.fromEntries((await getCuisines()).map((c) => [c.id, c.label]));
     return rows.map((r: any, i: number) => ({
       id: r.id,
       data: {
@@ -56,7 +78,7 @@ async function load(): Promise<RestaurantEntry[]> {
         order: i + 1,
         name: r.name,
         cuisine: r.cuisine,
-        cuisineLabel: r.cuisine_label || CUISINES[r.cuisine] || '',
+        cuisineLabel: r.cuisine_label || labels[r.cuisine] || CUISINES[r.cuisine] || '',
         neighborhood: r.neighborhood ?? '',
         price: r.price ?? '',
         note: r.note ?? '',

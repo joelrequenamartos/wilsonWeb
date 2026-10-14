@@ -1,6 +1,6 @@
 ---
 import type { RestaurantEntry } from '../lib/restaurants';
-import { CUISINES } from '../lib/restaurants';
+import { getCuisines } from '../lib/restaurants';
 import RestaurantCard from './RestaurantCard.astro';
 import AdBanner from './AdBanner.astro';
 
@@ -10,18 +10,18 @@ interface Props {
 
 const { restaurants } = Astro.props;
 
-const filterLabels = CUISINES;
-
 // Los 3 destacados van solo en el banner «Espacio destacado»; las tarjetas pequeñas son el resto.
 const gridRestaurants = restaurants.filter((r) => r.data.featuredRank == null);
 
-// Orden fijo de las pestañas de filtro (independiente del orden de la rejilla).
-const cuisineOrder = Object.keys(CUISINES);
-const tabs = cuisineOrder.map((cuisine) => ({
-  cuisine,
-  label: filterLabels[cuisine] ?? cuisine,
-  count: gridRestaurants.filter((r) => r.data.cuisine === cuisine).length
-}));
+// Pestañas de filtro: las cocinas del panel, en su orden, y solo las que tienen algún restaurante.
+const cuisines = await getCuisines();
+const tabs = cuisines
+  .map((c) => ({
+    cuisine: c.id,
+    label: c.label,
+    count: gridRestaurants.filter((r) => r.data.cuisine === c.id).length
+  }))
+  .filter((t) => t.count > 0);
 ---
 <section class="section section-alt" id="restaurantes">
   <div class="wrap">
