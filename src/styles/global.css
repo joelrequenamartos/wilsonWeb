@@ -458,7 +458,20 @@
   /* Foto de comida del restaurante detrás de su diapositiva, con degradado para que el texto se lea */
   .dest-slide{position:relative; isolation:isolate; overflow:hidden;}
   .dest-bg{position:absolute; inset:0; z-index:-2; background-size:cover; background-position:center; transform-origin:center;}
-  .dest-slide.has-photo::before{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(13,11,9,.72) 0%, rgba(13,11,9,.5) 55%, rgba(13,11,9,.22) 100%);}
+  /* Primer cuarto en degradado naranja (como el banner sin foto) y el resto, foto */
+  .dest-slide.has-photo::before{
+    content:""; position:absolute; inset:0; z-index:-1;
+    background:
+      linear-gradient(90deg, var(--coral) 0%, var(--coral-dark) 25%, rgba(168,80,30,0) 42%),
+      linear-gradient(rgba(13,11,9,.14), rgba(13,11,9,.14));
+  }
+  @media (max-width:640px){
+    .dest-slide.has-photo::before{
+      background:
+        linear-gradient(90deg, var(--coral) 0%, var(--coral-dark) 38%, rgba(168,80,30,.35) 100%),
+        linear-gradient(rgba(13,11,9,.14), rgba(13,11,9,.14));
+    }
+  }
   .dest-art{
     width:64px; height:64px; flex:none; color:#fff;
     display:flex; align-items:center; justify-content:center;
