@@ -361,9 +361,9 @@
 
   applyRestFilter();
 
-  // Tarjetas con promoción: ventana con el texto y el botón «Ir a la web»
+  // Tarjetas y banner destacado con promoción: ventana con el texto y el botón «Ir a la web»
   var promoModal = document.getElementById('promoModal');
-  if(promoModal && restGridEl){
+  if(promoModal){
     var promoTitle = document.getElementById('promoTitle');
     var promoText = document.getElementById('promoText');
     var promoGo = document.getElementById('promoGo');
@@ -374,11 +374,11 @@
       document.body.style.overflow = '';
       if(promoLast){ promoLast.focus(); promoLast = null; }
     };
-    restGridEl.addEventListener('click', function(e){
-      var btn = e.target.closest('[data-promo]');
+    document.addEventListener('click', function(e){
+      var btn = e.target.closest && e.target.closest('[data-promo]');
       if(!btn) return;
-      var card = btn.closest('.rest-card');
-      var tpl = card && card.querySelector('.rest-promo-tpl');
+      var box = btn.closest('.rest-card, .dest-slide');
+      var tpl = box && box.querySelector('.rest-promo-tpl');
       promoTitle.textContent = btn.textContent;
       promoText.innerHTML = tpl ? tpl.innerHTML : '';
       promoGo.href = btn.getAttribute('data-web') || '#';

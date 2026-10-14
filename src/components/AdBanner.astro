@@ -18,20 +18,26 @@ const featured = restaurants
   <div class="dest-track" id="destTrack">
     {featured.map((restaurant) => {
       const photo = restaurant.data.banner || restaurantImage(restaurant.data.id, 'banner');
+      const promo = restaurant.data.hasPromo && restaurant.data.promoHtml;
+      const web = restaurant.data.website;
       return (
       <div class:list={['dest-slide', { 'has-photo': photo }]}>
+        {promo && <span class="promo-badge">Descuento disponible</span>}
         {photo && <div class="dest-bg" style={`background-image:url('${photo}');${adjustStyle(restaurant.data.adjust?.banner) ?? ''}`}></div>}
-        <div class:list={['dest-art', restaurant.data.art]} aria-hidden="true">
+        <div class="dest-art" aria-hidden="true">
           {(restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo'))
             ? <img src={restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo')} alt="" loading="lazy" style={logoStyle(restaurant.data.adjust?.logo)} />
             : <svg class="icon" style="width:30px;height:30px"><use href="#i-fork" /></svg>}
         </div>
         <div class="dest-body">
           <span class="dest-rank">Destacado · Nº{restaurant.data.featuredRank}</span>
-          <h3>{restaurant.data.name}</h3>
+          <h3>{promo
+            ? <button type="button" class="rest-link" data-promo data-web={web}>{restaurant.data.name}</button>
+            : web ? <a class="rest-link" href={web} target="_blank" rel="noopener noreferrer">{restaurant.data.name}</a> : restaurant.data.name}</h3>
           <div class="rest-tags"><span>{restaurant.data.cuisineLabel}</span><span>📍 {restaurant.data.neighborhood}</span></div>
           <p class="rest-note">{restaurant.data.note}</p>
         </div>
+        {promo && <template class="rest-promo-tpl" set:html={restaurant.data.promoHtml}></template>}
       </div>
       );
     })}
@@ -53,5 +59,17 @@ const featured = restaurants
     <button class="dest-pause" id="destPause" aria-label="Pausar rotación automática" aria-pressed="false">
       <svg class="icon" id="destPauseIcon" style="width:13px;height:13px"><use href="#i-pause" /></svg>
     </button>
+  </div>
+</div>
+
+<div class="promo-modal" id="promoModal" aria-hidden="true">
+  <div class="promo-card" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+    <button class="promo-close" id="promoClose" type="button" aria-label="Cerrar">
+      <svg class="icon"><use href="#i-close" /></svg>
+    </button>
+    <span class="promo-tag">Descuento disponible</span>
+    <h3 id="promoTitle"></h3>
+    <div class="promo-text" id="promoText"></div>
+    <a class="btn btn-primary" id="promoGo" href="#" target="_blank" rel="noopener noreferrer">Ir a la web</a>
   </div>
 </div>
