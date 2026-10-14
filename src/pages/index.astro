@@ -10,12 +10,13 @@ import EventsSection from '../components/EventsSection.astro';
 import SocialSection from '../components/SocialSection.astro';
 import CtaBanner from '../components/CtaBanner.astro';
 import Footer from '../components/Footer.astro';
+import { getRestaurants } from '../lib/restaurants';
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
 
 const tours = (await getCollection('tours')).sort(byOrder);
 const reviews = (await getCollection('reviews')).sort(byOrder);
-const restaurants = (await getCollection('restaurants')).sort(byOrder);
+const restaurants = await getRestaurants();
 ---
 <Layout>
   <Header transparent />

@@ -1,15 +1,16 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { Restaurant } from '../lib/restaurants';
 import { restaurantImage } from '../lib/restaurantImages';
 
 interface Props {
-  restaurant: CollectionEntry<'restaurants'>['data'];
+  restaurant: Restaurant;
 }
 
 const { restaurant } = Astro.props;
 // Logo y foto de comida (banner) de este restaurante, si se han añadido a public/images/restaurantes/
-const logo = restaurantImage(restaurant.id, 'logo');
-const banner = restaurantImage(restaurant.id, 'banner');
+// (las del panel tienen prioridad; si no hay, se buscan por nombre de archivo)
+const logo = restaurant.logo || restaurantImage(restaurant.id, 'logo');
+const banner = restaurant.banner || restaurantImage(restaurant.id, 'banner');
 ---
 <article class="rest-card" data-cuisine={restaurant.cuisine}>
   <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]} style={banner ? `background-image:url('${banner}')` : undefined}>

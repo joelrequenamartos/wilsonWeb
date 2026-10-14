@@ -1,25 +1,19 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { RestaurantEntry } from '../lib/restaurants';
+import { CUISINES } from '../lib/restaurants';
 import RestaurantCard from './RestaurantCard.astro';
 import AdBanner from './AdBanner.astro';
 
 interface Props {
-  restaurants: CollectionEntry<'restaurants'>[];
+  restaurants: RestaurantEntry[];
 }
 
 const { restaurants } = Astro.props;
 
-const filterLabels: Record<string, string> = {
-  pizza: 'Pizza',
-  mexicana: 'Mexicana',
-  italiana: 'Italiana',
-  americana: 'Americana',
-  asiatica: 'Asiática'
-};
+const filterLabels = CUISINES;
 
-// Orden fijo de las pestañas de filtro (independiente del orden de la rejilla,
-// que ya llega ordenada por el campo "order" de cada restaurante).
-const cuisineOrder = ['pizza', 'mexicana', 'italiana', 'americana', 'asiatica'];
+// Orden fijo de las pestañas de filtro (independiente del orden de la rejilla).
+const cuisineOrder = Object.keys(CUISINES);
 const tabs = cuisineOrder.map((cuisine) => ({
   cuisine,
   label: filterLabels[cuisine] ?? cuisine,

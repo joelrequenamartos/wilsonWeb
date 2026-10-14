@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /adminblog
+Disallow: /adminrestaurantes
 
 Sitemap: https://www.silvertoursny.com/sitemap-index.xml

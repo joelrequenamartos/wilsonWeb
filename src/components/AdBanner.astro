@@ -1,9 +1,9 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { RestaurantEntry } from '../lib/restaurants';
 import { restaurantImage } from '../lib/restaurantImages';
 
 interface Props {
-  restaurants: CollectionEntry<'restaurants'>[];
+  restaurants: RestaurantEntry[];
 }
 
 const { restaurants } = Astro.props;
@@ -18,8 +18,8 @@ const featured = restaurants
     {featured.map((restaurant) => (
       <div class="ad-slide">
         <div class:list={['ad-art', restaurant.data.art]} aria-hidden="true">
-          {restaurantImage(restaurant.data.id, 'logo')
-            ? <img src={restaurantImage(restaurant.data.id, 'logo')} alt="" loading="lazy" />
+          {(restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo'))
+            ? <img src={restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo')} alt="" loading="lazy" />
             : <svg class="icon" style="width:30px;height:30px"><use href="#i-fork" /></svg>}
         </div>
         <div class="ad-body">

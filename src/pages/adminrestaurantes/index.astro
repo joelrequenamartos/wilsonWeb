@@ -1,0 +1,808 @@
+---
+// Panel de restaurantes (privado): acceso con el usuario de Supabase y gestión de los restaurantes de la web.
+// Todo ocurre en el navegador. Los permisos los imponen las políticas de supabase/restaurants.sql,
+// así que aunque alguien encuentre esta dirección, sin el usuario administrador no puede leer ocultos ni escribir.
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Panel de restaurantes — Silver Tours NY</title>
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- ACCESO -->
+    <section id="loginView" class="card narrow" hidden>
+      <h1>Panel de restaurantes</h1>
+      <p class="muted">Entra con tu correo y contraseña.</p>
+      <form id="loginForm" class="stack">
+        <label>Correo<input type="email" id="loginEmail" autocomplete="username" required /></label>
+        <label>Contraseña<input type="password" id="loginPass" autocomplete="current-password" required /></label>
+        <p class="msg" id="loginMsg" role="alert"></p>
+        <button class="btn primary" type="submit">Entrar</button>
+      </form>
+    </section>
+
+    <!-- LISTA -->
+    <section id="listView" hidden>
+      <header class="bar">
+        <h1>Restaurantes</h1>
+        <div class="bar-actions">
+          <button class="btn primary" id="newBtn" type="button">+ Nuevo restaurante</button>
+          <button class="btn" id="orderBtn" type="button" title="Cambiar el orden de los restaurantes">↕ Reordenar</button>
+          <button class="btn" id="rebuildBtn" type="button" title="Vuelve a construir la web con lo que hay guardado">Actualizar web</button>
+          <a class="btn ghost" href="/adminblog">Blog</a>
+          <button class="btn ghost" id="logoutBtn" type="button">Salir</button>
+        </div>
+      </header>
+      <p class="banner" id="listMsg" role="status" hidden></p>
+
+      <div class="card setup" id="setupBox" hidden>
+        <h2>Falta un paso en Supabase</h2>
+        <p>Para administrar los restaurantes hay que ejecutar <b>supabase/restaurants.sql</b> en el SQL Editor de Supabase (una sola vez).
+        Ese archivo crea la tabla y pasa a ella los 20 restaurantes que ya tiene la web. Mientras tanto, la web sigue mostrando los de siempre.</p>
+      </div>
+
+      <div class="pending-bar" id="pendingBar" hidden>
+        <span id="pendingText"></span>
+        <button class="btn primary" id="pendingBtn" type="button">Actualizar web ahora</button>
+      </div>
+      <p class="banner" id="stateWarn" hidden>⚠ Para que los cambios se publiquen solo al pulsar «Actualizar web», hay que ejecutar <b>supabase/publish-state.sql</b> en Supabase (una sola vez). Mientras tanto, cada guardado actualiza la web.</p>
+
+      <div class="order-bar" id="orderBar">
+        <p><b>Modo reordenar.</b> Arrastra los restaurantes por el asa <span aria-hidden="true">⋮⋮</span> o usa las flechas. Este es el orden en que salen en la página de Restaurantes.</p>
+        <div class="order-actions">
+          <button class="btn primary" id="orderSave" type="button" disabled>Guardar orden</button>
+          <button class="btn ghost" id="orderCancel" type="button">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="filters" id="filters" hidden>
+        <div class="seg" role="group" aria-label="Visibilidad">
+          <button type="button" data-estado="todos" class="is-active">Todos <span class="n"></span></button>
+          <button type="button" data-estado="visibles">Visibles <span class="n"></span></button>
+          <button type="button" data-estado="ocultos">Ocultos <span class="n"></span></button>
+        </div>
+        <select id="filterCuisine" aria-label="Filtrar por tipo de cocina">
+          <option value="">Todas las cocinas</option>
+        </select>
+        <button type="button" class="chip" data-toggle="destacados" aria-pressed="false">★ Destacados <span class="n"></span></button>
+        <button type="button" class="btn ghost small" id="clearFilters" hidden>Quitar filtros</button>
+      </div>
+      <p class="muted" id="filterEmpty" hidden>Ningún restaurante coincide con esos filtros.</p>
+      <div id="restList" class="rests"></div>
+    </section>
+
+    <!-- EDITAR / CREAR -->
+    <section id="editView" hidden>
+      <header class="bar">
+        <h1 id="editTitle">Nuevo restaurante</h1>
+        <button class="btn ghost" id="backBtn" type="button">← Volver a la lista</button>
+      </header>
+      <p class="banner error" id="editMsg" role="alert" hidden></p>
+
+      <form id="restForm" class="card stack" novalidate>
+        <div class="grid2">
+          <label>Nombre<input type="text" id="fName" maxlength="80" placeholder="Napoli's Corner" /></label>
+          <label>Identificador
+            <input type="text" id="fId" maxlength="60" placeholder="se-genera-desde-el-nombre" />
+            <small id="idHelp" class="muted">Sale del nombre y no se puede cambiar una vez creado.</small>
+          </label>
+        </div>
+
+        <div class="grid2">
+          <label>Tipo de cocina <small class="muted">(pestaña del filtro)</small>
+            <select id="fCuisine"></select>
+          </label>
+          <label>Etiqueta de cocina <small class="muted">(lo que se ve en la tarjeta; si la dejas vacía, el tipo)</small>
+            <input type="text" id="fLabel" maxlength="40" placeholder="Japonesa" />
+          </label>
+        </div>
+
+        <div class="grid2">
+          <label>Barrio <small class="muted">(sale con 📍)</small><input type="text" id="fHood" maxlength="60" placeholder="Little Italy" /></label>
+          <label>Precio
+            <select id="fPrice">
+              <option value="$">$ — económico</option>
+              <option value="$$">$$ — medio</option>
+              <option value="$$$">$$$ — caro</option>
+            </select>
+          </label>
+        </div>
+
+        <label>Descripción corta
+          <textarea id="fNote" rows="3" maxlength="220" placeholder="Una o dos frases sobre qué lo hace especial."></textarea>
+        </label>
+
+        <div class="images">
+          <div class="img-box" id="logoBox">
+            <span class="label">Logo</span>
+            <div class="logo-prev"><img id="logoPreview" alt="" hidden /><span id="logoEmpty" class="muted">Sin logo</span></div>
+            <div class="img-actions">
+              <label class="btn small">Subir logo<input type="file" id="logoFile" accept="image/*" hidden /></label>
+              <button class="btn ghost small" id="logoRemove" type="button" hidden>Quitar</button>
+            </div>
+            <small class="muted" id="logoStatus">Mejor cuadrado o con fondo transparente (PNG).</small>
+          </div>
+          <div class="img-box" id="bannerBox">
+            <span class="label">Foto de comida <small class="muted">(va por detrás del logo)</small></span>
+            <div class="banner-prev"><img id="bannerPreview" alt="" hidden /><span id="bannerEmpty" class="muted">Sin foto</span></div>
+            <div class="img-actions">
+              <label class="btn small">Subir foto<input type="file" id="bannerFile" accept="image/*" hidden /></label>
+              <button class="btn ghost small" id="bannerRemove" type="button" hidden>Quitar</button>
+            </div>
+            <small class="muted" id="bannerStatus">Horizontal; se reduce sola a 1600 px de ancho.</small>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <label>Destacado en el banner de la home
+            <select id="fRank">
+              <option value="">No destacado</option>
+              <option value="1">Puesto 1</option>
+              <option value="2">Puesto 2</option>
+              <option value="3">Puesto 3</option>
+            </select>
+            <small class="muted">Cada puesto solo lo tiene uno: al elegirlo se lo quita al que lo tuviera. Solo restaurantes visibles.</small>
+          </label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" id="fPublished" checked /> Visible en la web <small class="muted">(si no, queda oculto; para mostrarlo hay que rellenar todos los datos)</small></label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
+          <button class="btn danger" id="deleteBtn" type="button" hidden>Borrar restaurante</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Aviso de «guardando» -->
+  <div class="saving" id="saving" role="status" aria-live="polite" hidden>
+    <div class="saving-card">
+      <span class="spinner" aria-hidden="true"></span>
+      <p id="savingWord">Guardando…</p>
+    </div>
+  </div>
+
+  <style is:global>
+    :root{ --ink:#1A1512; --soft:#5C5147; --mute:#948879; --line:rgba(26,21,18,.16); --coral:#E07A3E; --coral-d:#A8501E; --bg:#F6F2EC; }
+    *{box-sizing:border-box;}
+    body{margin:0; font-family:"Poppins",system-ui,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5;}
+    .app{max-width:980px; margin:0 auto; padding:24px 16px 80px;}
+    h1{font-size:clamp(1.5rem,4vw,2rem); margin:0; letter-spacing:-.01em;}
+    h2{margin:0 0 6px; font-size:1.15rem;}
+    .muted{color:var(--mute); font-weight:400;}
+    .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:clamp(16px,3vw,28px);}
+    .narrow{max-width:420px; margin:12vh auto 0;}
+    .setup{margin-bottom:16px; background:#fff3e8; border-color:#f0cfae;}
+    .setup p{margin:0;}
+    .stack{display:flex; flex-direction:column; gap:16px;}
+    .grid2{display:grid; grid-template-columns:1fr; gap:16px;}
+    @media (min-width:700px){.grid2{grid-template-columns:1fr 1fr;}}
+    label, .label{display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:.9rem;}
+    input[type=text], input[type=email], input[type=password], select, textarea{
+      width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px; font:inherit; font-weight:400; background:#fff; color:var(--ink);
+    }
+    input:focus, textarea:focus, select:focus{outline:2px solid var(--coral); outline-offset:1px;}
+    input[disabled], select[disabled]{background:#f1ede6; color:var(--soft);}
+    .is-missing{border-color:#c0392b !important; outline:2px solid rgba(192,57,43,.28); outline-offset:1px;}
+    .btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 18px; border-radius:100px; border:1px solid var(--line); background:#fff; color:var(--ink); font:inherit; font-weight:600; font-size:.9rem; cursor:pointer; text-decoration:none;}
+    .btn.primary{background:var(--coral); border-color:var(--coral); color:#fff;}
+    .btn.danger{background:#fff; border-color:#c0392b; color:#c0392b;}
+    .btn.ghost{background:transparent;}
+    .btn.small{padding:6px 12px; font-size:.8rem;}
+    .btn[disabled]{opacity:.55; cursor:default;}
+    .bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+    .bar-actions{display:flex; gap:8px; flex-wrap:wrap;}
+    .banner{margin:0 0 16px; padding:12px 16px; border-radius:12px; background:#fff3e8; border:1px solid #f0cfae; font-size:.92rem;}
+    .banner.error{background:#fdecea; border-color:#f3b9b2; color:#8c2a1f;}
+    .banner.ok{background:#e8f6ee; border-color:#b5e0c6; color:#14653a;}
+    .msg{margin:0; font-size:.9rem; color:#c0392b; min-height:1.2em;}
+    .pending-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:12px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-weight:600; font-size:.95rem;}
+    .pending-bar[hidden], .filters[hidden], .setup[hidden]{display:none;}
+    .is-ordering .pending-bar{display:none !important;}
+    /* filtros */
+    .filters{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+    .filters select{width:auto; padding:8px 12px; border-radius:100px; font-weight:600; font-size:.85rem;}
+    .seg{display:inline-flex; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
+    .seg button, .chip{border:0; background:transparent; font:inherit; font-weight:600; font-size:.85rem; padding:7px 14px; border-radius:100px; cursor:pointer; color:var(--ink);}
+    .seg button.is-active{background:var(--coral); color:#fff;}
+    .chip{background:#fff; border:1px solid var(--line);}
+    .chip[aria-pressed=true]{background:var(--coral); border-color:var(--coral); color:#fff;}
+    .filters .n{font-weight:500; opacity:.7; margin-left:2px;}
+    /* lista */
+    .rests{display:flex; flex-direction:column; gap:10px;}
+    .rest{display:grid; grid-template-columns:96px 1fr auto; gap:14px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px;}
+    .rest .thumb{position:relative; width:96px; height:64px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#C25F26,#E07A3E); display:flex; align-items:center;}
+    .rest .thumb .bg{position:absolute; inset:0; background-size:cover; background-position:center;}
+    .rest .thumb .lg{position:relative; margin-left:8px; width:40px; height:40px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:4px;}
+    .rest .thumb .lg img{width:100%; height:100%; object-fit:contain;}
+    .rest .thumb .lg span{font-size:1rem;}
+    .rest h2{font-size:1rem; margin:0 0 4px; line-height:1.3;}
+    .rest .meta{display:flex; gap:6px; flex-wrap:wrap; font-size:.78rem; color:var(--soft); align-items:center;}
+    .pill{padding:2px 9px; border-radius:100px; font-weight:600; font-size:.72rem; background:#ece6dc;}
+    .pill.hide{background:#f3e9d6; color:#8a5a12;}
+    .pill.feat{background:#ffe4d0; color:var(--coral-d);}
+    .rest-actions{display:flex; gap:8px;}
+    @media (max-width:600px){.rest{grid-template-columns:80px 1fr;} .rest .thumb{width:80px;} .rest-actions{grid-column:1 / -1;}}
+    /* reordenar */
+    .order-bar{display:none; flex-direction:column; gap:12px; margin-bottom:16px; padding:14px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-size:.92rem;}
+    .order-bar p{margin:0;}
+    .order-actions{display:flex; gap:8px; flex-wrap:wrap;}
+    .is-ordering .order-bar{display:flex;}
+    .is-ordering .bar-actions, .is-ordering .filters, .is-ordering #filterEmpty{display:none !important;}
+    .rest.rest-order{grid-template-columns:40px 80px 1fr auto; user-select:none;}
+    .drag-handle{display:flex; align-items:center; justify-content:center; width:40px; height:48px; border:0; border-radius:10px; background:#f1ede6; color:var(--soft); font-size:1.2rem; letter-spacing:-.15em; cursor:grab; touch-action:none;}
+    .drag-handle:active{cursor:grabbing;}
+    .order-arrows{display:flex; flex-direction:column; gap:4px;}
+    .order-arrows button{width:34px; height:30px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size:.95rem;}
+    .order-arrows button[disabled]{opacity:.35; cursor:default;}
+    .rest.is-dragging{position:relative; z-index:20; box-shadow:0 14px 34px -10px rgba(0,0,0,.4); border-color:var(--coral); background:#fffaf5;}
+    /* formulario */
+    .images{display:grid; grid-template-columns:1fr; gap:16px;}
+    @media (min-width:700px){.images{grid-template-columns:1fr 1.4fr;}}
+    .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
+    .logo-prev, .banner-prev{display:flex; align-items:center; justify-content:center; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
+    .logo-prev{width:110px; height:110px; padding:10px;}
+    .logo-prev img{width:100%; height:100%; object-fit:contain;}
+    .banner-prev{width:100%; aspect-ratio:16/7;}
+    .banner-prev img{width:100%; height:100%; object-fit:cover;}
+    .img-actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    .img-actions label.btn{display:inline-flex; flex-direction:row;}
+    .checks{display:flex; flex-direction:column; gap:10px;}
+    .check{flex-direction:row; align-items:center; gap:8px; font-weight:600;}
+    .check input{width:18px; height:18px; accent-color:var(--coral);}
+    .form-actions{display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;}
+    /* aviso de guardando */
+    .saving{position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; background:rgba(246,242,236,.82); backdrop-filter:blur(3px);}
+    .saving[hidden]{display:none;}
+    .saving-card{display:flex; flex-direction:column; align-items:center; gap:18px; min-width:min(300px,86vw); padding:30px 36px; text-align:center; background:#fff; border-radius:22px; box-shadow:0 24px 60px -20px rgba(0,0,0,.35);}
+    .spinner{width:54px; height:54px; border-radius:50%; border:6px solid #f3d9c6; border-top-color:var(--coral); animation:spin .9s linear infinite;}
+    .saving-card p{margin:0; min-height:1.6em; font-weight:700; font-size:1.15rem; transition:opacity .22s ease;}
+    .saving-card p.is-fading{opacity:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @media (prefers-reduced-motion: reduce){.spinner{animation-duration:2.6s;}}
+  </style>
+
+  <script>
+    import { createClient } from '@supabase/supabase-js';
+    import { SUPABASE_URL, SUPABASE_KEY } from '../../lib/supabase';
+    import { CUISINES } from '../../lib/cuisines';
+
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const $ = (id) => document.getElementById(id);
+    const BUCKET = 'blog-images'; // el mismo almacén de fotos del blog; aquí van en la carpeta «restaurantes/»
+    const ARTS = ['art-food1', 'art-food2', 'art-food3'];
+
+    let session = null;
+    let todos = [];        // restaurantes cargados
+    let editing = null;    // restaurante en edición (null = nuevo)
+    let logoUrl = null;
+    let bannerUrl = null;
+    let idTouched = false;
+    let tablaLista = true;
+
+    // ---------- utilidades ----------
+    const views = ['loginView', 'listView', 'editView'];
+    const show = (id) => views.forEach((v) => ($(v).hidden = v !== id));
+    const slugify = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+    function banner(el, text, kind) {
+      el.textContent = text || '';
+      el.className = 'banner' + (kind ? ' ' + kind : '');
+      el.hidden = !text;
+      if (text && kind === 'error' && el.id === 'editMsg') window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------- aviso de «guardando» ----------
+    const FRASES = [
+      'Guardando…', 'Espera un poquito…', 'Calentando motores…', 'Pidiendo la mesa junto a la ventana…',
+      'Probando la pizza, por si acaso…', 'Colocando cada logo en su sitio…', 'Contando los tenedores…',
+      'Bibiana, qué buen trabajo estás haciendo…', 'Un segundito, Bibiana, que ya casi…', 'Ya casi está…',
+      'Bibiana manda y la web obedece…', 'Saludando al chef…', 'Poniendo la web guapa…', 'Bibiana, eres la reina del blog…'
+    ];
+    let frasesTimer = null;
+    let ultimaPrimera = '';
+    function barajar(lista) {
+      const b = [...lista];
+      for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+      return b;
+    }
+    function mostrarGuardando() {
+      const palabra = $('savingWord');
+      const orden = barajar(FRASES);
+      if (orden[0] === ultimaPrimera) orden.push(orden.shift());
+      ultimaPrimera = orden[0];
+      let i = 0;
+      palabra.textContent = orden[0];
+      palabra.classList.remove('is-fading');
+      $('saving').hidden = false;
+      clearInterval(frasesTimer);
+      frasesTimer = setInterval(() => {
+        palabra.classList.add('is-fading');
+        setTimeout(() => { i = (i + 1) % orden.length; palabra.textContent = orden[i]; palabra.classList.remove('is-fading'); }, 220);
+      }, 1600);
+    }
+    function ocultarGuardando() { clearInterval(frasesTimer); $('saving').hidden = true; }
+
+    // ---------- acceso ----------
+    async function esAdmin() {
+      const { data, error } = await sb.rpc('is_admin');
+      return !error && data === true;
+    }
+
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('loginMsg').textContent = '';
+      const { data, error } = await sb.auth.signInWithPassword({ email: $('loginEmail').value.trim(), password: $('loginPass').value });
+      if (error) { $('loginMsg').textContent = 'Correo o contraseña incorrectos.'; return; }
+      session = data.session;
+      if (!(await esAdmin())) {
+        await sb.auth.signOut(); session = null;
+        $('loginMsg').textContent = 'Este usuario no tiene permiso para gestionar los restaurantes.';
+        return;
+      }
+      $('loginPass').value = '';
+      await showList();
+    });
+
+    $('logoutBtn').addEventListener('click', async () => {
+      if (estadoWeb.supported && estadoWeb.pending > 0 && !confirm('Hay cambios guardados sin publicar en la web. ¿Salir igualmente? (Seguirán pendientes hasta que pulses «Actualizar web».)')) return;
+      await sb.auth.signOut(); session = null; show('loginView');
+    });
+
+    // ---------- publicar y cambios pendientes (mismo contador que el blog) ----------
+    async function publicar() {
+      try {
+        const r = await fetch('/api/publish', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token } });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) return { ok: true, msg: 'La web se está actualizando: los cambios se verán en 1-2 minutos.' };
+        if (j.error === 'not-configured') return { ok: false, msg: 'Falta conectar la publicación con Vercel (variable DEPLOY_HOOK_URL).' };
+        return { ok: false, msg: 'No se ha podido avisar a la web (' + (j.error || r.status) + ').' };
+      } catch { return { ok: false, msg: 'No se ha podido avisar a la web (sin conexión).' }; }
+    }
+
+    let estadoWeb = { supported: false, pending: 0 };
+    async function cargarEstadoWeb() {
+      const { data, error } = await sb.from('site_state').select('pending').maybeSingle();
+      estadoWeb.supported = !error && !!data;
+      estadoWeb.pending = data?.pending ?? 0;
+      pintarPendientes();
+    }
+    function pintarPendientes() {
+      const n = estadoWeb.pending;
+      $('pendingBar').hidden = !(estadoWeb.supported && n > 0);
+      $('pendingText').textContent = `Hay ${n} ${n === 1 ? 'cambio guardado' : 'cambios guardados'} sin publicar en la web.`;
+      $('stateWarn').hidden = estadoWeb.supported;
+      $('rebuildBtn').classList.toggle('primary', estadoWeb.supported && n > 0);
+    }
+    async function registrarCambio() {
+      if (!estadoWeb.supported) return await publicar();
+      const { error } = await sb.rpc('mark_site_dirty');
+      await cargarEstadoWeb();
+      if (error) return { ok: false, msg: 'Guardado, pero no se ha podido anotar como pendiente (' + error.message + ').' };
+      return { ok: true, msg: 'Aún no se ve en la web: pulsa «Actualizar web» cuando termines.' };
+    }
+    async function actualizarWeb() {
+      mostrarGuardando();
+      const r = await publicar();
+      if (r.ok && estadoWeb.supported) await sb.rpc('mark_site_published');
+      await cargarEstadoWeb();
+      ocultarGuardando();
+      banner($('listMsg'), r.msg, r.ok ? 'ok' : 'error');
+      if (r.ok) window.scrollTo(0, 0);
+      return r;
+    }
+    $('rebuildBtn').addEventListener('click', actualizarWeb);
+    $('pendingBtn').addEventListener('click', actualizarWeb);
+    window.addEventListener('beforeunload', (e) => {
+      if (estadoWeb.supported && estadoWeb.pending > 0) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    // ---------- lista y filtros ----------
+    const filtros = { estado: 'todos', cocina: '', destacados: false };
+    const cumple = (r, f) =>
+      (f.estado === 'todos' || (f.estado === 'visibles' ? r.published : !r.published)) &&
+      (!f.cocina || r.cuisine === f.cocina) &&
+      (!f.destacados || r.featured_rank != null);
+
+    $('filterCuisine').append(...Object.entries(CUISINES).map(([k, v]) => Object.assign(document.createElement('option'), { value: k, textContent: v })));
+    $('fCuisine').append(...Object.entries(CUISINES).map(([k, v]) => Object.assign(document.createElement('option'), { value: k, textContent: v })));
+
+    function pintarFiltros() {
+      const caja = $('filters');
+      caja.hidden = !todos.length;
+      caja.querySelectorAll('[data-estado]').forEach((b) => {
+        b.classList.toggle('is-active', filtros.estado === b.dataset.estado);
+        b.querySelector('.n').textContent = todos.filter((r) => cumple(r, { ...filtros, estado: b.dataset.estado })).length;
+      });
+      const d = caja.querySelector('[data-toggle=destacados]');
+      d.setAttribute('aria-pressed', String(filtros.destacados));
+      d.querySelector('.n').textContent = todos.filter((r) => cumple(r, { ...filtros, destacados: true })).length;
+      $('filterCuisine').value = filtros.cocina;
+      $('clearFilters').hidden = filtros.estado === 'todos' && !filtros.cocina && !filtros.destacados;
+    }
+
+    function miniatura(r) {
+      const t = document.createElement('div'); t.className = 'thumb';
+      if (r.banner) { const bg = document.createElement('div'); bg.className = 'bg'; bg.style.backgroundImage = `url('${r.banner}')`; t.append(bg); }
+      const lg = document.createElement('div'); lg.className = 'lg';
+      if (r.logo) { const im = document.createElement('img'); im.src = r.logo; im.alt = ''; lg.append(im); }
+      else { const s = document.createElement('span'); s.textContent = '🍴'; lg.append(s); }
+      t.append(lg);
+      return t;
+    }
+    const pill = (txt, cls = '') => { const s = document.createElement('span'); s.className = 'pill ' + cls; s.textContent = txt; return s; };
+
+    function renderList() {
+      pintarFiltros();
+      const list = $('restList');
+      list.textContent = '';
+      if (!todos.length) { list.textContent = 'Todavía no hay restaurantes. Pulsa «+ Nuevo restaurante».'; $('filterEmpty').hidden = true; return; }
+      const visibles = todos.filter((r) => cumple(r, filtros));
+      $('filterEmpty').hidden = visibles.length > 0;
+      for (const r of visibles) {
+        const row = document.createElement('article');
+        row.className = 'rest';
+        const info = document.createElement('div');
+        const h = document.createElement('h2'); h.textContent = r.name;
+        const meta = document.createElement('div'); meta.className = 'meta';
+        meta.append(pill(r.cuisine_label || CUISINES[r.cuisine] || r.cuisine));
+        if (r.neighborhood) meta.append(pill('📍 ' + r.neighborhood));
+        meta.append(pill(r.price));
+        if (r.featured_rank != null) meta.append(pill('★ Banner · puesto ' + r.featured_rank, 'feat'));
+        if (!r.published) meta.append(pill('Oculto', 'hide'));
+        info.append(h, meta);
+        const actions = document.createElement('div'); actions.className = 'rest-actions';
+        const edit = document.createElement('button'); edit.className = 'btn'; edit.type = 'button'; edit.textContent = 'Editar';
+        edit.addEventListener('click', () => openEditor(r));
+        actions.append(edit);
+        row.append(miniatura(r), info, actions);
+        list.append(row);
+      }
+    }
+
+    $('filters').addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.estado) filtros.estado = b.dataset.estado;
+      else if (b.dataset.toggle) filtros.destacados = !filtros.destacados;
+      else if (b.id === 'clearFilters') Object.assign(filtros, { estado: 'todos', cocina: '', destacados: false });
+      renderList();
+    });
+    $('filterCuisine').addEventListener('change', (e) => { filtros.cocina = e.target.value; renderList(); });
+
+    async function showList(message, kind) {
+      show('listView');
+      banner($('listMsg'), message, kind);
+      window.scrollTo(0, 0);
+      cargarEstadoWeb();
+      const { data, error } = await sb.from('restaurants').select('*').order('position', { ascending: true, nullsFirst: false });
+      if (error) {
+        // La tabla aún no existe: hay que ejecutar supabase/restaurants.sql
+        tablaLista = false;
+        $('setupBox').hidden = false;
+        $('newBtn').hidden = $('orderBtn').hidden = true;
+        $('restList').textContent = '';
+        $('filters').hidden = true;
+        return;
+      }
+      tablaLista = true;
+      $('setupBox').hidden = true;
+      $('newBtn').hidden = $('orderBtn').hidden = false;
+      todos = data;
+      salirOrden();
+      renderList();
+    }
+
+    $('newBtn').addEventListener('click', () => openEditor(null));
+    $('backBtn').addEventListener('click', () => showList());
+
+    // ---------- reordenar ----------
+    let ordenando = false;
+    let ordenInicial = [];
+    const idsEnOrden = () => [...$('restList').children].map((r) => r.dataset.id);
+
+    function marcarCambios() {
+      $('orderSave').disabled = idsEnOrden().join() === ordenInicial.join();
+      const filas = [...$('restList').children];
+      filas.forEach((r, i) => {
+        r.querySelector('[data-mover=arriba]').disabled = i === 0;
+        r.querySelector('[data-mover=abajo]').disabled = i === filas.length - 1;
+      });
+    }
+
+    function filaOrden(r) {
+      const row = document.createElement('article');
+      row.className = 'rest rest-order';
+      row.dataset.id = r.id;
+      const handle = document.createElement('button');
+      handle.type = 'button'; handle.className = 'drag-handle'; handle.textContent = '⋮⋮';
+      handle.setAttribute('aria-label', 'Arrastrar para reordenar');
+      const info = document.createElement('div');
+      const h = document.createElement('h2'); h.textContent = r.name;
+      const meta = document.createElement('div'); meta.className = 'meta';
+      meta.append(pill(r.cuisine_label || CUISINES[r.cuisine] || r.cuisine));
+      if (!r.published) meta.append(pill('Oculto', 'hide'));
+      info.append(h, meta);
+      const arrows = document.createElement('div'); arrows.className = 'order-arrows';
+      for (const [dir, txt, label] of [['arriba', '↑', 'Subir'], ['abajo', '↓', 'Bajar']]) {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.mover = dir; b.textContent = txt; b.setAttribute('aria-label', label);
+        arrows.append(b);
+      }
+      row.append(handle, miniatura(r), info, arrows);
+      return row;
+    }
+
+    function entrarOrden() {
+      if (!tablaLista) return;
+      ordenando = true;
+      $('listView').classList.add('is-ordering');
+      banner($('listMsg'), '');
+      const list = $('restList');
+      list.textContent = '';
+      todos.forEach((r) => list.append(filaOrden(r)));
+      ordenInicial = idsEnOrden();
+      marcarCambios();
+      window.scrollTo(0, 0);
+    }
+    function salirOrden() { ordenando = false; $('listView').classList.remove('is-ordering'); }
+
+    $('orderBtn').addEventListener('click', entrarOrden);
+    $('orderCancel').addEventListener('click', () => { salirOrden(); renderList(); });
+
+    $('restList').addEventListener('click', (e) => {
+      if (!ordenando) return;
+      const b = e.target.closest('[data-mover]');
+      if (!b) return;
+      const row = b.closest('.rest');
+      const list = $('restList');
+      if (b.dataset.mover === 'arriba' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+      else if (b.dataset.mover === 'abajo' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+      marcarCambios();
+      const activo = row.querySelector(`[data-mover=${b.dataset.mover}]`);
+      (activo && !activo.disabled ? activo : row.querySelector('.drag-handle')).focus();
+    });
+
+    // Arrastrar con el asa (ratón o dedo). Los eventos se escuchan en la ventana: al mover la fila en la página,
+    // el navegador suelta la «captura» del puntero y el arrastre dejaría de seguirlo.
+    function arrastrable(lista, { asa, fila, activo = () => true, alSoltar = () => {} }) {
+      lista.addEventListener('pointerdown', (e) => {
+        if (!activo()) return;
+        const handle = e.target.closest(asa);
+        if (!handle || !lista.contains(handle)) return;
+        const row = handle.closest(fila);
+        e.preventDefault();
+        const grab = e.clientY - row.getBoundingClientRect().top;
+        let y = e.clientY;
+        let raf = 0;
+        row.classList.add('is-dragging');
+        const colocar = () => {
+          const deseada = y - grab;
+          row.style.transform = 'none';
+          const centro = deseada + row.offsetHeight / 2;
+          const otras = [...lista.children].filter((r) => r !== row);
+          let idx = 0;
+          for (const o of otras) { const r = o.getBoundingClientRect(); if (r.top + r.height / 2 < centro) idx++; }
+          if (idx !== [...lista.children].indexOf(row)) lista.insertBefore(row, otras[idx] || null);
+          row.style.transform = `translateY(${deseada - row.getBoundingClientRect().top}px)`;
+        };
+        const tick = () => {
+          if (y < 70) window.scrollBy(0, -14); else if (y > window.innerHeight - 70) window.scrollBy(0, 14);
+          colocar();
+          raf = requestAnimationFrame(tick);
+        };
+        const mover = (ev) => { y = ev.clientY; };
+        const soltar = () => {
+          cancelAnimationFrame(raf);
+          window.removeEventListener('pointermove', mover);
+          window.removeEventListener('pointerup', soltar);
+          window.removeEventListener('pointercancel', soltar);
+          row.classList.remove('is-dragging');
+          row.style.transform = '';
+          alSoltar();
+        };
+        window.addEventListener('pointermove', mover);
+        window.addEventListener('pointerup', soltar);
+        window.addEventListener('pointercancel', soltar);
+        raf = requestAnimationFrame(tick);
+      });
+    }
+    arrastrable($('restList'), { asa: '.drag-handle', fila: '.rest', activo: () => ordenando, alSoltar: marcarCambios });
+
+    $('orderSave').addEventListener('click', async () => {
+      const porId = new Map(todos.map((r) => [String(r.id), r]));
+      const ids = idsEnOrden();
+      // Se renumera todo de 1 a N; solo se escriben los que cambian de posición.
+      const cambios = ids.map((id, i) => ({ id, position: i + 1 })).filter((c) => porId.get(c.id).position !== c.position);
+      $('orderSave').disabled = true;
+      mostrarGuardando();
+      const res = await Promise.all(cambios.map((c) => sb.from('restaurants').update({ position: c.position }).eq('id', c.id)));
+      const fallo = res.find((r) => r.error);
+      if (fallo) { $('orderSave').disabled = false; ocultarGuardando(); return banner($('listMsg'), 'No se ha podido guardar el orden: ' + fallo.error.message, 'error'); }
+      // Solo cambia la web si se ha movido algún restaurante visible.
+      const r = cambios.some((c) => porId.get(c.id).published) ? await registrarCambio() : { ok: true, msg: 'Los ocultos no cambian la web.' };
+      await showList('Orden guardado. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- imágenes ----------
+    async function prepararImagen(file, tipo) {
+      if (file.type === 'image/svg+xml') return { blob: file, ext: 'svg', type: file.type };
+      if (file.type === 'image/gif') return { blob: file, ext: 'gif', type: file.type };
+      const bmp = await createImageBitmap(file);
+      const maximo = tipo === 'logo' ? 600 : 1600;
+      const scale = Math.min(1, maximo / bmp.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * scale);
+      canvas.height = Math.round(bmp.height * scale);
+      canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      // El logo se queda en PNG para conservar la transparencia; la foto de comida va en JPEG.
+      if (tipo === 'logo') return { blob: await new Promise((res) => canvas.toBlob(res, 'image/png')), ext: 'png', type: 'image/png' };
+      return { blob: await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.85)), ext: 'jpg', type: 'image/jpeg' };
+    }
+
+    async function subirImagen(file, tipo) {
+      const base = editing?.id || slugify($('fId').value.trim() || $('fName').value.trim());
+      if (!base) throw new Error('Escribe primero el nombre del restaurante.');
+      const img = await prepararImagen(file, tipo);
+      const path = `restaurantes/${base}/${tipo}-${Date.now()}.${img.ext}`;
+      const { error } = await sb.storage.from(BUCKET).upload(path, img.blob, { contentType: img.type, upsert: false });
+      if (error) throw error;
+      return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    }
+
+    function pintarImagenes() {
+      $('logoPreview').hidden = !logoUrl; $('logoEmpty').hidden = !!logoUrl; $('logoRemove').hidden = !logoUrl;
+      if (logoUrl) $('logoPreview').src = logoUrl;
+      $('bannerPreview').hidden = !bannerUrl; $('bannerEmpty').hidden = !!bannerUrl; $('bannerRemove').hidden = !bannerUrl;
+      if (bannerUrl) $('bannerPreview').src = bannerUrl;
+    }
+
+    for (const tipo of ['logo', 'banner']) {
+      $(tipo + 'File').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const est = $(tipo + 'Status');
+        est.textContent = 'Subiendo…';
+        try {
+          const url = await subirImagen(file, tipo);
+          if (tipo === 'logo') logoUrl = url; else bannerUrl = url;
+          pintarImagenes();
+          est.textContent = 'Imagen subida.';
+        } catch (err) { est.textContent = 'No se ha podido subir: ' + (err.message || err); }
+        e.target.value = '';
+      });
+      $(tipo + 'Remove').addEventListener('click', () => { if (tipo === 'logo') logoUrl = null; else bannerUrl = null; pintarImagenes(); });
+    }
+
+    // ---------- editor ----------
+    // El puesto del banner solo existe para restaurantes visibles; al ocultar uno se apaga y al volver a mostrarlo se recupera.
+    let rangoGuardado = '';
+    function syncRango() {
+      const vis = $('fPublished').checked;
+      const sel = $('fRank');
+      if (!vis && !sel.disabled) { rangoGuardado = sel.value; sel.value = ''; }
+      if (vis && sel.disabled) sel.value = rangoGuardado;
+      sel.disabled = !vis;
+    }
+    $('fPublished').addEventListener('change', syncRango);
+
+    function openEditor(r) {
+      editing = r;
+      idTouched = !!r;
+      banner($('editMsg'), '');
+      document.querySelectorAll('.is-missing').forEach((x) => x.classList.remove('is-missing'));
+      show('editView');
+      $('editTitle').textContent = r ? 'Editar restaurante' : 'Nuevo restaurante';
+      $('fName').value = r?.name ?? '';
+      $('fId').value = r?.id ?? '';
+      $('fId').disabled = !!r;
+      $('idHelp').textContent = r ? 'No se puede cambiar una vez creado.' : 'Sale del nombre y no se puede cambiar una vez creado.';
+      $('fCuisine').value = r?.cuisine ?? 'pizza';
+      $('fLabel').value = r?.cuisine_label ?? '';
+      $('fHood').value = r?.neighborhood ?? '';
+      $('fPrice').value = r?.price ?? '$$';
+      $('fNote').value = r?.note ?? '';
+      logoUrl = r?.logo ?? null;
+      bannerUrl = r?.banner ?? null;
+      pintarImagenes();
+      $('logoStatus').textContent = 'Mejor cuadrado o con fondo transparente (PNG).';
+      $('bannerStatus').textContent = 'Horizontal; se reduce sola a 1600 px de ancho.';
+      $('fPublished').checked = r ? !!r.published : true;
+      $('fRank').disabled = false;
+      rangoGuardado = r?.featured_rank != null ? String(r.featured_rank) : '';
+      $('fRank').value = $('fPublished').checked ? rangoGuardado : '';
+      $('fRank').disabled = !$('fPublished').checked;
+      $('deleteBtn').hidden = !r;
+      window.scrollTo(0, 0);
+    }
+
+    $('fName').addEventListener('input', () => { if (!idTouched) $('fId').value = slugify($('fName').value); });
+    $('fId').addEventListener('input', () => { idTouched = true; $('fId').value = slugify($('fId').value); });
+    $('restForm').addEventListener('input', (e) => { if (e.target.classList) e.target.classList.remove('is-missing'); });
+
+    // ---------- guardar ----------
+    $('restForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      banner($('editMsg'), '');
+      document.querySelectorAll('.is-missing').forEach((x) => x.classList.remove('is-missing'));
+      const name = $('fName').value.trim();
+      const id = editing ? editing.id : slugify($('fId').value.trim() || name);
+      const visible = $('fPublished').checked;
+      if (!name) { $('fName').classList.add('is-missing'); return banner($('editMsg'), 'Escribe el nombre del restaurante.', 'error'); }
+      if (!id) { $('fId').classList.add('is-missing'); return banner($('editMsg'), 'El identificador no puede estar vacío.', 'error'); }
+
+      // Para que se vea en la web, todos los datos son obligatorios (las imágenes son opcionales).
+      if (visible) {
+        const falta = [];
+        const marcar = (el, n) => { falta.push(n); el.classList.add('is-missing'); };
+        if (!$('fHood').value.trim()) marcar($('fHood'), 'barrio');
+        if (!$('fNote').value.trim()) marcar($('fNote'), 'descripción');
+        if (falta.length) return banner($('editMsg'), 'Para que sea visible falta rellenar: ' + falta.join(', ') + '. Si aún no está listo, desmarca «Visible en la web».', 'error');
+      }
+
+      const cuisine = $('fCuisine').value;
+      const row = {
+        name,
+        cuisine,
+        cuisine_label: $('fLabel').value.trim() || CUISINES[cuisine],
+        neighborhood: $('fHood').value.trim(),
+        price: $('fPrice').value,
+        note: $('fNote').value.trim(),
+        logo: logoUrl,
+        banner: bannerUrl,
+        featured_rank: visible && $('fRank').value ? Number($('fRank').value) : null,
+        published: visible
+      };
+
+      $('saveBtn').disabled = true;
+      mostrarGuardando();
+      let error;
+      if (editing) ({ error } = await sb.from('restaurants').update(row).eq('id', editing.id));
+      else ({ error } = await sb.from('restaurants').insert({ id, art: ARTS[Math.floor(Math.random() * ARTS.length)], ...row }));
+      if (error) {
+        $('saveBtn').disabled = false;
+        ocultarGuardando();
+        const dup = error.code === '23505';
+        return banner($('editMsg'), dup ? 'Ya existe un restaurante con ese identificador. Cambia el nombre o el identificador.' : 'No se ha podido guardar: ' + error.message, 'error');
+      }
+      // Solo cuenta como cambio de la web si es visible (antes o después) o si toca el banner de otro.
+      const afectaWeb = !!(row.published || editing?.published);
+      const r = afectaWeb ? await registrarCambio() : { ok: true, msg: '' };
+      $('saveBtn').disabled = false;
+      await showList(afectaWeb ? 'Restaurante guardado. ' + r.msg : 'Guardado como oculto. No cambia la web pública.', r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- borrar ----------
+    $('deleteBtn').addEventListener('click', async () => {
+      if (!editing) return;
+      if (!confirm(`¿Borrar «${editing.name}»? No se puede deshacer.`)) return;
+      mostrarGuardando();
+      const { error } = await sb.from('restaurants').delete().eq('id', editing.id);
+      if (error) { ocultarGuardando(); return banner($('editMsg'), 'No se ha podido borrar: ' + error.message, 'error'); }
+      const r = editing.published ? await registrarCambio() : { ok: true, msg: '' };
+      await showList('Restaurante borrado. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- arranque ----------
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      session = data.session;
+      sb.auth.onAuthStateChange((_ev, s) => { session = s; });
+      if (session && (await esAdmin())) await showList();
+      else show('loginView');
+    })();
+  </script>
+</body>
+</html>
