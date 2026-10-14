@@ -30,6 +30,11 @@ const tabs = cuisineOrder.map((cuisine) => ({
 
     <AdBanner restaurants={restaurants} />
 
+    <div class="rest-search">
+      <svg class="icon" aria-hidden="true"><use href="#i-search" /></svg>
+      <input type="search" id="restSearch" placeholder="Buscar restaurante por nombre…" aria-label="Buscar restaurante por nombre" autocomplete="off" />
+    </div>
+
     <div class="map-tabs" role="group" aria-label="Filtrar restaurantes por cocina" id="restTabs">
       <button class="map-tab" data-filter="all" aria-pressed="true">Todos <span class="tab-count">{restaurants.length}</span></button>
       {tabs.map((tab) => (
@@ -37,7 +42,7 @@ const tabs = cuisineOrder.map((cuisine) => ({
       ))}
     </div>
 
-    <p class="rest-empty" id="restEmpty" hidden>No hay restaurantes de esta cocina todavía — prueba otro filtro.</p>
+    <p class="rest-empty" id="restEmpty" hidden>No hay restaurantes que coincidan — prueba otro nombre o filtro.</p>
 
     <div class="grid grid-3" id="restGrid">
       {restaurants.map((restaurant) => <RestaurantCard restaurant={restaurant.data} />)}

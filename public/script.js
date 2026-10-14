@@ -299,21 +299,25 @@
   var restLimit = 9;
   var restExpanded = false;
   var restFilter = 'all';
+  var restQuery = '';
+  var restSearchEl = document.getElementById('restSearch');
+  function restNorm(t){ return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim(); }
 
   function applyRestFilter(){
     var matches = [];
     restCards.forEach(function(c){
-      var match = (restFilter === 'all' || c.getAttribute('data-cuisine') === restFilter);
+      var match = (restFilter === 'all' || c.getAttribute('data-cuisine') === restFilter) &&
+                  (!restQuery || restNorm(c.getAttribute('data-name')).indexOf(restQuery) !== -1);
       if(match) matches.push(c);
     });
-    var capped = restFilter === 'all' && !restExpanded;
+    var capped = restFilter === 'all' && !restQuery && !restExpanded;
     var visibleCount = capped ? Math.min(restLimit, matches.length) : matches.length;
     restCards.forEach(function(c){ c.style.display = 'none'; });
     matches.slice(0, visibleCount).forEach(function(c){ c.style.display = ''; });
     if(restEmpty) restEmpty.hidden = matches.length > 0;
     if(restMoreBtn){
       var hasMore = capped && matches.length > restLimit;
-      restMoreBtn.hidden = !(hasMore || (restFilter === 'all' && restExpanded && matches.length > restLimit));
+      restMoreBtn.hidden = !!restQuery || !(hasMore || (restFilter === 'all' && restExpanded && matches.length > restLimit));
       restMoreBtn.textContent = restExpanded ? 'Ver menos restaurantes' : 'Ver más restaurantes';
     }
   }
@@ -326,6 +330,13 @@
       applyRestFilter();
     });
   });
+
+  if(restSearchEl){
+    restSearchEl.addEventListener('input', function(){
+      restQuery = restNorm(restSearchEl.value);
+      applyRestFilter();
+    });
+  }
 
   if(restMoreBtn){
     restMoreBtn.addEventListener('click', function(){

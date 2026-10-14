@@ -64,6 +64,7 @@
       </div>
 
       <div class="filters" id="filters" hidden>
+        <input type="text" id="filterSearch" class="search" placeholder="🔍 Buscar por nombre…" aria-label="Buscar restaurante por nombre" autocomplete="off">
         <div class="seg" role="group" aria-label="Visibilidad">
           <button type="button" data-estado="todos" class="is-active">Todos <span class="n"></span></button>
           <button type="button" data-estado="visibles">Visibles <span class="n"></span></button>
@@ -211,6 +212,7 @@
     .is-ordering .pending-bar{display:none !important;}
     /* filtros */
     .filters{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+    .filters .search{width:220px; max-width:100%; padding:8px 14px; border-radius:100px; font-size:.85rem;}
     .filters select{width:auto; padding:8px 12px; border-radius:100px; font-weight:600; font-size:.85rem;}
     .seg{display:inline-flex; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
     .seg button, .chip{border:0; background:transparent; font:inherit; font-weight:600; font-size:.85rem; padding:7px 14px; border-radius:100px; cursor:pointer; color:var(--ink);}
@@ -408,11 +410,13 @@
     });
 
     // ---------- lista y filtros ----------
-    const filtros = { estado: 'todos', cocina: '', destacados: false };
+    const filtros = { estado: 'todos', cocina: '', destacados: false, texto: '' };
+    const norm = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     const cumple = (r, f) =>
       (f.estado === 'todos' || (f.estado === 'visibles' ? r.published : !r.published)) &&
       (!f.cocina || r.cuisine === f.cocina) &&
-      (!f.destacados || r.featured_rank != null);
+      (!f.destacados || r.featured_rank != null) &&
+      (!f.texto || norm(r.name).includes(norm(f.texto)));
 
     $('filterCuisine').append(...Object.entries(CUISINES).map(([k, v]) => Object.assign(document.createElement('option'), { value: k, textContent: v })));
     $('fCuisine').append(...Object.entries(CUISINES).map(([k, v]) => Object.assign(document.createElement('option'), { value: k, textContent: v })));
@@ -428,7 +432,8 @@
       d.setAttribute('aria-pressed', String(filtros.destacados));
       d.querySelector('.n').textContent = todos.filter((r) => cumple(r, { ...filtros, destacados: true })).length;
       $('filterCuisine').value = filtros.cocina;
-      $('clearFilters').hidden = filtros.estado === 'todos' && !filtros.cocina && !filtros.destacados;
+      $('clearFilters').hidden = filtros.estado === 'todos' && !filtros.cocina && !filtros.destacados && !filtros.texto;
+      if ($('filterSearch').value !== filtros.texto) $('filterSearch').value = filtros.texto;
     }
 
     function miniatura(r) {
@@ -475,9 +480,10 @@
       if (!b) return;
       if (b.dataset.estado) filtros.estado = b.dataset.estado;
       else if (b.dataset.toggle) filtros.destacados = !filtros.destacados;
-      else if (b.id === 'clearFilters') Object.assign(filtros, { estado: 'todos', cocina: '', destacados: false });
+      else if (b.id === 'clearFilters') Object.assign(filtros, { estado: 'todos', cocina: '', destacados: false, texto: '' });
       renderList();
     });
+    $('filterSearch').addEventListener('input', (e) => { filtros.texto = e.target.value; renderList(); });
     $('filterCuisine').addEventListener('change', (e) => { filtros.cocina = e.target.value; renderList(); });
 
     async function showList(message, kind) {
