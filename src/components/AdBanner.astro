@@ -1,7 +1,7 @@
 ---
 import type { RestaurantEntry } from '../lib/restaurants';
 import { restaurantImage } from '../lib/restaurantImages';
-import { logoStyle } from '../lib/restaurants';
+import { adjustStyle, logoStyle } from '../lib/restaurants';
 
 interface Props {
   restaurants: RestaurantEntry[];
@@ -16,8 +16,11 @@ const featured = restaurants
 <div class="dest-banner reveal" id="destBanner" aria-roledescription="carrusel" aria-label="Top 3 restaurantes destacados" tabindex="0">
   <span class="dest-sponsor-badge"><svg class="icon" style="width:12px;height:12px"><use href="#i-star" /></svg>Espacio destacado</span>
   <div class="dest-track" id="destTrack">
-    {featured.map((restaurant) => (
-      <div class="dest-slide">
+    {featured.map((restaurant) => {
+      const photo = restaurant.data.banner || restaurantImage(restaurant.data.id, 'banner');
+      return (
+      <div class:list={['dest-slide', { 'has-photo': photo }]}>
+        {photo && <div class="dest-bg" style={`background-image:url('${photo}');${adjustStyle(restaurant.data.adjust?.banner) ?? ''}`}></div>}
         <div class:list={['dest-art', restaurant.data.art]} aria-hidden="true">
           {(restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo'))
             ? <img src={restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo')} alt="" loading="lazy" style={logoStyle(restaurant.data.adjust?.logo)} />
@@ -31,7 +34,8 @@ const featured = restaurants
         </div>
         <a class="btn btn-primary btn-sm dest-cta" href="/restaurantes">Ver restaurantes</a>
       </div>
-    ))}
+      );
+    })}
   </div>
 
   <button class="dest-arrow dest-prev" id="destPrev" aria-label="Restaurante anterior">
