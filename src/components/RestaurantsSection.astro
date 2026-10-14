@@ -12,12 +12,15 @@ const { restaurants } = Astro.props;
 
 const filterLabels = CUISINES;
 
+// Los 3 destacados van solo en el banner «Espacio destacado»; las tarjetas pequeñas son el resto.
+const gridRestaurants = restaurants.filter((r) => r.data.featuredRank == null);
+
 // Orden fijo de las pestañas de filtro (independiente del orden de la rejilla).
 const cuisineOrder = Object.keys(CUISINES);
 const tabs = cuisineOrder.map((cuisine) => ({
   cuisine,
   label: filterLabels[cuisine] ?? cuisine,
-  count: restaurants.filter((r) => r.data.cuisine === cuisine).length
+  count: gridRestaurants.filter((r) => r.data.cuisine === cuisine).length
 }));
 ---
 <section class="section section-alt" id="restaurantes">
@@ -36,7 +39,7 @@ const tabs = cuisineOrder.map((cuisine) => ({
     </div>
 
     <div class="map-tabs" role="group" aria-label="Filtrar restaurantes por cocina" id="restTabs">
-      <button class="map-tab" data-filter="all" aria-pressed="true">Todos <span class="tab-count">{restaurants.length}</span></button>
+      <button class="map-tab" data-filter="all" aria-pressed="true">Todos <span class="tab-count">{gridRestaurants.length}</span></button>
       {tabs.map((tab) => (
         <button class="map-tab" data-filter={tab.cuisine} aria-pressed="false">{tab.label} <span class="tab-count">{tab.count}</span></button>
       ))}
@@ -45,7 +48,7 @@ const tabs = cuisineOrder.map((cuisine) => ({
     <p class="rest-empty" id="restEmpty" hidden>No hay restaurantes que coincidan — prueba otro nombre o filtro.</p>
 
     <div class="grid grid-3" id="restGrid">
-      {restaurants.map((restaurant) => <RestaurantCard restaurant={restaurant.data} />)}
+      {gridRestaurants.map((restaurant) => <RestaurantCard restaurant={restaurant.data} />)}
     </div>
 
     <div class="rest-more-wrap">

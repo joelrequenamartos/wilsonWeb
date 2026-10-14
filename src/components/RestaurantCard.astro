@@ -12,7 +12,7 @@ const { restaurant } = Astro.props;
 const logo = restaurant.logo || restaurantImage(restaurant.id, 'logo');
 const banner = restaurant.banner || restaurantImage(restaurant.id, 'banner');
 ---
-<article class="rest-card" data-cuisine={restaurant.cuisine} data-name={restaurant.name} data-rank={restaurant.featuredRank ?? undefined}>
+<article class="rest-card" data-cuisine={restaurant.cuisine} data-name={restaurant.name}>
   <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]} style={banner ? `background-image:url('${banner}')` : undefined}>
     <span class="rest-logo">
       {logo ? <img src={logo} alt={`Logo de ${restaurant.name}`} loading="lazy" /> : <svg class="icon" aria-hidden="true"><use href="#i-fork" /></svg>}
