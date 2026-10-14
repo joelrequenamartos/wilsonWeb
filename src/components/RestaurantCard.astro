@@ -1,17 +1,25 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { restaurantImage } from '../lib/restaurantImages';
 
 interface Props {
   restaurant: CollectionEntry<'restaurants'>['data'];
 }
 
 const { restaurant } = Astro.props;
+// Logo y foto de comida (banner) de este restaurante, si se han añadido a public/images/restaurantes/
+const logo = restaurantImage(restaurant.id, 'logo');
+const banner = restaurantImage(restaurant.id, 'banner');
 ---
 <article class="rest-card" data-cuisine={restaurant.cuisine}>
-  <div class:list={['rest-art', restaurant.art]}><svg class="icon"><use href="#i-fork" /></svg></div>
+  <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]} style={banner ? `background-image:url('${banner}')` : undefined}>
+    <span class="rest-logo">
+      {logo ? <img src={logo} alt={`Logo de ${restaurant.name}`} loading="lazy" /> : <svg class="icon" aria-hidden="true"><use href="#i-fork" /></svg>}
+    </span>
+  </div>
   <div class="rest-body">
     <div class="rest-top"><h3>{restaurant.name}</h3><span class="price-tag">{restaurant.price}</span></div>
-    <div class="rest-tags"><span>{restaurant.cuisineLabel}</span><span>{restaurant.neighborhood}</span><span>★ {restaurant.rating}</span></div>
+    <div class="rest-tags"><span>{restaurant.cuisineLabel}</span><span>📍 {restaurant.neighborhood}</span></div>
     <p class="rest-note">{restaurant.note}</p>
   </div>
 </article>

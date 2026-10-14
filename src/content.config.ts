@@ -99,7 +99,6 @@ const restaurants = defineCollection({
     cuisineLabel: z.string(),
     neighborhood: z.string(),
     price: z.string(),
-    rating: z.number(),
     note: z.string(),
     art: z.string(),
     featuredRank: z.number().optional(),

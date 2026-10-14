@@ -357,8 +357,15 @@
   /* ---------- restaurants ---------- */
   .rest-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow); transition:transform .2s ease;}
   @media (hover:hover){.rest-card:hover{transform:translateY(-5px);}}
-  .rest-art{height:120px; display:flex; align-items:center; justify-content:center; color:#fff; position:relative;}
-  .rest-art .icon{width:36px;height:36px;}
+  /* cabecera de la tarjeta: foto de comida por detrás (si hay) y el logo a la izquierda */
+  .rest-art{height:132px; display:flex; align-items:center; justify-content:flex-start; padding:0 18px; color:#fff; position:relative; isolation:isolate; background-size:cover; background-position:center;}
+  .rest-art.has-banner::before{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(13,11,9,.5) 0%, rgba(13,11,9,.12) 65%, rgba(13,11,9,.04) 100%);}
+  .rest-logo{
+    width:80px; height:80px; flex:none; display:flex; align-items:center; justify-content:center; padding:9px;
+    background:#fff; border-radius:20px; box-shadow:0 12px 26px -12px rgba(0,0,0,.55);
+  }
+  .rest-logo img{width:100%; height:100%; object-fit:contain; display:block;}
+  .rest-logo .icon{width:34px; height:34px; color:var(--coral-dark);}
   .rest-body{padding:16px 18px 20px; display:flex; flex-direction:column; gap:8px;}
   .rest-top{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
   .rest-top h3{font-size:1.05rem;}
@@ -423,6 +430,7 @@
     width:64px; height:64px; flex:none; border-radius:16px; color:var(--coral-dark); background:#fff;
     display:flex; align-items:center; justify-content:center; box-shadow:0 10px 22px -10px rgba(0,0,0,.4);
   }
+  .ad-art img{width:100%; height:100%; object-fit:contain; padding:8px; display:block;}
   .ad-body{flex:1; min-width:0;}
   .ad-rank{
     display:inline-flex; font-family:"Space Mono"; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em;

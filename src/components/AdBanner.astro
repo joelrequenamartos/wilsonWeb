@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { restaurantImage } from '../lib/restaurantImages';
 
 interface Props {
   restaurants: CollectionEntry<'restaurants'>[];
@@ -16,11 +17,15 @@ const featured = restaurants
   <div class="ad-track" id="adTrack">
     {featured.map((restaurant) => (
       <div class="ad-slide">
-        <div class:list={['ad-art', restaurant.data.art]} aria-hidden="true"><svg class="icon" style="width:30px;height:30px"><use href="#i-fork" /></svg></div>
+        <div class:list={['ad-art', restaurant.data.art]} aria-hidden="true">
+          {restaurantImage(restaurant.data.id, 'logo')
+            ? <img src={restaurantImage(restaurant.data.id, 'logo')} alt="" loading="lazy" />
+            : <svg class="icon" style="width:30px;height:30px"><use href="#i-fork" /></svg>}
+        </div>
         <div class="ad-body">
-          <span class="ad-rank">Top 3 mejor valorados · Nº{restaurant.data.featuredRank}</span>
+          <span class="ad-rank">Destacado · Nº{restaurant.data.featuredRank}</span>
           <h3>{restaurant.data.name}</h3>
-          <div class="rest-tags"><span>{restaurant.data.cuisineLabel}</span><span>{restaurant.data.neighborhood}</span><span>★ {restaurant.data.rating}</span></div>
+          <div class="rest-tags"><span>{restaurant.data.cuisineLabel}</span><span>📍 {restaurant.data.neighborhood}</span></div>
           <p class="rest-note">{restaurant.data.note}</p>
         </div>
         <a class="btn btn-primary btn-sm ad-cta" href="/restaurantes">Ver restaurantes</a>
