@@ -485,7 +485,13 @@
   .dest-body .rest-note{margin-top:6px; color:rgba(255,255,255,.92);}
   @media (max-width:640px){
     /* Compacto: logo pequeño al lado del texto, descripción en 2 líneas y botón debajo */
-    .dest-slide{flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px 12px; min-height:0; padding:50px 46px 14px;}
+    .dest-slide{flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px 12px; min-height:0; padding:48px 16px 44px;}
+    /* Las dos etiquetas, del mismo tamaño y pequeñas; flechas abajo con los puntos para que el contenido quede a la izquierda */
+    .dest-sponsor-badge, .promo-badge{top:12px; height:24px; display:inline-flex; align-items:center; padding:0 10px; font-size:.58rem; letter-spacing:.05em; line-height:1; box-sizing:border-box;}
+    .dest-sponsor-badge{left:12px;}
+    .promo-badge{right:12px;}
+    .dest-sponsor-badge .icon{width:10px !important; height:10px !important;}
+    .dest-rank{font-size:.6rem; padding:3px 8px;}
     .dest-art{width:48px; height:48px;}
     .dest-art .icon{width:24px !important; height:24px !important;}
     .dest-body h3{font-size:1.05rem; margin-top:6px;}
@@ -501,6 +507,11 @@
   .dest-prev{left:14px;} .dest-prev .icon{transform:rotate(180deg);}
   .dest-next{right:14px;}
   @media (max-width:640px){.dest-arrow{width:28px;height:28px;} .dest-prev{left:8px;} .dest-next{right:8px;}}
+  @media (max-width:640px){
+    .dest-arrow{top:auto; bottom:9px; transform:none;}
+    .dest-prev{left:auto; right:146px;}
+    .dest-next{right:114px;}
+  }
 
   .dest-bottom{position:absolute; right:18px; bottom:14px; display:flex; align-items:center; gap:10px; z-index:2;}
   .dest-more-cta{display:flex; justify-content:center; margin-top:28px;}
