@@ -21,7 +21,7 @@ export type Restaurant = {
 };
 
 // Zoom (1 = tamaño normal) y desplazamiento en % del marco (x: derecha, y: abajo)
-export type ImgAdjust = { z?: number; x?: number; y?: number };
+export type ImgAdjust = { z?: number; x?: number; y?: number; s?: number }; // s: intensidad de la sombra del logo (0-100)
 
 const num = (v: unknown, d: number) => (typeof v === 'number' && isFinite(v) ? v : d);
 // Estilo CSS de una imagen ajustada; vacío si está sin tocar
@@ -74,4 +74,13 @@ async function load(): Promise<RestaurantEntry[]> {
 export function getRestaurants(): Promise<RestaurantEntry[]> {
   if (!cache || Date.now() - cache.at > 15000) cache = { at: Date.now(), value: load() };
   return cache.value;
+}
+
+export const DEFAULT_SHADOW = 40;
+// Estilo del logo: zoom/posición + sombra suave (sigue la silueta del PNG, sin fondo blanco)
+export function logoStyle(a?: ImgAdjust | null): string {
+  const z = num(a?.z, 1), x = num(a?.x, 0), y = num(a?.y, 0), s = Math.min(100, Math.max(0, num(a?.s, DEFAULT_SHADOW)));
+  const t = z === 1 && x === 0 && y === 0 ? '' : `transform:translate(${x}%,${y}%) scale(${z});`;
+  const f = s === 0 ? '' : `filter:drop-shadow(0 ${(2 + s * 0.06).toFixed(1)}px ${(4 + s * 0.1).toFixed(1)}px rgba(0,0,0,${(s / 100 * 0.9).toFixed(2)}))`;
+  return t + f;
 }

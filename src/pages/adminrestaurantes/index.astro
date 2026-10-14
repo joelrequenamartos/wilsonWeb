@@ -133,6 +133,7 @@
               <label>Zoom <output id="logoZoomV"></output><input type="range" id="logoZoom" min="50" max="300" step="5" value="100" /></label>
               <label>Horizontal <output id="logoXV"></output><input type="range" id="logoX" min="-50" max="50" step="1" value="0" /></label>
               <label>Vertical <output id="logoYV"></output><input type="range" id="logoY" min="-50" max="50" step="1" value="0" /></label>
+              <label>Sombra <output id="logoSV"></output><input type="range" id="logoS" min="0" max="100" step="5" value="40" /></label>
               <button class="btn ghost small" id="logoReset" type="button">Restablecer</button>
             </div>
           </div>
@@ -241,7 +242,7 @@
     .rest{display:grid; grid-template-columns:96px 1fr auto; gap:14px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px;}
     .rest .thumb{position:relative; width:96px; height:64px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#C25F26,#E07A3E); display:flex; align-items:center;}
     .rest .thumb .bg{position:absolute; inset:0; background-size:cover; background-position:center;}
-    .rest .thumb .lg{overflow:hidden; position:relative; margin-left:8px; width:40px; height:40px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; padding:4px;}
+    .rest .thumb .lg{position:relative; margin-left:8px; width:40px; height:40px; display:flex; align-items:center; justify-content:center;}
     .rest .thumb .lg img{width:100%; height:100%; object-fit:contain;}
     .rest .thumb .lg span{font-size:1rem;}
     .rest h2{font-size:1rem; margin:0 0 4px; line-height:1.3;}
@@ -278,7 +279,7 @@
     .card-prev{position:relative; height:132px; max-width:380px; border-radius:14px; overflow:hidden; isolation:isolate; display:flex; align-items:center; padding:0 18px; background:linear-gradient(135deg,#C25F26,#E07A3E); margin-top:6px;}
     .card-prev .bg{position:absolute; inset:0; z-index:-2; background-size:cover; background-position:center;}
     .card-prev.has-bg::before{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg, rgba(13,11,9,.5) 0%, rgba(13,11,9,.12) 65%, rgba(13,11,9,.04) 100%);}
-    .card-prev .lg{width:80px; height:80px; flex:none; display:flex; align-items:center; justify-content:center; padding:9px; background:#fff; border-radius:20px; overflow:hidden; box-shadow:0 12px 26px -12px rgba(0,0,0,.55); font-size:1.6rem;}
+    .card-prev .lg{width:80px; height:80px; flex:none; display:flex; align-items:center; justify-content:center; background:transparent; font-size:2rem;}
     .card-prev .lg img{width:100%; height:100%; object-fit:contain; display:block;}
     .logo-prev{overflow:hidden;}
     .logo-prev{width:110px; height:110px; padding:10px;}
@@ -317,18 +318,19 @@
     let editing = null;    // restaurante en edición (null = nuevo)
     let logoUrl = null;
     let bannerUrl = null;
-    const AJ0 = () => ({ logo: { z: 1, x: 0, y: 0 }, banner: { z: 1, x: 0, y: 0 } });
+    const AJ0 = () => ({ logo: { z: 1, x: 0, y: 0, s: 40 }, banner: { z: 1, x: 0, y: 0 } });
     let ajuste = AJ0();
     const estiloAj = (a) => (a && (a.z !== 1 || a.x || a.y) ? `translate(${a.x || 0}%,${a.y || 0}%) scale(${a.z || 1})` : '');
+    const sombra = (s) => (s > 0 ? `drop-shadow(0 ${(2 + s * 0.06).toFixed(1)}px ${(4 + s * 0.1).toFixed(1)}px rgba(0,0,0,${(s / 100 * 0.9).toFixed(2)}))` : '');
     const ajusteDe = (obj) => {
       const base = AJ0();
       for (const t of ['logo', 'banner']) {
         const a = obj?.[t];
-        if (a && typeof a === 'object') base[t] = { z: Number(a.z) || 1, x: Number(a.x) || 0, y: Number(a.y) || 0 };
+        if (a && typeof a === 'object') base[t] = { ...base[t], z: Number(a.z) || 1, x: Number(a.x) || 0, y: Number(a.y) || 0, ...(t === 'logo' ? { s: Number.isFinite(Number(a.s)) && a.s !== null && a.s !== undefined ? Number(a.s) : 40 } : {}) };
       }
       return base;
     };
-    const hayAjuste = () => ['logo', 'banner'].some((t) => ajuste[t].z !== 1 || ajuste[t].x || ajuste[t].y);
+    const hayAjuste = () => ['logo', 'banner'].some((t) => ajuste[t].z !== 1 || ajuste[t].x || ajuste[t].y) || ajuste.logo.s !== 40;
     let idTouched = false;
     let tablaLista = true;
 
@@ -480,7 +482,7 @@
       const t = document.createElement('div'); t.className = 'thumb';
       if (r.banner) { const bg = document.createElement('div'); bg.className = 'bg'; bg.style.backgroundImage = `url('${r.banner}')`; bg.style.transform = estiloAj(ajusteDe(r.img_adjust).banner); t.append(bg); }
       const lg = document.createElement('div'); lg.className = 'lg';
-      if (r.logo) { const im = document.createElement('img'); im.src = r.logo; im.alt = ''; im.style.transform = estiloAj(ajusteDe(r.img_adjust).logo); lg.append(im); }
+      if (r.logo) { const im = document.createElement('img'); im.src = r.logo; im.alt = ''; const aj = ajusteDe(r.img_adjust).logo; im.style.transform = estiloAj(aj); im.style.filter = sombra(aj.s); lg.append(im); }
       else { const s = document.createElement('span'); s.textContent = '🍴'; lg.append(s); }
       t.append(lg);
       return t;
@@ -704,21 +706,23 @@
         $(t + 'Zoom').value = Math.round(a.z * 100); $(t + 'ZoomV').textContent = Math.round(a.z * 100) + '%';
         $(t + 'X').value = a.x; $(t + 'XV').textContent = a.x;
         $(t + 'Y').value = a.y; $(t + 'YV').textContent = a.y;
+        if (t === 'logo') { $('logoS').value = a.s; $('logoSV').textContent = a.s + '%'; }
       }
       const l = estiloAj(ajuste.logo), b = estiloAj(ajuste.banner);
-      $('logoPreview').style.transform = l;
+      const fl = sombra(ajuste.logo.s);
+      $('logoPreview').style.transform = l; $('logoPreview').style.filter = fl;
       $('bannerPreview').style.transform = b;
       $('cpBg').style.backgroundImage = bannerUrl ? `url('${bannerUrl}')` : '';
       $('cpBg').style.transform = b;
       $('cardPrev').classList.toggle('has-bg', !!bannerUrl);
       $('cpLogo').hidden = !logoUrl; $('cpIcon').hidden = !!logoUrl;
       if (logoUrl) $('cpLogo').src = logoUrl;
-      $('cpLogo').style.transform = l;
+      $('cpLogo').style.transform = l; $('cpLogo').style.filter = fl;
     }
     for (const t of ['logo', 'banner']) {
-      const leer = () => { ajuste[t] = { z: Number($(t + 'Zoom').value) / 100, x: Number($(t + 'X').value), y: Number($(t + 'Y').value) }; pintarAjuste(); };
-      ['Zoom', 'X', 'Y'].forEach((k) => $(t + k).addEventListener('input', leer));
-      $(t + 'Reset').addEventListener('click', () => { ajuste[t] = { z: 1, x: 0, y: 0 }; pintarAjuste(); });
+      const leer = () => { ajuste[t] = { z: Number($(t + 'Zoom').value) / 100, x: Number($(t + 'X').value), y: Number($(t + 'Y').value), ...(t === 'logo' ? { s: Number($('logoS').value) } : {}) }; pintarAjuste(); };
+      ['Zoom', 'X', 'Y', ...(t === 'logo' ? ['S'] : [])].forEach((k) => $(t + k).addEventListener('input', leer));
+      $(t + 'Reset').addEventListener('click', () => { ajuste[t] = AJ0()[t]; pintarAjuste(); });
     }
 
     async function subirImagen(file, tipo) {
@@ -748,13 +752,13 @@
         try {
           const url = await subirImagen(file, tipo);
           if (tipo === 'logo') logoUrl = url; else bannerUrl = url;
-          ajuste[tipo] = { z: 1, x: 0, y: 0 };
+          ajuste[tipo] = AJ0()[tipo];
           pintarImagenes();
           est.textContent = 'Imagen subida.';
         } catch (err) { est.textContent = 'No se ha podido subir: ' + (err.message || err); }
         e.target.value = '';
       });
-      $(tipo + 'Remove').addEventListener('click', () => { if (tipo === 'logo') logoUrl = null; else bannerUrl = null; ajuste[tipo] = { z: 1, x: 0, y: 0 }; pintarImagenes(); });
+      $(tipo + 'Remove').addEventListener('click', () => { if (tipo === 'logo') logoUrl = null; else bannerUrl = null; ajuste[tipo] = AJ0()[tipo]; pintarImagenes(); });
     }
 
     // ---------- editor ----------

@@ -1,7 +1,7 @@
 ---
 import type { RestaurantEntry } from '../lib/restaurants';
 import { restaurantImage } from '../lib/restaurantImages';
-import { adjustStyle } from '../lib/restaurants';
+import { logoStyle } from '../lib/restaurants';
 
 interface Props {
   restaurants: RestaurantEntry[];
@@ -20,7 +20,7 @@ const featured = restaurants
       <div class="dest-slide">
         <div class:list={['dest-art', restaurant.data.art]} aria-hidden="true">
           {(restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo'))
-            ? <img src={restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo')} alt="" loading="lazy" style={adjustStyle(restaurant.data.adjust?.logo)} />
+            ? <img src={restaurant.data.logo || restaurantImage(restaurant.data.id, 'logo')} alt="" loading="lazy" style={logoStyle(restaurant.data.adjust?.logo)} />
             : <svg class="icon" style="width:30px;height:30px"><use href="#i-fork" /></svg>}
         </div>
         <div class="dest-body">

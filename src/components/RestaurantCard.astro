@@ -1,6 +1,6 @@
 ---
 import type { Restaurant } from '../lib/restaurants';
-import { adjustStyle } from '../lib/restaurants';
+import { adjustStyle, logoStyle } from '../lib/restaurants';
 import { restaurantImage } from '../lib/restaurantImages';
 
 interface Props {
@@ -17,7 +17,7 @@ const banner = restaurant.banner || restaurantImage(restaurant.id, 'banner');
   <div class:list={['rest-art', restaurant.art, { 'has-banner': banner }]}>
     {banner && <div class="rest-bg" style={`background-image:url('${banner}');${adjustStyle(restaurant.adjust?.banner) ?? ''}`}></div>}
     <span class="rest-logo">
-      {logo ? <img src={logo} alt={`Logo de ${restaurant.name}`} loading="lazy" style={adjustStyle(restaurant.adjust?.logo)} /> : <svg class="icon" aria-hidden="true"><use href="#i-fork" /></svg>}
+      {logo ? <img src={logo} alt={`Logo de ${restaurant.name}`} loading="lazy" style={logoStyle(restaurant.adjust?.logo)} /> : <svg class="icon" aria-hidden="true"><use href="#i-fork" /></svg>}
     </span>
   </div>
   <div class="rest-body">
