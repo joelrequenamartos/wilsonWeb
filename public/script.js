@@ -361,15 +361,15 @@
 
   applyRestFilter();
 
-  var adBanner = document.getElementById('adBanner');
+  var adBanner = document.getElementById('destBanner');
   if(adBanner){
-    var adTrack = document.getElementById('adTrack');
+    var adTrack = document.getElementById('destTrack');
     var adSlides = adTrack.children;
-    var adDots = document.querySelectorAll('#adDots .ad-dot');
-    var adPrev = document.getElementById('adPrev');
-    var adNext = document.getElementById('adNext');
-    var adPause = document.getElementById('adPause');
-    var adPauseIcon = document.getElementById('adPauseIcon');
+    var adDots = document.querySelectorAll('#destDots .dest-dot');
+    var adPrev = document.getElementById('destPrev');
+    var adNext = document.getElementById('destNext');
+    var adPause = document.getElementById('destPause');
+    var adPauseIcon = document.getElementById('destPauseIcon');
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var adIndex = 0;
     var adTimer = null;
