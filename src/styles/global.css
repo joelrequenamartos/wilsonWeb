@@ -108,6 +108,19 @@
     header.site .btn-sm{padding:clamp(9px,.9vw,13px) clamp(18px,1.8vw,26px); font-size:clamp(.85rem,.3vw + .75rem,.98rem);}
     .nav-whatsapp{width:clamp(40px,3vw,46px); height:clamp(40px,3vw,46px);}
     .nav-whatsapp img{width:clamp(24px,1.8vw,28px); height:clamp(24px,1.8vw,28px);}
+    .nav-links a{white-space:nowrap;}
+  }
+  /* Escritorio estrecho (881–1180 px): con 5 enlaces el menú se hacía muy ancho y «Sobre Wilson» se partía en dos
+     líneas; aquí se compacta (logo, letra y huecos más pequeños) para que todo quepa en una sola fila. */
+  @media (min-width:881px) and (max-width:1180px){
+    .nav{gap:clamp(10px,1.4vw,16px);}
+    .brand-logo{width:clamp(165px,19vw,215px);}
+    .nav-links{gap:clamp(14px,1.9vw,22px);}
+    .nav-links a{font-size:clamp(.9rem,1.5vw,1.08rem);}
+    .nav-cta{gap:8px;}
+    header.site .btn-sm{padding:9px 14px; font-size:.82rem;}
+    .nav-whatsapp{width:34px; height:34px;}
+    .nav-whatsapp img{width:22px; height:22px;}
   }
   @media (max-width:880px){
     .nav-links-wrap{
