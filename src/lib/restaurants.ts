@@ -111,7 +111,10 @@ export function cleanPromo(html: string): string {
       if (tag === 'img') {
         const src = /src\s*=\s*("([^"]*)"|'([^']*)')/i.exec(attrs);
         const v = (src?.[2] ?? src?.[3] ?? '').trim();
-        return /^https?:\/\//i.test(v) ? `<img src="${v.replace(/"/g, '&quot;')}" alt="" loading="lazy">` : '';
+        if (!/^https?:\/\//i.test(v)) return '';
+        const w = /width\s*=\s*"?(\d{1,4})(%?)"?/i.exec(attrs);
+        const width = w ? ` style="width:${w[2] ? Math.min(100, Number(w[1])) + '%' : Math.min(2000, Number(w[1])) + 'px'}"` : '';
+        return `<img src="${v.replace(/"/g, '&quot;')}" alt="" loading="lazy"${width}>`;
       }
       if (tag !== 'a') {
         const al = /ql-align-(center|right|justify)/.exec(attrs);

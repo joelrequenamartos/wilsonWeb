@@ -383,9 +383,8 @@
     font-family:"Space Mono"; font-size:.66rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
     padding:6px 11px; border-radius:100px; box-shadow:0 6px 14px -6px rgba(0,0,0,.45); line-height:1;
   }
-  .promo-text img{max-width:100%; height:auto; border-radius:12px; display:block; margin:.5em 0;}
+  .promo-text img{max-width:100%; height:auto; border-radius:12px; display:inline-block; vertical-align:bottom; margin:.3em 0;}
   .promo-text .ql-align-center{text-align:center;} .promo-text .ql-align-right{text-align:right;} .promo-text .ql-align-justify{text-align:justify;}
-  .promo-text img.ql-align-center{margin-inline:auto;}
   .promo-card h3{font-size:1.3rem; padding-right:34px;}
   .promo-text{color:var(--ink-soft); line-height:1.6; width:100%;}
   .promo-text p{margin:0 0 .7em;}

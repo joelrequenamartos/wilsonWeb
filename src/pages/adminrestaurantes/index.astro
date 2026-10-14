@@ -286,7 +286,15 @@
     .logo-prev, .banner-prev{display:flex; align-items:center; justify-content:center; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
     .promo-box{margin:6px 0 16px;}
     .promo-box[hidden]{display:none;}
-    #promoEditor .ql-editor img{max-width:100%; height:auto; border-radius:10px;}
+    #promoEditor .ql-editor img{max-width:100%; height:auto; border-radius:10px; cursor:pointer;}
+    #promoEditor .ql-editor img.is-selected{outline:3px solid var(--coral); outline-offset:2px;}
+    .img-tools{position:absolute; z-index:5; display:flex; flex-wrap:wrap; gap:4px; align-items:center; padding:6px 8px; background:#1A1512; color:#fff; border-radius:10px; box-shadow:0 8px 24px -8px rgba(0,0,0,.5); font-size:.8rem; max-width:calc(100% - 8px);}
+    .img-tools[hidden]{display:none;}
+    .img-tools button{border:0; background:transparent; color:#fff; padding:5px 9px; border-radius:7px; font:inherit; font-weight:600; cursor:pointer;}
+    .img-tools button:hover, .img-tools button.is-active{background:var(--coral);}
+    .img-tools .sep{width:1px; height:18px; background:rgba(255,255,255,.3); margin:0 2px;}
+    .img-tools input, .img-tools select{width:68px; padding:4px 6px; border-radius:7px; border:0; font:inherit; font-size:.8rem; color:#1A1512; background:#fff;}
+    .img-tools select{width:auto;}
     #promoEditor{min-height:150px; background:#fff; font-size:1rem; font-family:inherit;}
     .promo-box .ql-toolbar{border-radius:12px 12px 0 0; background:#fff;}
     .promo-box .ql-container{border-radius:0 0 12px 12px; font-family:inherit;}
@@ -817,6 +825,80 @@
           }
         }
       });
+      iniciarTamanoPromo();
+    }
+    // Tamaño de las fotos del texto: al hacer clic en una foto aparece una barrita con 25 % · 50 % · 75 % · 100 %
+    // y un campo para escribir el ancho exacto en píxeles o en %.
+    function iniciarTamanoPromo() {
+      const cont = quillPromo.container;
+      const bar = document.createElement('div');
+      bar.className = 'img-tools'; bar.hidden = true;
+      let sel = null;
+      const noFoco = (el) => el.addEventListener('mousedown', (e) => { if (el.tagName !== 'INPUT' && el.tagName !== 'SELECT') e.preventDefault(); });
+      const poner = (val) => {
+        if (!sel) return;
+        const blot = window.Quill.find(sel);
+        if (!blot) return;
+        quillPromo.formatText(quillPromo.getIndex(blot), 1, 'width', val || false, 'user');
+        colocar();
+      };
+      for (const [txt, val] of [['25 %', '25%'], ['50 %', '50%'], ['75 %', '75%'], ['100 %', '']]) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = txt; b.dataset.w = val; noFoco(b);
+        b.addEventListener('click', () => poner(val));
+        bar.append(b);
+      }
+      const sep = document.createElement('span'); sep.className = 'sep'; bar.append(sep);
+      const num = document.createElement('input'); num.type = 'number'; num.min = '10'; num.max = '2000'; num.placeholder = 'Ancho'; num.setAttribute('aria-label', 'Ancho de la foto');
+      const unit = document.createElement('select'); unit.setAttribute('aria-label', 'Unidad');
+      unit.innerHTML = '<option value="px">px</option><option value="%">%</option>';
+      const ok = document.createElement('button'); ok.type = 'button'; ok.textContent = 'Aplicar'; noFoco(ok);
+      const aplicar = () => {
+        const n = Math.round(Number(num.value));
+        if (!n || n < 10) return;
+        const v = unit.value === '%' ? Math.min(100, n) + '%' : String(Math.min(2000, n));
+        poner(v);
+      };
+      ok.addEventListener('click', aplicar);
+      num.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); aplicar(); } });
+      bar.append(num, unit, ok);
+      const sep2 = document.createElement('span'); sep2.className = 'sep'; bar.append(sep2);
+      const del = document.createElement('button'); del.type = 'button'; del.textContent = 'Quitar foto'; noFoco(del);
+      del.addEventListener('click', () => {
+        if (!sel) return;
+        const blot = window.Quill.find(sel);
+        if (blot) quillPromo.deleteText(quillPromo.getIndex(blot), 1, 'user');
+        ocultar();
+      });
+      bar.append(del);
+      cont.append(bar);
+
+      function colocar() {
+        if (!sel || !sel.isConnected) return ocultar();
+        const c = cont.getBoundingClientRect();
+        const r = sel.getBoundingClientRect();
+        bar.hidden = false;
+        bar.style.top = Math.max(4, r.top - c.top + cont.scrollTop - bar.offsetHeight - 6) + 'px';
+        bar.style.left = Math.max(4, Math.min(r.left - c.left, c.width - bar.offsetWidth - 4)) + 'px';
+        const actual = sel.getAttribute('width') || '';
+        bar.querySelectorAll('button[data-w]').forEach((b) => b.classList.toggle('is-active', b.dataset.w === actual));
+        if (actual && document.activeElement !== num) {
+          num.value = parseInt(actual, 10) || '';
+          unit.value = actual.endsWith('%') ? '%' : 'px';
+        }
+        if (!actual && document.activeElement !== num) num.value = '';
+      }
+      function ocultar() {
+        if (sel) sel.classList.remove('is-selected');
+        sel = null; bar.hidden = true;
+      }
+      quillPromo.root.addEventListener('click', (e) => {
+        if (e.target.tagName === 'IMG') {
+          if (sel) sel.classList.remove('is-selected');
+          sel = e.target; sel.classList.add('is-selected'); colocar();
+        } else ocultar();
+      });
+      quillPromo.on('text-change', () => { if (sel) colocar(); });
     }
     function syncPromo() {
       const on = $('fPromo').checked;
@@ -923,7 +1005,7 @@
         banner: bannerUrl,
         ...((hayAjuste() || (editing && 'img_adjust' in editing)) ? { img_adjust: hayAjuste() ? ajuste : null } : {}),
         ...((website || tienePromo || (editing && 'website' in editing))
-          ? { website: website || null, has_promo: tienePromo, promo_html: tienePromo ? quillPromo.getSemanticHTML().replace(/&nbsp;/g, ' ') : null }
+          ? { website: website || null, has_promo: tienePromo, promo_html: tienePromo ? quillPromo.getSemanticHTML().replace(/&nbsp;/g, ' ').replace(/\s*class="is-selected"/g, '') : null }
           : {}),
         featured_rank: visible && $('fRank').value ? Number($('fRank').value) : null,
         published: visible
