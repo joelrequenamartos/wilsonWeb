@@ -293,6 +293,19 @@
 
   var restTabsEl = document.getElementById('restTabs');
   var restTabs = restTabsEl ? restTabsEl.querySelectorAll('.map-tab') : [];
+  // Orden aleatorio en cada carga: los destacados (1-3) van primero en el orden del panel; el resto se baraja.
+  var restGridEl = document.getElementById('restGrid');
+  if(restGridEl){
+    var restAll = Array.prototype.slice.call(restGridEl.querySelectorAll('.rest-card'));
+    var restPinned = restAll.filter(function(c){ return c.hasAttribute('data-rank'); })
+      .sort(function(a, b){ return Number(a.getAttribute('data-rank')) - Number(b.getAttribute('data-rank')); });
+    var restRest = restAll.filter(function(c){ return !c.hasAttribute('data-rank'); });
+    for(var ri = restRest.length - 1; ri > 0; ri--){
+      var rj = Math.floor(Math.random() * (ri + 1));
+      var rt = restRest[ri]; restRest[ri] = restRest[rj]; restRest[rj] = rt;
+    }
+    restPinned.concat(restRest).forEach(function(c){ restGridEl.appendChild(c); });
+  }
   var restCards = document.querySelectorAll('#restGrid .rest-card');
   var restEmpty = document.getElementById('restEmpty');
   var restMoreBtn = document.getElementById('restMoreBtn');
