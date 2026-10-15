@@ -116,6 +116,11 @@ const cuisines = await getCuisines();
               </article>
             </div>
 
+            <label class="reg-consent" id="regConsentWrap">
+              <input type="checkbox" name="consent" id="regConsent" />
+              <span>Acepto que Silver Tours NY pueda contactarme por correo electrónico o por teléfono para tratar este registro. Entiendo que la información y el resultado mostrado en la web no son definitivos y pueden estar sujetos a cambios y a la revisión de Silver Tours NY. *</span>
+            </label>
+
             <input class="contact-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
             <div class="reg-actions">
@@ -151,6 +156,9 @@ const cuisines = await getCuisines();
   .reg-examples figcaption{font-size:.82rem; color:var(--ink-soft); margin-top:6px;}
   .reg-ex-title{font-weight:700; margin:0; font-size:.95rem;}
   .reg-ex-tip{margin:0; font-size:.85rem; color:var(--ink-soft);}
+  .reg-consent{display:flex; gap:12px; align-items:flex-start; font-size:.9rem; line-height:1.5; color:var(--ink-soft); padding:14px 16px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); cursor:pointer;}
+  .reg-consent input{width:20px; height:20px; margin-top:2px; flex:none; accent-color:var(--coral);}
+  .reg-consent.is-invalid{border-color:#c0392b;}
   .reg-preview{display:grid; gap:8px; max-width:380px;}
   .reg-prev-title{font-weight:700; font-size:.95rem;}
   .reg-prev-title small{font-weight:400; color:var(--ink-soft);}
@@ -227,6 +235,7 @@ const cuisines = await getCuisines();
       var v = function (n) { return (f[n].value || '').trim(); };
       var cuisine = f.cuisine.value === '__otra' ? v('cuisine_other') : f.cuisine.value;
       form.querySelectorAll('.is-invalid').forEach(function (x) { x.classList.remove('is-invalid'); });
+      document.getElementById('regConsentWrap').classList.remove('is-invalid');
       var faltan = [];
       var marca = function (n, txt) { faltan.push(txt); var l = f[n].closest('.contact-field'); if (l) l.classList.add('is-invalid'); };
       if (!v('name')) marca('name', 'el nombre del restaurante');
@@ -235,6 +244,7 @@ const cuisines = await getCuisines();
       if (!v('note')) marca('note', 'la descripción');
       if (!v('contact_name')) marca('contact_name', 'tu nombre');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('contact_email'))) marca('contact_email', v('contact_email') ? 'un correo válido (por ejemplo, nombre@gmail.com)' : 'el correo');
+      if (!f.consent.checked) { faltan.push('aceptar el permiso de contacto'); document.getElementById('regConsentWrap').classList.add('is-invalid'); }
       if (faltan.length) return say('Falta: ' + faltan.join(', ') + '.', 'error');
       var web = v('website');
       if (web && !/^https?:\/\//i.test(web)) web = 'https://' + web;
@@ -257,7 +267,7 @@ const cuisines = await getCuisines();
             name: v('name'), cuisine: cuisine, price: f.price.value, neighborhood: v('neighborhood'), note: v('note'),
             website: web, logo: urls[0], photo: urls[1], logo2: urls[2], photo2: urls[3],
             contact_name: v('contact_name'), contact_email: v('contact_email'), contact_phone: v('contact_phone'),
-            web: f.web.value, token: token
+            consent: f.consent.checked, web: f.web.value, token: token
           })
         });
       }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok && d.ok, error: d.error }; }); })

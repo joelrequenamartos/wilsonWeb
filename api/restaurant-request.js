@@ -77,6 +77,7 @@ export default async function handler(req, res) {
     contact_email: String(b.contact_email || '').trim().slice(0, 200),
     contact_phone: String(b.contact_phone || '').trim().slice(0, 60)
   };
+  if (b.consent !== true) return res.status(400).json({ ok: false, error: 'invalid' });
   if (!row.name || !row.neighborhood || !row.note || !row.contact_name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.contact_email)) {
     return res.status(400).json({ ok: false, error: 'invalid' });
   }
