@@ -149,9 +149,16 @@ const cuisines = await getCuisines();
       var f = form.elements;
       var v = function (n) { return (f[n].value || '').trim(); };
       var cuisine = f.cuisine.value === '__otra' ? v('cuisine_other') : f.cuisine.value;
-      if (!v('name') || !cuisine || !v('neighborhood') || !v('note') || !v('contact_name') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('contact_email'))) {
-        return say('Rellena los campos con * (y revisa el correo).', 'error');
-      }
+      form.querySelectorAll('.is-invalid').forEach(function (x) { x.classList.remove('is-invalid'); });
+      var faltan = [];
+      var marca = function (n, txt) { faltan.push(txt); var l = f[n].closest('.contact-field'); if (l) l.classList.add('is-invalid'); };
+      if (!v('name')) marca('name', 'el nombre del restaurante');
+      if (!cuisine) marca(f.cuisine.value === '__otra' ? 'cuisine_other' : 'cuisine', 'el tipo de cocina');
+      if (!v('neighborhood')) marca('neighborhood', 'el barrio');
+      if (!v('note')) marca('note', 'la descripción');
+      if (!v('contact_name')) marca('contact_name', 'tu nombre');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('contact_email'))) marca('contact_email', v('contact_email') ? 'un correo válido (por ejemplo, nombre@gmail.com)' : 'el correo');
+      if (faltan.length) return say('Falta: ' + faltan.join(', ') + '.', 'error');
       var web = v('website');
       if (web && !/^https?:\/\//i.test(web)) web = 'https://' + web;
       if (web && !/^https?:\/\/[^\s]+\.[^\s]+$/i.test(web)) return say('El enlace de la web no es válido.', 'error');
