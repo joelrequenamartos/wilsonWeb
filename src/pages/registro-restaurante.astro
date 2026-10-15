@@ -57,6 +57,19 @@ const cuisines = await getCuisines();
               <input type="url" name="website" maxlength="300" placeholder="https://www.turestaurante.com" inputmode="url" />
             </label>
 
+            <div class="reg-examples">
+              <p class="reg-ex-title">Ejemplos de cómo deben quedar el logo y la foto de la comida:</p>
+              <figure>
+                <img src="/images/registro/ejemplo-banner.jpg" alt="Ejemplo: restaurante destacado con su logo a la izquierda y la foto de la comida de fondo" loading="lazy" />
+                <figcaption>En el banner destacado: logo a la izquierda y foto de fondo.</figcaption>
+              </figure>
+              <figure>
+                <img src="/images/registro/ejemplo-tarjetas.jpg" alt="Ejemplo: tarjetas de restaurantes con el logo sobre la foto de la comida" loading="lazy" />
+                <figcaption>En las tarjetas: el logo encima de la foto de la comida.</figcaption>
+              </figure>
+              <p class="reg-ex-tip">Un logo en PNG con fondo transparente y una foto horizontal, bien iluminada, quedan mejor.</p>
+            </div>
+
             <div class="reg-grid">
               <label class="contact-field">Logo <small>PNG, mejor con fondo transparente (máx. 10 MB)</small>
                 <input type="file" name="logo" accept="image/*" />
@@ -88,6 +101,21 @@ const cuisines = await getCuisines();
               <input type="tel" name="contact_phone" maxlength="60" autocomplete="tel" />
             </label>
 
+            <div class="reg-preview">
+              <span class="reg-prev-title">Así quedaría aproximadamente <small>(no es definitivo)</small></span>
+              <article class="rest-card reg-prev-card" aria-hidden="true">
+                <div class="rest-art art-food1" id="rpArt">
+                  <div class="rest-bg" id="rpBg"></div>
+                  <span class="rest-logo"><img id="rpLogo" alt="" hidden /><svg class="icon" id="rpIcon" aria-hidden="true"><use href="#i-fork" /></svg></span>
+                </div>
+                <div class="rest-body">
+                  <div class="rest-top"><h3 id="rpName">Nombre del restaurante</h3><span class="price-tag" id="rpPrice">$$</span></div>
+                  <div class="rest-tags"><span id="rpCuisine">Cocina</span><span id="rpHood">📍 Barrio</span></div>
+                  <p class="rest-note" id="rpNote">Aquí saldrá tu descripción corta.</p>
+                </div>
+              </article>
+            </div>
+
             <input class="contact-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
             <div class="reg-actions">
@@ -117,6 +145,16 @@ const cuisines = await getCuisines();
   .reg-actions{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
   .reg-done{padding:28px; border-radius:var(--radius-lg); background:#e8f6ee; color:#14653a; font-size:1.05rem;}
   [hidden]{display:none !important;}
+  .reg-examples{display:grid; gap:14px; padding:16px; border:1.5px dashed var(--line); border-radius:var(--radius-md); background:var(--surface);}
+  .reg-examples figure{margin:0;}
+  .reg-examples img{width:100%; height:auto; border-radius:12px; display:block; box-shadow:var(--shadow);}
+  .reg-examples figcaption{font-size:.82rem; color:var(--ink-soft); margin-top:6px;}
+  .reg-ex-title{font-weight:700; margin:0; font-size:.95rem;}
+  .reg-ex-tip{margin:0; font-size:.85rem; color:var(--ink-soft);}
+  .reg-preview{display:grid; gap:8px; max-width:380px;}
+  .reg-prev-title{font-weight:700; font-size:.95rem;}
+  .reg-prev-title small{font-weight:400; color:var(--ink-soft);}
+  .reg-prev-card{transform:none !important;}
 </style>
 
 <script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
@@ -132,6 +170,36 @@ const cuisines = await getCuisines();
         .then(function (d) { token = (d && d.token) || ''; }).catch(function () {});
     }
     pedirToken();
+
+    // Vista previa aproximada de la tarjeta con lo que va escribiendo / subiendo
+    var urls = { logo: null, photo: null };
+    function pintarPrev() {
+      var f = form.elements;
+      var cocina = f.cuisine.value === '__otra' ? f.cuisine_other.value : f.cuisine.value;
+      document.getElementById('rpName').textContent = f.name.value.trim() || 'Nombre del restaurante';
+      document.getElementById('rpPrice').textContent = f.price.value;
+      document.getElementById('rpCuisine').textContent = (cocina || '').trim() || 'Cocina';
+      document.getElementById('rpHood').textContent = '📍 ' + (f.neighborhood.value.trim() || 'Barrio');
+      document.getElementById('rpNote').textContent = f.note.value.trim() || 'Aquí saldrá tu descripción corta.';
+      var lg = document.getElementById('rpLogo');
+      lg.hidden = !urls.logo; document.getElementById('rpIcon').style.display = urls.logo ? 'none' : '';
+      if (urls.logo) lg.src = urls.logo;
+      document.getElementById('rpBg').style.backgroundImage = urls.photo ? 'url("' + urls.photo + '")' : '';
+      document.getElementById('rpArt').classList.toggle('has-banner', !!urls.photo);
+    }
+    function previa(input, clave) {
+      input.addEventListener('change', function () {
+        if (urls[clave]) URL.revokeObjectURL(urls[clave]);
+        var fl = input.files[0];
+        urls[clave] = fl && /^image\//.test(fl.type) ? URL.createObjectURL(fl) : null;
+        pintarPrev();
+      });
+    }
+    previa(form.elements.logo, 'logo');
+    previa(form.elements.photo, 'photo');
+    form.addEventListener('input', pintarPrev);
+    form.addEventListener('change', pintarPrev);
+    pintarPrev();
 
     document.getElementById('regCuisine').addEventListener('change', function (e) {
       document.getElementById('regOtherWrap').hidden = e.target.value !== '__otra';
