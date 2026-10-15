@@ -170,6 +170,22 @@
     </form>
   </dialog>
 
+  <dialog id="evDialog" class="btn-dialog ev-dialog">
+    <form id="evForm" class="stack" novalidate>
+      <h2 id="evDialogTitle">Insertar categoría de eventos</h2>
+      <label>Título de la categoría<input type="text" id="evTitle" maxlength="80" placeholder="Eventos mensuales" /></label>
+      <div id="evRows" class="ev-rows"></div>
+      <button type="button" class="btn" id="evAdd">+ Añadir evento</button>
+      <p class="msg" id="evMsg" role="alert"></p>
+      <div class="btn-dialog-actions">
+        <button type="button" class="btn danger" id="evRemove" hidden>Quitar bloque</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" id="evCancel">Cancelar</button>
+        <button type="submit" class="btn primary" id="evOk">Insertar</button>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Aviso de «guardando»: cubre la pantalla mientras se guarda y se avisa a la web (tarda unos segundos) -->
   <div class="saving" id="saving" role="status" aria-live="polite" hidden>
     <div class="saving-card">
@@ -237,6 +253,24 @@
     .btn-contrast[hidden]{display:none;}
     .ql-editor a.blog-btn{user-select:none;}
     .ql-toolbar button.ql-boton{width:auto !important; padding:0 10px !important; font-weight:700; font-size:.78rem; color:var(--coral-d); border:1px solid var(--coral) !important; border-radius:100px !important; margin-left:6px;}
+    .ev-dialog{width:min(640px,94vw); max-height:90vh; overflow:auto;}
+    .ev-rows{display:grid; gap:12px;}
+    .ev-row{border:1.5px solid var(--line); border-radius:12px; padding:12px; display:grid; gap:8px; background:#fff;}
+    .ev-row .ev-dates{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+    .ev-row label{font-size:.82rem; margin:0;}
+    .ev-row-top{display:flex; gap:6px; justify-content:space-between; align-items:center; font-weight:700; font-size:.85rem;}
+    .ev-row-top .btn{padding:4px 10px;}
+    .ql-editor .ev-block{margin:14px 0; padding:14px; border:2px dashed var(--coral); border-radius:14px; cursor:pointer; background:#fff8f2; user-select:none;}
+    .ql-editor .ev-block .ev-title{font-weight:800; font-size:1.3rem; margin-bottom:8px;}
+    .ql-editor .ev-block .monthly-list{list-style:none; margin:0; padding:0;}
+    .ql-editor .ev-block .monthly-item{display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid #f0cfae;}
+    .ql-editor .ev-block .monthly-badge{display:flex; flex-direction:column; align-items:center; justify-content:center; width:64px; height:58px; border-radius:14px; background:var(--coral); color:#fff; line-height:1;}
+    .ql-editor .ev-block .monthly-badge b{font-size:1.2rem;}
+    .ql-editor .ev-block .monthly-badge span{font-size:.65rem; text-transform:uppercase;}
+    .ql-editor .ev-block .monthly-title{font-size:1rem; font-weight:700; margin:0;}
+    .ql-editor .ev-block .monthly-text p{margin:2px 0 0; font-size:.85rem; color:var(--soft);}
+    .ql-editor .ev-block .monthly-go{width:34px; height:34px; border-radius:50%; background:var(--coral); color:#fff; display:flex; align-items:center; justify-content:center;}
+    .ql-editor .ev-block::after{content:"Haz clic para editar este bloque"; display:block; margin-top:8px; font-size:.75rem; color:var(--coral-d);}
     .btn-dialog{border:0; border-radius:18px; padding:22px; width:min(480px,92vw); box-shadow:0 30px 80px -20px rgba(0,0,0,.5);}
     .btn-dialog::backdrop{background:rgba(26,21,18,.5);}
     .btn-dialog h2{margin:0; font-size:1.25rem;}
@@ -890,17 +924,152 @@
       if (v !== 'quitar') quill.insertEmbed(idx, 'boton', v, 'user');
     }
 
+    // ---------- bloque de categoría con eventos ----------
+    const MESES = new Intl.DateTimeFormat('es', { month: 'short' });
+    const DIAS = new Intl.DateTimeFormat('es', { day: 'numeric' });
+    const escH = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const fechaBadge = (d, f) => {
+      const a = new Date(`${d}T12:00:00`);
+      const mon = (x) => MESES.format(x).replace('.', '');
+      if (!f || f <= d) return { num: DIAS.format(a), mon: mon(a), range: false };
+      const b = new Date(`${f}T12:00:00`);
+      const mismo = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+      return { num: `${DIAS.format(a)}-${DIAS.format(b)}`, mon: mismo ? mon(a) : `${mon(a)}-${mon(b)}`, range: true };
+    };
+    const evValido = (v) => {
+      const e = (Array.isArray(v?.e) ? v.e : []).map((x) => ({
+        d: String(x.d || '').slice(0, 10), f: String(x.f || '').slice(0, 10), t: String(x.t || '').trim(), s: String(x.s || '').trim(), l: String(x.l || '').trim()
+      })).filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x.d) && x.t);
+      return { t: String(v?.t || '').trim(), e };
+    };
+    function htmlEventos(v) {
+      const items = v.e.map((x) => {
+        const b = fechaBadge(x.d, /^\d{4}-\d{2}-\d{2}$/.test(x.f) && x.f > x.d ? x.f : '');
+        const go = /^https?:\/\//i.test(x.l)
+          ? `<a class="monthly-go" href="${escH(x.l)}" target="_blank" rel="noopener noreferrer" aria-label="Más información: ${escH(x.t)}"><svg class="icon"><use href="#i-arrow"></use></svg></a>` : '';
+        return `<li class="monthly-item"><time class="monthly-badge${b.range ? ' is-range' : ''}" datetime="${escH(x.d)}"><b>${escH(b.num)}</b><span>${escH(b.mon)}</span></time><div class="monthly-text"><div class="monthly-title">${escH(x.t)}</div>${x.s ? `<p>${escH(x.s)}</p>` : ''}</div>${go}</li>`;
+      }).join('');
+      return `<div class="ev-title section-title">${escH(v.t)}</div><ul class="monthly-list">${items}</ul>`;
+    }
+    let eventosRegistrado = false;
+    function registrarEventos() {
+      if (eventosRegistrado) return;
+      eventosRegistrado = true;
+      const BlockEmbed = window.Quill.import('blots/block/embed');
+      class EventosBlot extends BlockEmbed {
+        static blotName = 'eventos';
+        static tagName = 'section';
+        static className = 'ev-block';
+        static create(v) {
+          const n = super.create();
+          const val = evValido(v);
+          n.setAttribute('data-ev', JSON.stringify(val));
+          n.classList.add('monthly-events');
+          n.innerHTML = htmlEventos(val);
+          return n;
+        }
+        static value(n) { try { return JSON.parse(n.getAttribute('data-ev')); } catch { return { t: '', e: [] }; } }
+      }
+      window.Quill.register(EventosBlot);
+      window.Quill.import('ui/icons').eventos = '+ Eventos';
+    }
+
+    function filaEvento(x = {}) {
+      const row = document.createElement('div'); row.className = 'ev-row';
+      row.innerHTML = `
+        <div class="ev-row-top"><span>Evento</span><span>
+          <button type="button" class="btn ghost" data-m="up" aria-label="Subir">↑</button>
+          <button type="button" class="btn ghost" data-m="down" aria-label="Bajar">↓</button>
+          <button type="button" class="btn danger" data-m="del" aria-label="Quitar evento">✕</button></span></div>
+        <div class="ev-dates">
+          <label>Fecha<input type="date" data-k="d" /></label>
+          <label>Hasta (opcional, para varios días)<input type="date" data-k="f" /></label>
+        </div>
+        <label>Título<input type="text" data-k="t" maxlength="100" placeholder="New York Film Festival" /></label>
+        <label>Descripción<textarea data-k="s" rows="2" maxlength="300"></textarea></label>
+        <label>Enlace del botón (opcional)<input type="text" data-k="l" placeholder="https://…" /></label>`;
+      for (const k of ['d', 'f', 't', 's', 'l']) row.querySelector(`[data-k=${k}]`).value = x[k] ?? '';
+      return row;
+    }
+    function leerFilas() {
+      return [...$('evRows').children].map((r) => {
+        const g = (k) => r.querySelector(`[data-k=${k}]`).value.trim();
+        return { d: g('d'), f: g('f'), t: g('t'), s: g('s'), l: g('l') };
+      });
+    }
+    // Abre el cuadro; devuelve {t,e}, 'quitar' o null (cancelado).
+    function pedirEventos(actual) {
+      return new Promise((resolve) => {
+        const dlg = $('evDialog');
+        $('evDialogTitle').textContent = actual ? 'Editar categoría de eventos' : 'Insertar categoría de eventos';
+        $('evOk').textContent = actual ? 'Guardar' : 'Insertar';
+        $('evRemove').hidden = !actual;
+        $('evTitle').value = actual?.t ?? '';
+        $('evMsg').textContent = '';
+        $('evRows').textContent = '';
+        (actual?.e?.length ? actual.e : [{}]).forEach((x) => $('evRows').append(filaEvento(x)));
+        $('evRows').onclick = (e) => {
+          const b = e.target.closest('[data-m]');
+          if (!b) return;
+          const row = b.closest('.ev-row');
+          if (b.dataset.m === 'del') { if ($('evRows').children.length > 1) row.remove(); else row.querySelectorAll('input,textarea').forEach((i) => (i.value = '')); }
+          else if (b.dataset.m === 'up' && row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling);
+          else if (b.dataset.m === 'down' && row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row);
+        };
+        $('evAdd').onclick = () => { const r = filaEvento(); $('evRows').append(r); r.scrollIntoView({ block: 'nearest' }); r.querySelector('[data-k=d]').focus(); };
+        const fin = (v) => { dlg.removeEventListener('close', alCerrar); $('evForm').onsubmit = null; $('evRemove').onclick = null; $('evCancel').onclick = null; if (dlg.open) dlg.close(); resolve(v); };
+        const alCerrar = () => fin(null);
+        dlg.addEventListener('close', alCerrar);
+        $('evCancel').onclick = () => fin(null);
+        $('evRemove').onclick = () => fin('quitar');
+        $('evForm').onsubmit = (e) => {
+          e.preventDefault();
+          const filas = leerFilas().filter((x) => x.d || x.t || x.s || x.l);
+          if (!filas.length) return ($('evMsg').textContent = 'Añade al menos un evento.');
+          for (const [i, x] of filas.entries()) {
+            const n = `Evento ${i + 1}`;
+            if (!x.t) return ($('evMsg').textContent = `${n}: falta el título.`);
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(x.d)) return ($('evMsg').textContent = `${n}: falta la fecha.`);
+            if (x.f && x.f <= x.d) return ($('evMsg').textContent = `${n}: la fecha final debe ser posterior a la inicial.`);
+            if (x.l && !/^https?:\/\/\S+$/i.test(x.l)) return ($('evMsg').textContent = `${n}: el enlace debe empezar por https://`);
+          }
+          fin({ t: $('evTitle').value.trim() || 'Eventos mensuales', e: filas });
+        };
+        dlg.showModal();
+        $('evTitle').focus();
+      });
+    }
+    async function insertarEventos() {
+      const sel = quill.getSelection(true) || { index: Math.max(0, quill.getLength() - 1) };
+      const v = await pedirEventos(null);
+      if (!v || v === 'quitar') return;
+      quill.insertEmbed(sel.index, 'eventos', v, 'user');
+      quill.setSelection(sel.index + 1);
+    }
+    async function editarEventos(node) {
+      const blot = window.Quill.find(node);
+      if (!blot) return;
+      const idx = quill.getIndex(blot);
+      const v = await pedirEventos(EventosValor(node));
+      if (v === null) return;
+      quill.deleteText(idx, 1, 'user');
+      if (v !== 'quitar') quill.insertEmbed(idx, 'eventos', v, 'user');
+    }
+    const EventosValor = (n) => { try { return JSON.parse(n.getAttribute('data-ev')); } catch { return { t: '', e: [] }; } };
+
     function iniciarEditor() {
       if (quill) return;
       registrarBoton();
+      registrarEventos();
       quill = new window.Quill('#editor', {
         theme: 'snow',
         placeholder: 'Escribe aquí tu entrada…',
         modules: {
           toolbar: {
-            container: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['blockquote'], ['image', 'boton'], ['clean']],
+            container: [[{ header: [2, 3, false] }], ['bold', 'italic', 'underline'], ['link'], [{ list: 'ordered' }, { list: 'bullet' }], ['blockquote'], ['image', 'boton', 'eventos'], ['clean']],
             handlers: {
               boton() { insertarBoton(); },
+              eventos() { insertarEventos(); },
               image() {
                 const input = document.createElement('input');
                 input.type = 'file'; input.accept = 'image/*';
@@ -923,10 +1092,13 @@
       // Al recargar una entrada, los <a class="blog-btn"> vuelven a ser botones (y no enlaces sueltos).
       const Delta = window.Quill.import('delta');
       quill.clipboard.addMatcher('a.blog-btn', (node) => new Delta().insert({ boton: { text: node.textContent, url: node.getAttribute('href'), ...coloresBoton(node) } }));
+      quill.clipboard.addMatcher('section.ev-block', (node) => new Delta().insert({ eventos: EventosValor(node) }));
       // Un clic sobre un botón del texto lo abre para editarlo o quitarlo.
       quill.root.addEventListener('click', (e) => {
         const a = e.target.closest && e.target.closest('a.blog-btn');
-        if (a) { e.preventDefault(); editarBoton(a); }
+        if (a) { e.preventDefault(); editarBoton(a); return; }
+        const ev = e.target.closest && e.target.closest('section.ev-block');
+        if (ev) { e.preventDefault(); editarEventos(ev); }
       });
       iniciarTamanoImagenes();
       quill.on('text-change', () => $('editor').classList.remove('is-missing'));
