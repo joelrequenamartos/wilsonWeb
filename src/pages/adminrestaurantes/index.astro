@@ -37,6 +37,7 @@
         <div class="bar-actions">
           <button class="btn primary" id="newBtn" type="button">+ Nuevo restaurante</button>
           <button class="btn" id="orderBtn" type="button" title="Cambiar el orden de los restaurantes">↕ Reordenar</button>
+          <button class="btn" id="requestsBtn" type="button" title="Restaurantes que han enviado sus datos desde el formulario público">📥 Solicitudes <span class="req-count" id="reqCount" hidden></span></button>
           <button class="btn" id="cuisinesBtn" type="button" title="Añadir, renombrar o borrar tipos de cocina">🍴 Cocinas</button>
           <button class="btn" id="rebuildBtn" type="button" title="Vuelve a construir la web con lo que hay guardado">Actualizar web</button>
           <button class="btn ghost" id="logoutBtn" type="button">Salir</button>
@@ -79,6 +80,21 @@
       </div>
       <p class="muted" id="filterEmpty" hidden>Ningún restaurante coincide con esos filtros.</p>
       <div id="restList" class="rests"></div>
+    </section>
+
+    <!-- SOLICITUDES -->
+    <section id="requestsView" hidden>
+      <header class="bar">
+        <h1>Solicitudes de restaurantes</h1>
+        <button class="btn ghost" id="reqBack" type="button">← Volver a la lista</button>
+      </header>
+      <p class="banner" id="reqMsg" role="status" hidden></p>
+      <div class="card setup" id="reqSetup" hidden>
+        <h2>Falta un paso en Supabase</h2>
+        <p>Para recibir solicitudes hay que ejecutar <b>supabase/restaurant-requests.sql</b> en el SQL Editor de Supabase (una sola vez).</p>
+      </div>
+      <p class="muted">Enlace del formulario para los restaurantes: <b>/registro-restaurante</b></p>
+      <div id="reqList" class="rests"></div>
     </section>
 
     <!-- COCINAS -->
@@ -306,6 +322,17 @@
     @media (min-width:700px){.images{grid-template-columns:1fr 1.4fr;}}
     .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
     .logo-prev, .banner-prev{display:flex; align-items:center; justify-content:center; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
+    .req-count{display:inline-block; min-width:20px; padding:1px 7px; border-radius:100px; background:#1f9d55; color:#fff; font-size:.72rem; font-weight:700; text-align:center;}
+    .req-count[hidden]{display:none;}
+    .req-card{display:grid; grid-template-columns:120px 1fr; gap:14px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px;}
+    .req-card .imgs{display:grid; gap:8px; align-content:start;}
+    .req-card .imgs a{display:block; border-radius:10px; overflow:hidden; background:#f1ede6; border:1px solid var(--line); aspect-ratio:4/3;}
+    .req-card .imgs img{width:100%; height:100%; object-fit:contain; display:block;}
+    .req-card h2{font-size:1.05rem; margin:0 0 6px;}
+    .req-card p{margin:6px 0; font-size:.9rem;}
+    .req-card .contact{font-size:.82rem; color:var(--soft);}
+    .req-card .req-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+    @media (max-width:600px){.req-card{grid-template-columns:1fr;} .req-card .imgs{grid-template-columns:1fr 1fr;}}
     .cuis-list{display:grid; gap:8px;}
     .cuis-row{display:grid; grid-template-columns:1fr auto auto auto; gap:8px; align-items:center;}
     .cuis-row input{padding:8px 12px; border-radius:10px;}
@@ -395,7 +422,7 @@
     let tablaLista = true;
 
     // ---------- utilidades ----------
-    const views = ['loginView', 'listView', 'editView', 'cuisinesView'];
+    const views = ['loginView', 'listView', 'editView', 'cuisinesView', 'requestsView'];
     const show = (id) => views.forEach((v) => ($(v).hidden = v !== id));
     const slugify = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
@@ -609,6 +636,7 @@
 
     async function showList(message, kind) {
       show('listView');
+      contarSolicitudes();
       await cargarCocinas();
       banner($('listMsg'), message, kind);
       window.scrollTo(0, 0);
@@ -1089,6 +1117,93 @@
       await showList('Restaurante borrado. ' + r.msg, r.ok ? 'ok' : 'error');
       ocultarGuardando();
     });
+
+    // ---------- solicitudes de restaurantes (formulario público) ----------
+    let solicitudes = [];
+    let tablaSolicitudes = false;
+    async function contarSolicitudes() {
+      const { count, error } = await sb.from('restaurant_requests').select('id', { count: 'exact', head: true }).eq('status', 'pendiente');
+      tablaSolicitudes = !error;
+      $('reqCount').hidden = !(tablaSolicitudes && count > 0);
+      $('reqCount').textContent = count || '';
+    }
+    const ARTS_SOL = ['art-food1', 'art-food2', 'art-food3'];
+    function filaSolicitud(s) {
+      const card = document.createElement('article'); card.className = 'req-card';
+      const imgs = document.createElement('div'); imgs.className = 'imgs';
+      for (const [url, txt] of [[s.logo, 'logo'], [s.photo, 'foto']]) {
+        if (!url) continue;
+        const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Abrir ' + txt + ' original';
+        const im = document.createElement('img'); im.src = url; im.alt = txt; a.append(im); imgs.append(a);
+      }
+      const info = document.createElement('div');
+      const h = document.createElement('h2'); h.textContent = s.name;
+      const meta = document.createElement('div'); meta.className = 'meta';
+      meta.append(pill(s.cuisine));
+      if (s.neighborhood) meta.append(pill('📍 ' + s.neighborhood));
+      meta.append(pill(s.price));
+      const note = document.createElement('p'); note.textContent = s.note;
+      info.append(h, meta, note);
+      if (s.website) { const p = document.createElement('p'); const a = document.createElement('a'); a.href = s.website; a.target = '_blank'; a.rel = 'noopener'; a.textContent = s.website; p.append('🔗 ', a); info.append(p); }
+      const c = document.createElement('p'); c.className = 'contact';
+      c.textContent = `Contacto: ${s.contact_name} · ${s.contact_email}${s.contact_phone ? ' · ' + s.contact_phone : ''} · ${new Date(s.created_at).toLocaleDateString('es-ES')}`;
+      info.append(c);
+      const acts = document.createElement('div'); acts.className = 'req-actions';
+      const crear = document.createElement('button'); crear.type = 'button'; crear.className = 'btn primary'; crear.textContent = 'Crear restaurante (oculto) y revisar';
+      crear.addEventListener('click', () => crearDesdeSolicitud(s, crear));
+      const desc = document.createElement('button'); desc.type = 'button'; desc.className = 'btn danger small'; desc.textContent = 'Descartar';
+      desc.addEventListener('click', async () => {
+        if (!confirm(`¿Descartar la solicitud de «${s.name}»?`)) return;
+        const { error } = await sb.from('restaurant_requests').update({ status: 'descartada' }).eq('id', s.id);
+        if (error) return banner($('reqMsg'), 'No se ha podido descartar: ' + error.message, 'error');
+        await abrirSolicitudes('Solicitud descartada.', 'ok');
+      });
+      acts.append(crear, desc);
+      info.append(acts);
+      card.append(imgs, info);
+      return card;
+    }
+    async function crearDesdeSolicitud(s, boton) {
+      boton.disabled = true;
+      mostrarGuardando();
+      const etiqueta = (s.cuisine || '').trim();
+      const match = cocinas.find((c) => c.label.toLowerCase() === etiqueta.toLowerCase());
+      let id = slugify(s.name) || 'restaurante';
+      const base = id; let n = 2;
+      while (todos.some((r) => r.id === id)) id = `${base}-${n++}`;
+      const row = {
+        id, name: s.name,
+        cuisine: match ? match.id : (cocinas[0]?.id ?? 'pizza'),
+        cuisine_label: match ? '' : etiqueta,
+        neighborhood: s.neighborhood, price: s.price, note: s.note,
+        logo: s.logo, banner: s.photo,
+        art: ARTS_SOL[Math.floor(Math.random() * ARTS_SOL.length)],
+        published: false
+      };
+      if (s.website && todos.length && 'website' in todos[0]) row.website = s.website;
+      const ins = await sb.from('restaurants').insert(row);
+      if (ins.error) { ocultarGuardando(); boton.disabled = false; return banner($('reqMsg'), 'No se ha podido crear: ' + ins.error.message, 'error'); }
+      await sb.from('restaurant_requests').update({ status: 'aprobada', restaurant_id: id }).eq('id', s.id);
+      ocultarGuardando();
+      await showList('Restaurante creado como oculto. Revísalo, ajústalo y márcalo como visible cuando esté listo.', 'ok');
+      const r = todos.find((x) => x.id === id);
+      if (r) openEditor(r);
+    }
+    async function abrirSolicitudes(msg, kind) {
+      show('requestsView');
+      banner($('reqMsg'), msg, kind);
+      window.scrollTo(0, 0);
+      const { data, error } = await sb.from('restaurant_requests').select('*').eq('status', 'pendiente').order('created_at', { ascending: false });
+      $('reqSetup').hidden = !error;
+      $('reqList').textContent = '';
+      if (error) return;
+      solicitudes = data;
+      contarSolicitudes();
+      if (!data.length) { $('reqList').textContent = 'No hay solicitudes pendientes.'; return; }
+      for (const s of data) $('reqList').append(filaSolicitud(s));
+    }
+    $('requestsBtn').addEventListener('click', () => abrirSolicitudes());
+    $('reqBack').addEventListener('click', () => showList());
 
     // ---------- gestionar cocinas ----------
     async function cambioWebCocinas(texto) {

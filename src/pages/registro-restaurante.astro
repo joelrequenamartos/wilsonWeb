@@ -1,0 +1,193 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getCuisines } from '../lib/restaurants';
+import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+const cuisines = await getCuisines();
+---
+<Layout title="Registro de restaurante — Silver Tours NY" description="Formulario para que los restaurantes envíen sus datos a Silver Tours NY." noindex>
+  <Header />
+  <main id="main">
+    <section class="section">
+      <div class="wrap reg-wrap">
+        <div class="section-head">
+          <span class="eyebrow">Para restaurantes</span>
+          <h1 class="section-title">Registra tu restaurante</h1>
+          <p class="section-sub">Rellena los datos y sube tu logo y una foto de tu comida. Revisaremos la información y, si todo está correcto, aparecerá en nuestra web.</p>
+        </div>
+
+        <div class="contact-wrap" id="regWrap">
+          <form class="contact-form reg-form" id="regForm" novalidate>
+            <label class="contact-field">Nombre del restaurante *
+              <input type="text" name="name" maxlength="120" required autocomplete="organization" />
+            </label>
+
+            <div class="reg-grid">
+              <label class="contact-field">Tipo de cocina *
+                <select name="cuisine" id="regCuisine">
+                  {cuisines.map((c) => <option value={c.label}>{c.label}</option>)}
+                  <option value="__otra">Otra…</option>
+                </select>
+              </label>
+              <label class="contact-field">Precio *
+                <select name="price">
+                  <option value="$">$ — económico</option>
+                  <option value="$$" selected>$$ — medio</option>
+                  <option value="$$$">$$$ — caro</option>
+                </select>
+              </label>
+            </div>
+            <label class="contact-field" id="regOtherWrap" hidden>¿Qué tipo de cocina?
+              <input type="text" name="cuisine_other" maxlength="60" />
+            </label>
+
+            <label class="contact-field">Barrio *
+              <input type="text" name="neighborhood" maxlength="80" placeholder="Little Italy" required />
+            </label>
+
+            <label class="contact-field">Descripción corta *
+              <textarea name="note" rows="3" maxlength="600" placeholder="Una o dos frases sobre qué os hace especiales." required></textarea>
+            </label>
+
+            <label class="contact-field">Web del restaurante
+              <input type="url" name="website" maxlength="300" placeholder="https://www.turestaurante.com" inputmode="url" />
+            </label>
+
+            <div class="reg-grid">
+              <label class="contact-field">Logo <small>PNG, mejor con fondo transparente (máx. 10 MB)</small>
+                <input type="file" name="logo" accept="image/*" />
+              </label>
+              <label class="contact-field">Foto de la comida <small>Horizontal, buena calidad (máx. 10 MB)</small>
+                <input type="file" name="photo" accept="image/*" />
+              </label>
+            </div>
+
+            <h2 class="reg-sub">Datos de contacto <small>(solo para nosotros, no se publican)</small></h2>
+            <div class="reg-grid">
+              <label class="contact-field">Tu nombre *
+                <input type="text" name="contact_name" maxlength="120" autocomplete="name" required />
+              </label>
+              <label class="contact-field">Correo *
+                <input type="email" name="contact_email" maxlength="200" autocomplete="email" required />
+              </label>
+            </div>
+            <label class="contact-field">Teléfono <small>(opcional)</small>
+              <input type="tel" name="contact_phone" maxlength="60" autocomplete="tel" />
+            </label>
+
+            <input class="contact-hp" type="text" name="web" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+            <div class="reg-actions">
+              <button class="btn btn-primary" type="submit" id="regSubmit">Enviar restaurante</button>
+              <p class="contact-status" id="regStatus" role="status"></p>
+            </div>
+          </form>
+          <p class="reg-done" id="regDone" hidden>
+            <strong>¡Gracias!</strong> Hemos recibido los datos de tu restaurante. Los revisaremos y te escribiremos si necesitamos algo más.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer tours={tours} />
+</Layout>
+
+<style is:global>
+  .reg-wrap{max-width:760px;}
+  .reg-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:640px){.reg-grid{grid-template-columns:1fr;}}
+  .reg-form select, .reg-form input[type=file]{width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface); font:inherit; font-weight:400;}
+  .reg-form input[type=file]{padding:10px;}
+  .reg-form textarea{font:inherit;}
+  .reg-sub{font-size:1.1rem; margin-top:8px;}
+  .reg-sub small{font-weight:400; font-size:.8rem; color:var(--ink-soft);}
+  .reg-actions{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .reg-done{padding:28px; border-radius:var(--radius-lg); background:#e8f6ee; color:#14653a; font-size:1.05rem;}
+  [hidden]{display:none !important;}
+</style>
+
+<script define:vars={{ SUPABASE_URL, SUPABASE_KEY }}>
+  (function () {
+    var form = document.getElementById('regForm');
+    var status = document.getElementById('regStatus');
+    var btn = document.getElementById('regSubmit');
+    var token = '';
+    var MAX = 10 * 1024 * 1024;
+    function say(t, kind) { status.textContent = t || ''; status.className = 'contact-status' + (kind ? ' is-' + kind : ''); }
+    function pedirToken() {
+      fetch('/api/restaurant-request', { cache: 'no-store' }).then(function (r) { return r.json(); })
+        .then(function (d) { token = (d && d.token) || ''; }).catch(function () {});
+    }
+    pedirToken();
+
+    document.getElementById('regCuisine').addEventListener('change', function (e) {
+      document.getElementById('regOtherWrap').hidden = e.target.value !== '__otra';
+    });
+
+    function subir(file, tipo, carpeta) {
+      if (!file || !file.size) return Promise.resolve(null);
+      if (!/^image\//.test(file.type)) return Promise.reject(new Error('El archivo del ' + tipo + ' debe ser una imagen.'));
+      if (file.size > MAX) return Promise.reject(new Error('La imagen del ' + tipo + ' pesa más de 10 MB.'));
+      var ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'png';
+      var path = 'solicitudes/' + carpeta + '/' + tipo + '-' + Date.now() + '.' + ext;
+      return fetch(SUPABASE_URL + '/storage/v1/object/blog-images/' + path, {
+        method: 'POST',
+        headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type, 'x-upsert': 'false' },
+        body: file
+      }).then(function (r) {
+        if (!r.ok) throw new Error('No se ha podido subir la imagen del ' + tipo + '.');
+        return SUPABASE_URL + '/storage/v1/object/public/blog-images/' + path;
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = form.elements;
+      var v = function (n) { return (f[n].value || '').trim(); };
+      var cuisine = f.cuisine.value === '__otra' ? v('cuisine_other') : f.cuisine.value;
+      if (!v('name') || !cuisine || !v('neighborhood') || !v('note') || !v('contact_name') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('contact_email'))) {
+        return say('Rellena los campos con * (y revisa el correo).', 'error');
+      }
+      var web = v('website');
+      if (web && !/^https?:\/\//i.test(web)) web = 'https://' + web;
+      if (web && !/^https?:\/\/[^\s]+\.[^\s]+$/i.test(web)) return say('El enlace de la web no es válido.', 'error');
+      if (!token) { pedirToken(); return say('Un momento, preparando el envío… inténtalo de nuevo en unos segundos.', 'error'); }
+
+      btn.disabled = true;
+      say('Enviando… (subiendo las imágenes)');
+      var carpeta = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2);
+      Promise.all([
+        subir(f.logo.files[0], 'logo', carpeta),
+        subir(f.photo.files[0], 'foto', carpeta)
+      ]).then(function (urls) {
+        return fetch('/api/restaurant-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: v('name'), cuisine: cuisine, price: f.price.value, neighborhood: v('neighborhood'), note: v('note'),
+            website: web, logo: urls[0], photo: urls[1],
+            contact_name: v('contact_name'), contact_email: v('contact_email'), contact_phone: v('contact_phone'),
+            web: f.web.value, token: token
+          })
+        });
+      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok && d.ok, error: d.error }; }); })
+        .then(function (res) {
+          if (!res.ok) {
+            btn.disabled = false;
+            if (res.error === 'token') { pedirToken(); return say('Se ha caducado el formulario. Vuelve a pulsar «Enviar».', 'error'); }
+            if (res.error === 'too-fast') return say('Un momento… vuelve a pulsar «Enviar».', 'error');
+            if (res.error === 'invalid') return say('Revisa los campos obligatorios.', 'error');
+            return say('No se ha podido enviar. Inténtalo de nuevo en unos minutos.', 'error');
+          }
+          form.hidden = true;
+          document.getElementById('regDone').hidden = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        .catch(function (err) { btn.disabled = false; say(err && err.message ? err.message : 'No se ha podido enviar.', 'error'); });
+    });
+  })();
+</script>

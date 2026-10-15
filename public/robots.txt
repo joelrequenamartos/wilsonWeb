@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /adminblog
 Disallow: /adminrestaurantes
+Disallow: /registro-restaurante
 
 Sitemap: https://www.silvertoursny.com/sitemap-index.xml
