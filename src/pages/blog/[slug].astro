@@ -6,8 +6,7 @@ import Footer from '../../components/Footer.astro';
 import BlogTemplate from '../../components/BlogTemplate.astro';
 import UpcomingEvents from '../../components/UpcomingEvents.astro';
 import EbookPopup from '../../components/EbookPopup.astro';
-import MonthlyEvents from '../../components/MonthlyEvents.astro';
-import { getPosts, prepareContent } from '../../lib/posts';
+import { getPosts, prepareContent, hasMonthlyEvents } from '../../lib/posts';
 
 export async function getStaticPaths() {
   // «todos» está reservado para el listado paginado (/blog/todos)
@@ -20,6 +19,8 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { html, toc } = prepareContent(post.content);
+// En la entrada que contiene los eventos mensuales no se repite la lista ni el carrusel: solo salen en el resto de la web.
+const hasMonthly = hasMonthlyEvents(post);
 
 const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
 ---
@@ -29,10 +30,9 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
     <section class="section">
       <div class="wrap blog-post-wrap blog-post-wrap-tpl">
         <BlogTemplate title={post.title} excerpt={post.excerpt} image={post.image ?? undefined} html={html} toc={toc} />
-        {post.monthlyEvents && post.events.length > 0 && <MonthlyEvents events={post.events} />}
       </div>
     </section>
-    <UpcomingEvents />
+    {!hasMonthly && <UpcomingEvents />}
   </main>
   <EbookPopup />
   <Footer tours={tours} />

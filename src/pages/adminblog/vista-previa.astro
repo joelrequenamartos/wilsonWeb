@@ -100,7 +100,7 @@ const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.dat
       $('pvIndex').hidden = !list.children.length;
 
       // Eventos mensuales (solo si la entrada los tiene activados): mismo diseño que en la web publicada.
-      if (raw.monthly && Array.isArray(raw.events) && raw.events.length) {
+      if (false && raw.monthly && Array.isArray(raw.events) && raw.events.length) { // la entrada con eventos mensuales no repite la lista
         const dia = new Intl.DateTimeFormat('es', { day: 'numeric' });
         const mes = new Intl.DateTimeFormat('es', { month: 'short' });
         const mon = (d) => mes.format(d).replace('.', '');

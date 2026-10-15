@@ -131,6 +131,9 @@ function eventsFromContent(html: string): MonthlyEvent[] {
     .filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.title);
 }
 
+// ¿La entrada tiene eventos mensuales propios (marcados en sus bloques o en su lista antigua)?
+export const hasMonthlyEvents = (p: Post) => eventsFromContent(p.content).length > 0 || (p.monthlyEvents && p.events.length > 0);
+
 export async function getMonthlyEvents(): Promise<MonthlyEvent[]> {
   const posts = await getPosts();
   const seen = new Set<string>();
