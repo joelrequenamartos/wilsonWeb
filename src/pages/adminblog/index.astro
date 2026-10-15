@@ -280,7 +280,7 @@
     .ql-editor .ev-block .monthly-go{width:34px; height:34px; border-radius:50%; background:var(--coral); color:#fff; display:flex; align-items:center; justify-content:center;}
     .ql-editor .ev-block .is-monthly .monthly-text::after{content:"📅 Evento mensual"; display:inline-block; margin-top:4px; font-size:.7rem; font-weight:700; color:#1f7a45;}
     .ev-row .check{display:flex; gap:8px; align-items:flex-start;}
-    .ql-editor .ev-block::after{content:"Haz clic para editar este bloque"; display:block; margin-top:8px; font-size:.75rem; color:var(--coral-d);}
+    .ql-editor .ev-block::after{content:"Doble clic para editar este bloque (un clic solo lo selecciona)"; display:block; margin-top:8px; font-size:.75rem; color:var(--coral-d);}
     .btn-dialog{border:0; border-radius:18px; padding:22px; width:min(480px,92vw); box-shadow:0 30px 80px -20px rgba(0,0,0,.5);}
     .btn-dialog::backdrop{background:rgba(26,21,18,.5);}
     .btn-dialog h2{margin:0; font-size:1.25rem;}
@@ -1112,12 +1112,41 @@
       const Delta = window.Quill.import('delta');
       quill.clipboard.addMatcher('a.blog-btn', (node) => new Delta().insert({ boton: { text: node.textContent, url: node.getAttribute('href'), ...coloresBoton(node) } }));
       quill.clipboard.addMatcher('section.ev-block', (node) => new Delta().insert({ eventos: EventosValor(node) }));
+      quill.root.addEventListener('dblclick', (e) => {
+        const ev = e.target.closest && e.target.closest('section.ev-block');
+        if (ev) { e.preventDefault(); editarEventos(ev); }
+      });
+      // Siempre hay un párrafo vacío antes, entre y después de los bloques de eventos para poder seguir escribiendo.
+      let ajustando = false;
+      quill.on('text-change', () => {
+        if (ajustando) return;
+        const ops = quill.getContents().ops;
+        const faltan = [];
+        let idx = 0;
+        ops.forEach((op, i) => {
+          const len = typeof op.insert === 'string' ? op.insert.length : 1;
+          if (op.insert && typeof op.insert === 'object' && op.insert.eventos) {
+            const prev = ops[i - 1], next = ops[i + 1];
+            const prevOk = prev && typeof prev.insert === 'string' && prev.insert.endsWith('\n');
+            const nextOk = next && typeof next.insert === 'string';
+            if (!prevOk && !(i === 0 && false)) faltan.push(idx);          // antes (o entre dos bloques)
+            if (!nextOk) faltan.push(idx + len);                            // después
+          }
+          idx += len;
+        });
+        if (!faltan.length) return;
+        ajustando = true;
+        const cursor = quill.getSelection();
+        [...new Set(faltan)].sort((a, b) => b - a).forEach((at) => quill.insertText(at, '\n', 'silent'));
+        if (cursor) quill.setSelection(cursor.index, 0, 'silent');
+        ajustando = false;
+      });
       // Un clic sobre un botón del texto lo abre para editarlo o quitarlo.
       quill.root.addEventListener('click', (e) => {
         const a = e.target.closest && e.target.closest('a.blog-btn');
         if (a) { e.preventDefault(); editarBoton(a); return; }
         const ev = e.target.closest && e.target.closest('section.ev-block');
-        if (ev) { e.preventDefault(); editarEventos(ev); }
+        if (ev) e.preventDefault(); // un clic solo selecciona; con doble clic se edita (así se puede seguir escribiendo alrededor)
       });
       iniciarTamanoImagenes();
       quill.on('text-change', () => { $('editor').classList.remove('is-missing'); refrescarMensuales(); });
