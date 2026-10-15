@@ -1271,7 +1271,8 @@
         }
         list.append(ul);
       };
-      pintar('En esta entrada', mias, 'Ninguno todavía. Inserta un bloque «+ Eventos» y marca «Evento mensual» en los que quieras que salgan aquí.');
+      const borrador = !$('fPublished').checked;
+      pintar(borrador && mias.length ? 'En esta entrada (borrador: no cuentan hasta que la publiques)' : 'En esta entrada', mias, 'Ninguno todavía. Inserta un bloque «+ Eventos» y marca «Evento mensual» en los que quieras que salgan aquí.');
       if (otras.length) pintar('También salen de otras entradas publicadas', otras, '');
     }
 
@@ -1309,6 +1310,7 @@
       $('fFeatured').closest('label').classList.toggle('is-off', !$('fPublished').checked);
       $('monthlyWarn').hidden = eventsSupported;
       $('eventsBox').hidden = !eventsSupported;
+      $('fPublished').onchange = () => refrescarMensuales();
       coverUrl = post?.image ?? null;
       pintarPortada();
       $('coverStatus').textContent = 'Se reduce sola a 1600 px de ancho.';
@@ -1364,7 +1366,8 @@
       }
 
       const events = readEvents().filter((e) => e.date && e.title);
-      const monthly = eventsSupported && events.length > 0;
+      // Un borrador conserva sus eventos marcados pero NO cuenta como «eventos mensuales» hasta que se publique.
+      const monthly = eventsSupported && events.length > 0 && $('fPublished').checked;
       const row = {
         slug, title,
         excerpt: $('fExcerpt').value.trim(),
