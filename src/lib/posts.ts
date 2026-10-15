@@ -104,12 +104,50 @@ export function getPosts(): Promise<Post[]> {
   return cache.value;
 }
 
-// Eventos de la entrada que tiene activos los «Eventos mensuales» (solo si está publicada), en el orden que se les dio.
+// Eventos mensuales de toda la web: los eventos marcados «Evento mensual» en los bloques de eventos del texto de CUALQUIER
+// entrada publicada (da igual la categoría del bloque), más los que una entrada antigua ya tenía guardados en su lista.
+const decodeAttr = (s: string) =>
+  s.replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+
+function eventsFromContent(html: string): MonthlyEvent[] {
+  const out: MonthlyEvent[] = [];
+  for (const m of html.matchAll(/<section[^>]*class="[^"]*\bev-block\b[^"]*"[^>]*data-ev="([^"]*)"/g)) {
+    try {
+      const v = JSON.parse(decodeAttr(m[1]));
+      for (const x of Array.isArray(v?.e) ? v.e : []) {
+        if (!x?.m) continue;
+        out.push({
+          date: String(x.d ?? '').slice(0, 10),
+          endDate: String(x.f ?? '').slice(0, 10),
+          title: String(x.t ?? '').trim(),
+          subtitle: String(x.s ?? '').trim(),
+          link: safeUrl(x.l)
+        });
+      }
+    } catch { /* bloque ilegible: se ignora */ }
+  }
+  return out
+    .map((e) => ({ ...e, endDate: /^\d{4}-\d{2}-\d{2}$/.test(e.endDate) && e.endDate > e.date ? e.endDate : '' }))
+    .filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.title);
+}
+
+// ¿La entrada tiene eventos mensuales propios (marcados en sus bloques o en su lista antigua)?
+export const hasMonthlyEvents = (p: Post) => eventsFromContent(p.content).length > 0 || (p.monthlyEvents && p.events.length > 0);
+
 export async function getMonthlyEvents(): Promise<MonthlyEvent[]> {
   const posts = await getPosts();
-  return posts
-    .filter((p) => p.monthlyEvents)
-    .flatMap((p) => p.events);
+  const seen = new Set<string>();
+  const all: MonthlyEvent[] = [];
+  for (const p of posts) {
+    const fromText = eventsFromContent(p.content);
+    for (const e of fromText.length ? fromText : p.monthlyEvents ? p.events : []) {
+      const k = `${e.date}|${e.title}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      all.push(e);
+    }
+  }
+  return all;
 }
 
 const slugify = (s: string) =>

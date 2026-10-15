@@ -1305,6 +1305,15 @@
   .monthly-go .icon{width:20px; height:20px;}
   @media (hover:hover){.monthly-go:hover{background:var(--coral-dark); transform:scale(1.08);}}
 
+  /* Bloque de categoría con eventos dentro del texto de una entrada */
+  .post-body .ev-block{margin-block:clamp(28px,5vw,44px); max-width:none;}
+  .post-body .ev-block .ev-title{font-family:"Poppins"; font-weight:800; font-size:clamp(1.5rem,5vw,2rem); line-height:1.2; margin:0; color:var(--ink);}
+  .post-body .ev-block .monthly-list{list-style:none; padding:0; margin:clamp(14px,3vw,22px) 0 0;}
+  .post-body .ev-block .monthly-item{margin:0;}
+  .monthly-title{font-family:"Poppins"; font-weight:700; font-size:clamp(1.05rem,3.4vw,1.3rem); line-height:1.25; color:var(--ink); margin:0;}
+  .post-body .ev-block .monthly-text p{margin:4px 0 0;}
+  .post-body .ev-block .monthly-go{text-decoration:none;}
+
   /* ---------- entrada de blog ---------- */
   .blog-post-wrap-tpl{max-width:760px;}
   /* Escritorio: la entrada usa el mismo ancho que el resto de la web (foto y título a todo el ancho);
