@@ -17,7 +17,7 @@ const cuisines = await getCuisines();
         <div class="section-head">
           <span class="eyebrow">Para restaurantes</span>
           <h1 class="section-title">Registra tu restaurante</h1>
-          <p class="section-sub">Rellena los datos y sube tu logo y una foto de tu comida. Revisaremos la información y, si todo está correcto, aparecerá en nuestra web.</p>
+          <p class="section-sub">Rellena los datos y sube tu logo y una foto de tu comida (obligatorios). Revisaremos la información y, si todo está correcto, aparecerá en nuestra web.</p>
         </div>
 
         <div class="contact-wrap" id="regWrap">
@@ -71,10 +71,10 @@ const cuisines = await getCuisines();
             </div>
 
             <div class="reg-grid">
-              <label class="contact-field">Logo <small>PNG, mejor con fondo transparente (máx. 10 MB)</small>
+              <label class="contact-field">Logo * <small>PNG, mejor con fondo transparente (máx. 10 MB)</small>
                 <input type="file" name="logo" accept="image/*" />
               </label>
-              <label class="contact-field">Foto de la comida <small>Horizontal, buena calidad (máx. 10 MB)</small>
+              <label class="contact-field">Foto de la comida * <small>Horizontal, buena calidad (máx. 10 MB)</small>
                 <input type="file" name="photo" accept="image/*" />
               </label>
             </div>
@@ -240,6 +240,8 @@ const cuisines = await getCuisines();
       var marca = function (n, txt) { faltan.push(txt); var l = f[n].closest('.contact-field'); if (l) l.classList.add('is-invalid'); };
       if (!v('name')) marca('name', 'el nombre del restaurante');
       if (!cuisine) marca(f.cuisine.value === '__otra' ? 'cuisine_other' : 'cuisine', 'el tipo de cocina');
+      if (!f.logo.files[0]) marca('logo', 'el logo');
+      if (!f.photo.files[0]) marca('photo', 'la foto de la comida');
       if (!v('neighborhood')) marca('neighborhood', 'el barrio');
       if (!v('note')) marca('note', 'la descripción');
       if (!v('contact_name')) marca('contact_name', 'tu nombre');
