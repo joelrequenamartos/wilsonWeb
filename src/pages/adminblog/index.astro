@@ -252,7 +252,16 @@
     .btn-contrast[hidden]{display:none;}
     .ql-editor a.blog-btn{user-select:none;}
     .ql-toolbar button.ql-boton{width:auto !important; padding:0 10px !important; font-weight:700; font-size:.78rem; color:var(--coral-d); border:1px solid var(--coral) !important; border-radius:100px !important; margin-left:6px;}
-    .ev-dialog{width:min(640px,94vw); max-height:90vh; overflow:auto;}
+    .btn-dialog.ev-dialog{width:min(1060px,94vw); max-height:92vh; overflow:auto; padding:26px 30px;}
+    .ev-dialog .ev-main{display:grid; grid-template-columns:230px 1fr; gap:16px; align-items:start;}
+    .ev-dialog .ev-side{display:grid; gap:10px;}
+    .ev-dialog .ev-fields{display:grid; gap:10px;}
+    .ev-dialog .ev-fields .two{display:grid; grid-template-columns:2fr 1fr; gap:10px;}
+    .ev-dialog textarea{min-height:64px; resize:vertical;}
+    .btn-dialog.ev-dialog .ev-fields label.ev-check{display:flex; flex-direction:row; align-items:center; justify-content:flex-start; text-align:left; gap:8px; padding:8px 12px; border-radius:10px; background:#e8f6ee; font-size:.85rem; margin:0;}
+    .ev-dialog .ev-check small{display:inline; font-weight:400;}
+    .ev-dialog .ev-check input{width:18px; height:18px; flex:none; accent-color:#1f9d55;}
+    @media (max-width:760px){.ev-dialog .ev-main{grid-template-columns:1fr;} .ev-dialog .ev-fields .two{grid-template-columns:1fr;}}
     .ev-rows{display:grid; gap:12px;}
     .ev-row{border:1.5px solid var(--line); border-radius:12px; padding:12px; display:grid; gap:8px; background:#fff;}
     .ev-row .ev-dates{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
@@ -982,14 +991,20 @@
           <button type="button" class="btn ghost" data-m="up" aria-label="Subir">↑</button>
           <button type="button" class="btn ghost" data-m="down" aria-label="Bajar">↓</button>
           <button type="button" class="btn danger" data-m="del" aria-label="Quitar evento">✕</button></span></div>
-        <div class="ev-dates">
-          <label>Fecha<input type="date" data-k="d" /></label>
-          <label>Hasta (opcional, para varios días)<input type="date" data-k="f" /></label>
-        </div>
-        <label>Título<input type="text" data-k="t" maxlength="100" placeholder="New York Film Festival" /></label>
-        <label>Descripción<textarea data-k="s" rows="2" maxlength="300"></textarea></label>
-        <label>Enlace del botón (opcional; obligatorio si es evento mensual)<input type="text" data-k="l" placeholder="https://…" /></label>
-        <label class="check"><input type="checkbox" data-k="m" /> <b>Evento mensual</b> <small class="muted">(además sale en la lista de eventos mensuales de la web, sea de la categoría que sea)</small></label>`;
+        <div class="ev-main">
+          <div class="ev-side">
+            <label>Fecha<input type="date" data-k="d" /></label>
+            <label>Hasta <small class="muted">(opcional, varios días)</small><input type="date" data-k="f" /></label>
+          </div>
+          <div class="ev-fields">
+            <div class="two">
+              <label>Título<input type="text" data-k="t" maxlength="100" placeholder="New York Film Festival" /></label>
+              <label>Enlace del botón <small class="muted">(obligatorio si es mensual)</small><input type="text" data-k="l" placeholder="https://…" /></label>
+            </div>
+            <label>Descripción<textarea data-k="s" rows="2" maxlength="300"></textarea></label>
+            <label class="ev-check"><input type="checkbox" data-k="m" /><b>Evento mensual</b><small class="muted">· además sale en la lista de eventos mensuales de la web, sea de la categoría que sea</small></label>
+          </div>
+        </div>`;
       for (const k of ['d', 'f', 't', 's', 'l']) row.querySelector(`[data-k=${k}]`).value = x[k] ?? '';
       row.querySelector('[data-k=m]').checked = !!x.m;
       return row;
