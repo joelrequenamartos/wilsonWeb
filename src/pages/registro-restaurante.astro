@@ -66,6 +66,15 @@ const cuisines = await getCuisines();
               </label>
             </div>
 
+            <div class="reg-grid">
+              <label class="contact-field">Segundo logo <small>(opcional)</small>
+                <input type="file" name="logo2" accept="image/*" />
+              </label>
+              <label class="contact-field">Segunda foto de la comida <small>(opcional)</small>
+                <input type="file" name="photo2" accept="image/*" />
+              </label>
+            </div>
+
             <h2 class="reg-sub">Datos de contacto <small>(solo para nosotros, no se publican)</small></h2>
             <div class="reg-grid">
               <label class="contact-field">Tu nombre *
@@ -169,14 +178,16 @@ const cuisines = await getCuisines();
       var carpeta = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2);
       Promise.all([
         subir(f.logo.files[0], 'logo', carpeta),
-        subir(f.photo.files[0], 'foto', carpeta)
+        subir(f.photo.files[0], 'foto', carpeta),
+        subir(f.logo2.files[0], 'logo2', carpeta),
+        subir(f.photo2.files[0], 'foto2', carpeta)
       ]).then(function (urls) {
         return fetch('/api/restaurant-request', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: v('name'), cuisine: cuisine, price: f.price.value, neighborhood: v('neighborhood'), note: v('note'),
-            website: web, logo: urls[0], photo: urls[1],
+            website: web, logo: urls[0], photo: urls[1], logo2: urls[2], photo2: urls[3],
             contact_name: v('contact_name'), contact_email: v('contact_email'), contact_phone: v('contact_phone'),
             web: f.web.value, token: token
           })
