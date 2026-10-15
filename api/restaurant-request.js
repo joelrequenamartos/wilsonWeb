@@ -92,8 +92,9 @@ export default async function handler(req, res) {
       body: JSON.stringify(row)
     });
     if (!r.ok) {
-      console.error('Supabase rechazó la solicitud', r.status, await r.text().catch(() => ''));
-      return res.status(502).json({ ok: false, error: r.status === 404 ? 'not-configured-db' : 'save-failed' });
+      const detalle = await r.text().catch(() => '');
+      console.error('Supabase rechazó la solicitud', r.status, detalle);
+      return res.status(502).json({ ok: false, error: r.status === 404 ? 'not-configured-db' : 'save-failed', status: r.status, detail: detalle.slice(0, 300) });
     }
   } catch {
     return res.status(502).json({ ok: false, error: 'save-failed' });
