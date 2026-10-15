@@ -25,6 +25,9 @@ create table if not exists public.restaurant_requests (
 alter table public.restaurant_requests add column if not exists logo2  text check (logo2  is null or char_length(logo2)  <= 500);
 alter table public.restaurant_requests add column if not exists photo2 text check (photo2 is null or char_length(photo2) <= 500);
 
+-- Información adicional escrita por el restaurante (opcional)
+alter table public.restaurant_requests add column if not exists extra_info text not null default '' check (char_length(extra_info) <= 1500);
+
 alter table public.restaurant_requests enable row level security;
 
 -- Cualquiera puede enviar una solicitud (siempre «pendiente»), pero solo el administrador puede verlas.

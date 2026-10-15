@@ -101,6 +101,10 @@ const cuisines = await getCuisines();
               <input type="tel" name="contact_phone" maxlength="60" autocomplete="tel" />
             </label>
 
+            <label class="contact-field">Información adicional <small>(opcional: cualquier cosa que quieras que sepamos)</small>
+              <textarea name="extra_info" rows="4" maxlength="1500" placeholder="Horarios, promociones, cómo llegar, cualquier detalle útil…"></textarea>
+            </label>
+
             <div class="reg-preview">
               <span class="reg-prev-title">Así quedaría aproximadamente <small>(no es definitivo)</small></span>
               <article class="rest-card reg-prev-card" aria-hidden="true">
@@ -268,7 +272,7 @@ const cuisines = await getCuisines();
           body: JSON.stringify({
             name: v('name'), cuisine: cuisine, price: f.price.value, neighborhood: v('neighborhood'), note: v('note'),
             website: web, logo: urls[0], photo: urls[1], logo2: urls[2], photo2: urls[3],
-            contact_name: v('contact_name'), contact_email: v('contact_email'), contact_phone: v('contact_phone'),
+            contact_name: v('contact_name'), contact_email: v('contact_email'), contact_phone: v('contact_phone'), extra_info: v('extra_info'),
             consent: f.consent.checked, web: f.web.value, token: token
           })
         });

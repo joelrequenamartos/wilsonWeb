@@ -1145,6 +1145,7 @@
       const note = document.createElement('p'); note.textContent = s.note;
       info.append(h, meta, note);
       if (s.website) { const p = document.createElement('p'); const a = document.createElement('a'); a.href = s.website; a.target = '_blank'; a.rel = 'noopener'; a.textContent = s.website; p.append('🔗 ', a); info.append(p); }
+      if (s.extra_info) { const x = document.createElement('p'); x.style.whiteSpace = 'pre-wrap'; x.textContent = 'ℹ️ ' + s.extra_info; info.append(x); }
       const c = document.createElement('p'); c.className = 'contact';
       c.textContent = `Contacto: ${s.contact_name} · ${s.contact_email}${s.contact_phone ? ' · ' + s.contact_phone : ''} · ${new Date(s.created_at).toLocaleDateString('es-ES')}`;
       info.append(c);

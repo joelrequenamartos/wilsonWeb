@@ -73,6 +73,7 @@ export default async function handler(req, res) {
     photo: urlImg(b.photo),
     logo2: urlImg(b.logo2),
     photo2: urlImg(b.photo2),
+    extra_info: String(b.extra_info || '').trim().slice(0, 1500),
     contact_name: String(b.contact_name || '').trim().slice(0, 120),
     contact_email: String(b.contact_email || '').trim().slice(0, 200),
     contact_phone: String(b.contact_phone || '').trim().slice(0, 60)
@@ -114,10 +115,11 @@ export default async function handler(req, res) {
     ${fila('Foto', link(row.photo, 'ver foto'))}
     ${fila('Segundo logo', link(row.logo2, 'ver logo 2'))}
     ${fila('Segunda foto', link(row.photo2, 'ver foto 2'))}
+    ${fila('Información adicional', esc(row.extra_info).replace(/\n/g, '<br>'))}
     ${fila('Contacto', `${esc(row.contact_name)} · <a href="mailto:${esc(row.contact_email)}" style="color:${ORANGE};">${esc(row.contact_email)}</a>${row.contact_phone ? ' · ' + esc(row.contact_phone) : ''}`)}
   </table>
 </div>`;
-  const text = `Nueva solicitud de restaurante (pendiente en el panel).\n\nNombre: ${row.name}\nCocina: ${row.cuisine}\nBarrio: ${row.neighborhood}\nPrecio: ${row.price}\nDescripción: ${row.note}\nWeb: ${row.website}\nLogo: ${row.logo || ''}\nFoto: ${row.photo || ''}\nLogo 2: ${row.logo2 || ''}\nFoto 2: ${row.photo2 || ''}\nContacto: ${row.contact_name} · ${row.contact_email} · ${row.contact_phone}`;
+  const text = `Nueva solicitud de restaurante (pendiente en el panel).\n\nNombre: ${row.name}\nCocina: ${row.cuisine}\nBarrio: ${row.neighborhood}\nPrecio: ${row.price}\nDescripción: ${row.note}\nWeb: ${row.website}\nLogo: ${row.logo || ''}\nFoto: ${row.photo || ''}\nLogo 2: ${row.logo2 || ''}\nFoto 2: ${row.photo2 || ''}\nInformación adicional: ${row.extra_info}\nContacto: ${row.contact_name} · ${row.contact_email} · ${row.contact_phone}`;
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
