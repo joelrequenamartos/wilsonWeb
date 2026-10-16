@@ -132,7 +132,7 @@ function eventsFromContent(html: string): MonthlyEvent[] {
 }
 
 // ¿La entrada tiene eventos mensuales propios (marcados en sus bloques o en su lista antigua)?
-export const hasMonthlyEvents = (p: Post) => eventsFromContent(p.content).length > 0 || (p.monthlyEvents && p.events.length > 0);
+export const hasMonthlyEvents = (p: Post) => eventsFromContent(p.content).length > 0 || p.events.length > 0;
 
 export async function getMonthlyEvents(): Promise<MonthlyEvent[]> {
   const posts = await getPosts();
@@ -140,7 +140,7 @@ export async function getMonthlyEvents(): Promise<MonthlyEvent[]> {
   const all: MonthlyEvent[] = [];
   for (const p of posts) {
     const fromText = eventsFromContent(p.content);
-    for (const e of fromText.length ? fromText : p.monthlyEvents ? p.events : []) {
+    for (const e of fromText.length ? fromText : p.events) { // la lista antigua cuenta aunque su casilla ya no exista (es publicada: solo se leen entradas publicadas)
       const k = `${e.date}|${e.title}`;
       if (seen.has(k)) continue;
       seen.add(k);
