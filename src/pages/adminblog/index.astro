@@ -1234,16 +1234,36 @@
         }));
       });
     }
+    let eventosAntiguos = []; // lista manual de entradas antiguas (sin bloques «+ Eventos»); se puede ir quitando
     // Eventos de ESTA entrada: los del editor; si la entrada es antigua y no tiene bloques, los que ya tenía guardados.
     function readEvents() {
-      const delTexto = mensualesDeHtml(quill.root);
-      if (delTexto.length || quill.root.querySelector('section.ev-block')) return delTexto.map((e) => ({ ...e, _rango: !!e.end_date }));
-      const viejos = Array.isArray(editing?.events) ? editing.events : [];
-      return viejos.map((e) => ({ date: e.date, end_date: e.end_date || '', title: e.title, subtitle: e.subtitle || '', link: e.link || '', _rango: !!e.end_date, _cat: '' }));
+      const delTexto = mensualesDeHtml(quill.root).map((e) => ({ ...e, _rango: !!e.end_date }));
+      const viejos = eventosAntiguos.map((e) => ({ date: e.date, end_date: e.end_date || '', title: e.title, subtitle: e.subtitle || '', link: e.link || '', _rango: !!e.end_date, _cat: '', _antiguo: true }));
+      const vistos = new Set(delTexto.map((e) => `${e.date}|${e.title}`));
+      return [...delTexto, ...viejos.filter((e) => !vistos.has(`${e.date}|${e.title}`))];
     }
     function etiquetaFecha(e) {
       const b = fechaBadge(e.date, e.end_date);
       return `${b.num} ${b.mon}`;
+    }
+    // Quitar un evento de la lista: en un bloque, solo le quita la casilla «Evento mensual»; en la lista antigua, lo borra.
+    function quitarMensual(e) {
+      if (e._antiguo) {
+        eventosAntiguos = eventosAntiguos.filter((x) => !(x.date === e.date && x.title === e.title));
+        return refrescarMensuales();
+      }
+      for (const sec of quill.root.querySelectorAll('section.ev-block')) {
+        const v = EventosValor(sec);
+        const x = (v.e || []).find((y) => y.m && y.d === e.date && y.t === e.title);
+        if (!x) continue;
+        x.m = false;
+        const blot = window.Quill.find(sec);
+        if (!blot) return;
+        const idx = quill.getIndex(blot);
+        quill.deleteText(idx, 1, 'user');
+        quill.insertEmbed(idx, 'eventos', v, 'user');
+        return;
+      }
     }
     function refrescarMensuales() {
       const list = $('eventsList');
@@ -1258,22 +1278,30 @@
         if (!evs.length && p.monthly_events && Array.isArray(p.events)) evs = p.events.map((e) => ({ date: e.date, title: e.title, end_date: e.end_date || '', _cat: '' }));
         evs.forEach((e) => otras.push({ ...e, _de: p.title }));
       }
-      const pintar = (titulo, arr, vacio) => {
+      const pintar = (titulo, arr, vacio, quitable) => {
         const h = document.createElement('p'); h.className = 'muted'; h.style.margin = '0'; h.innerHTML = `<b>${titulo}</b>`;
         list.append(h);
         if (!arr.length) { const v = document.createElement('p'); v.className = 'muted'; v.style.margin = '0 0 6px'; v.textContent = vacio; list.append(v); return; }
         const ul = document.createElement('ul'); ul.style.cssText = 'margin:0 0 6px; padding-left:0; list-style:none; display:grid; gap:6px;';
         for (const e of arr) {
           const li = document.createElement('li');
-          li.style.cssText = 'background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px 12px; font-size:.9rem;';
-          li.textContent = `📅 ${etiquetaFecha(e)} · ${e.title}` + (e._cat ? ` · ${e._cat}` : '') + (e._de ? ` · de «${e._de}»` : '');
+          li.style.cssText = 'background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px 12px; font-size:.9rem; display:flex; gap:10px; align-items:center; justify-content:space-between;';
+          const tx = document.createElement('span');
+          tx.textContent = `📅 ${etiquetaFecha(e)} · ${e.title}` + (e._cat ? ` · ${e._cat}` : '') + (e._antiguo ? ' · lista antigua' : '') + (e._de ? ` · de «${e._de}»` : '');
+          li.append(tx);
+          if (quitable) {
+            const b = document.createElement('button'); b.type = 'button'; b.className = 'btn small danger'; b.textContent = 'Quitar';
+            b.title = e._antiguo ? 'Borrar de la lista de eventos mensuales' : 'Quitar la casilla «Evento mensual» de este evento (sigue en el bloque)';
+            b.addEventListener('click', () => quitarMensual(e));
+            li.append(b);
+          }
           ul.append(li);
         }
         list.append(ul);
       };
       const borrador = !$('fPublished').checked;
-      pintar(borrador && mias.length ? 'En esta entrada (borrador: no cuentan hasta que la publiques)' : 'En esta entrada', mias, 'Ninguno todavía. Inserta un bloque «+ Eventos» y marca «Evento mensual» en los que quieras que salgan aquí.');
-      if (otras.length) pintar('También salen de otras entradas publicadas', otras, '');
+      pintar(borrador && mias.length ? 'En esta entrada (borrador: no cuentan hasta que la publiques)' : 'En esta entrada', mias, 'Ninguno todavía. Inserta un bloque «+ Eventos» y marca «Evento mensual» en los que quieras que salgan aquí.', true);
+      if (otras.length) pintar('También salen de otras entradas publicadas', otras, '', false);
     }
 
     // Vista previa: guarda el borrador actual en el navegador y abre /blog-preview con el diseño real, sin guardar ni publicar nada.
@@ -1310,6 +1338,7 @@
       $('fFeatured').closest('label').classList.toggle('is-off', !$('fPublished').checked);
       $('monthlyWarn').hidden = eventsSupported;
       $('eventsBox').hidden = !eventsSupported;
+      eventosAntiguos = Array.isArray(post?.events) ? post.events.map((e) => ({ ...e })) : [];
       $('fPublished').onchange = () => refrescarMensuales();
       coverUrl = post?.image ?? null;
       pintarPortada();
