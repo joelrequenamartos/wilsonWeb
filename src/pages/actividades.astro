@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ActivityCard from '../components/ActivityCard.astro';
+import { getActivities } from '../lib/activities';
+
+const tours = (await getCollection('tours')).sort((a, b) => a.data.order - b.data.order);
+const activities = await getActivities();
+
+// Pestañas de filtro: las etiquetas que tengan las actividades (Entradas, Excursiones…), en orden de aparición.
+const tags = [...new Set(activities.map((a) => a.tag).filter(Boolean))].map((tag) => ({
+  tag,
+  count: activities.filter((a) => a.tag === tag).length
+}));
+---
+<Layout title="Actividades en Nueva York — Silver Tours NY" description="Entradas, miradores, museos y experiencias en Nueva York. Te contamos lo mejor y te llevamos a la web oficial para reservar.">
+  <Header />
+  <main id="main">
+    <section class="section section-alt">
+      <div class="wrap act-wrap">
+        <div class="section-head">
+          <span class="eyebrow">Qué hacer en Nueva York</span>
+          <h1 class="section-title">Actividades en Nueva York</h1>
+          <p class="section-sub">Miradores, museos, entradas y experiencias que recomendamos. Al pulsar una actividad te llevamos a su web para reservar.</p>
+        </div>
+
+        {activities.length > 0 ? (
+          <>
+            <p class="act-count" id="actCount">{activities.length} {activities.length === 1 ? 'actividad' : 'actividades'} en Nueva York</p>
+            {tags.length > 1 && (
+              <div class="map-tabs act-tabs" role="group" aria-label="Filtrar actividades" id="actTabs">
+                <button class="map-tab" data-filter="all" aria-pressed="true">Todas <span class="tab-count">{activities.length}</span></button>
+                {tags.map((t) => (
+                  <button class="map-tab" data-filter={t.tag} aria-pressed="false">{t.tag} <span class="tab-count">{t.count}</span></button>
+                ))}
+              </div>
+            )}
+            <div class="act-list" id="actList">
+              {activities.map((a) => <ActivityCard activity={a} />)}
+            </div>
+          </>
+        ) : (
+          <p class="act-empty">Estamos preparando las primeras actividades. ¡Vuelve pronto!</p>
+        )}
+      </div>
+    </section>
+  </main>
+  <Footer tours={tours} />
+</Layout>
+
+<script is:inline>
+  (function () {
+    var tabs = document.querySelectorAll('#actTabs .map-tab');
+    if (!tabs.length) return;
+    var cards = document.querySelectorAll('#actList .act-card');
+    var count = document.getElementById('actCount');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var f = tab.getAttribute('data-filter');
+        tabs.forEach(function (t) { t.setAttribute('aria-pressed', t === tab ? 'true' : 'false'); });
+        var n = 0;
+        cards.forEach(function (c) {
+          var ok = f === 'all' || c.getAttribute('data-tag') === f;
+          c.style.display = ok ? '' : 'none';
+          if (ok) n++;
+        });
+        if (count) count.textContent = n + (n === 1 ? ' actividad' : ' actividades') + ' en Nueva York';
+      });
+    });
+  })();
+</script>

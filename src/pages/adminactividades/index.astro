@@ -1,0 +1,859 @@
+---
+// Panel de actividades (privado): acceso con el usuario de Supabase y gestión de las actividades de /actividades.
+// Todo ocurre en el navegador. Los permisos los imponen las políticas de supabase/activities.sql:
+// sin el usuario administrador no se pueden leer los borradores ni escribir.
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Panel de actividades — Silver Tours NY</title>
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- ACCESO -->
+    <section id="loginView" class="card narrow" hidden>
+      <h1>Panel de actividades</h1>
+      <p class="muted">Entra con tu correo y contraseña.</p>
+      <form id="loginForm" class="stack">
+        <label>Correo<input type="email" id="loginEmail" autocomplete="username" required /></label>
+        <label>Contraseña<input type="password" id="loginPass" autocomplete="current-password" required /></label>
+        <p class="msg" id="loginMsg" role="alert"></p>
+        <button class="btn primary" type="submit">Entrar</button>
+      </form>
+    </section>
+
+    <!-- LISTA -->
+    <section id="listView" hidden>
+      <header class="bar">
+        <h1>Actividades</h1>
+        <div class="bar-actions">
+          <button class="btn primary" id="newBtn" type="button">+ Nueva actividad</button>
+          <button class="btn" id="orderBtn" type="button" title="Cambiar el orden de las actividades">↕ Reordenar</button>
+          <a class="btn" href="/actividades" target="_blank" rel="noopener" title="Abre la página pública (lo publicado tras «Actualizar web»)">Ver página ↗</a>
+          <button class="btn" id="rebuildBtn" type="button" title="Vuelve a construir la web con lo que hay guardado">Actualizar web</button>
+          <button class="btn ghost" id="logoutBtn" type="button">Salir</button>
+        </div>
+      </header>
+      <p class="banner" id="listMsg" role="status" hidden></p>
+
+      <div class="card setup" id="setupBox" hidden>
+        <h2>Falta un paso en Supabase</h2>
+        <p>Para administrar las actividades hay que ejecutar <b>supabase/activities.sql</b> en el SQL Editor de Supabase (una sola vez). Mientras tanto, la página /actividades sale vacía.</p>
+      </div>
+
+      <div class="pending-bar" id="pendingBar" hidden>
+        <span id="pendingText"></span>
+        <button class="btn primary" id="pendingBtn" type="button">Actualizar web ahora</button>
+      </div>
+      <p class="banner" id="stateWarn" hidden>⚠ Para que los cambios se publiquen solo al pulsar «Actualizar web», hay que ejecutar <b>supabase/publish-state.sql</b> en Supabase (una sola vez). Mientras tanto, cada guardado actualiza la web.</p>
+
+      <div class="order-bar" id="orderBar">
+        <p><b>Modo reordenar.</b> Arrastra las actividades por el asa <span aria-hidden="true">⋮⋮</span> o usa las flechas. Este es el orden en que salen en la página de Actividades.</p>
+        <div class="order-actions">
+          <button class="btn primary" id="orderSave" type="button" disabled>Guardar orden</button>
+          <button class="btn ghost" id="orderCancel" type="button">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="filters" id="filters" hidden>
+        <input type="text" id="filterSearch" class="search" placeholder="🔍 Buscar por título…" aria-label="Buscar actividad por título" autocomplete="off">
+        <div class="seg" role="group" aria-label="Estado">
+          <button type="button" data-estado="todas" class="is-active">Todas <span class="n"></span></button>
+          <button type="button" data-estado="publicadas">Publicadas <span class="n"></span></button>
+          <button type="button" data-estado="borradores">Borradores <span class="n"></span></button>
+        </div>
+        <select id="filterTag" aria-label="Filtrar por etiqueta"><option value="">Todas las etiquetas</option></select>
+        <button type="button" class="chip" data-toggle="gratis" aria-pressed="false">Gratis <span class="n"></span></button>
+        <button type="button" class="btn ghost small" id="clearFilters" hidden>Quitar filtros</button>
+      </div>
+      <p class="muted" id="filterEmpty" hidden>Ninguna actividad coincide con esos filtros.</p>
+      <div id="actList" class="rests"></div>
+    </section>
+
+    <!-- EDITAR / CREAR -->
+    <section id="editView" hidden>
+      <header class="bar">
+        <h1 id="editTitle">Nueva actividad</h1>
+        <button class="btn ghost" id="backBtn" type="button">← Volver a la lista</button>
+      </header>
+      <p class="banner error" id="editMsg" role="alert" hidden></p>
+
+      <div class="edit-grid">
+        <form id="actForm" class="card stack" novalidate>
+          <label>Título<input type="text" id="fTitle" maxlength="140" placeholder="Entradas al SUMMIT One Vanderbilt" /></label>
+
+          <div class="img-box">
+            <span class="label">Foto principal</span>
+            <div class="photo-prev"><img id="photoPreview" alt="" hidden /><span id="photoEmpty" class="muted">Sin foto</span></div>
+            <div class="img-actions">
+              <label class="btn small">Subir foto<input type="file" id="photoFile" accept="image/*" hidden /></label>
+              <button class="btn ghost small" id="photoRemove" type="button" hidden>Quitar</button>
+              <small class="muted" id="photoStatus">Horizontal; se reduce sola a 1600 px de ancho.</small>
+            </div>
+          </div>
+
+          <label>Descripción <small class="muted">(2-3 líneas; en el móvil no se muestra)</small>
+            <textarea id="fDesc" rows="3" maxlength="500" placeholder="Con las entradas al SUMMIT subiréis a uno de los mejores miradores de Nueva York…"></textarea>
+          </label>
+
+          <div class="grid2">
+            <label>Etiqueta <small class="muted">(opcional; también es el filtro de la página)</small>
+              <input type="text" id="fTag" maxlength="40" list="tagList" placeholder="Entradas" />
+              <datalist id="tagList"></datalist>
+            </label>
+            <label>Texto destacado en verde <small class="muted">(opcional)</small>
+              <input type="text" id="fHighlight" maxlength="60" list="hlList" placeholder="Cancelación gratuita" />
+              <datalist id="hlList"><option value="Cancelación gratuita"></option><option value="Sin colas"></option><option value="Más vendido"></option></datalist>
+            </label>
+          </div>
+
+          <fieldset class="price-box">
+            <legend>Precio</legend>
+            <label class="check"><input type="checkbox" id="fFree" /> Gratuita <small class="muted">(se muestra «Gratis» en vez de precio)</small></label>
+            <div class="price-fields" id="priceFields">
+              <div class="price-row">
+                <label>Precio<input type="text" inputmode="decimal" id="fPrice" placeholder="41,82" /></label>
+                <label>Moneda
+                  <select id="fCurrency"><option value="$">$ (dólares)</option><option value="€">€ (euros)</option></select>
+                </label>
+                <label>Precio anterior <small class="muted">(opcional, sale tachado)</small><input type="text" inputmode="decimal" id="fOldPrice" placeholder="46,68" /></label>
+              </div>
+              <label class="check"><input type="checkbox" id="fFrom" checked /> Mostrar «desde» encima del precio</label>
+            </div>
+          </fieldset>
+
+          <label>Enlace <small class="muted">(web donde se reserva; al pulsar la tarjeta se abre en otra pestaña)</small>
+            <div class="link-row">
+              <input type="text" id="fLink" inputmode="url" maxlength="600" placeholder="https://…" />
+              <button class="btn small" id="testLink" type="button">Probar ↗</button>
+            </div>
+          </label>
+
+          <div class="checks">
+            <label class="check"><input type="checkbox" id="fPublished" /> Publicada <small class="muted">(si no, queda como borrador y no se ve en la web; para publicar hacen falta título, foto, descripción, precio o «Gratuita» y enlace)</small></label>
+          </div>
+
+          <div class="form-actions">
+            <div class="form-actions-left">
+              <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
+              <button class="btn" id="dupBtn" type="button" hidden title="Crea una copia como borrador">Duplicar</button>
+            </div>
+            <button class="btn danger" id="deleteBtn" type="button" hidden>Borrar actividad</button>
+          </div>
+        </form>
+
+        <aside class="preview-col">
+          <span class="label">Vista previa</span>
+          <div class="pv-switch" role="group" aria-label="Tamaño de la vista previa">
+            <button type="button" class="is-active" data-pv="desk">🖥 Escritorio</button>
+            <button type="button" data-pv="mob">📱 Móvil</button>
+          </div>
+          <div class="pv" id="pv" data-mode="desk">
+            <div class="pv-card">
+              <div class="pv-img"><img id="pvImg" alt="" hidden /><span id="pvNoImg">🎟</span></div>
+              <div class="pv-body">
+                <h2 class="pv-title" id="pvTitle">Título de la actividad</h2>
+                <span class="pv-hl" id="pvHl" hidden></span>
+                <p class="pv-desc" id="pvDesc"></p>
+                <span class="pv-tag" id="pvTag" hidden></span>
+              </div>
+              <div class="pv-side">
+                <div class="pv-price" id="pvPrice"></div>
+                <span class="pv-btn">Ver detalles</span>
+              </div>
+            </div>
+          </div>
+          <small class="muted">Aproximada: así se verá en /actividades.</small>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- Aviso de «guardando» -->
+  <div class="saving" id="saving" role="status" aria-live="polite" hidden>
+    <div class="saving-card">
+      <span class="spinner" aria-hidden="true"></span>
+      <p id="savingWord">Guardando…</p>
+    </div>
+  </div>
+
+  <style is:global>
+    :root{ --ink:#1A1512; --soft:#5C5147; --mute:#948879; --line:rgba(26,21,18,.16); --coral:#E07A3E; --coral-d:#A8501E; --bg:#F6F2EC; }
+    *{box-sizing:border-box;}
+    body{margin:0; font-family:"Poppins",system-ui,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5;}
+    .app{max-width:980px; margin:0 auto; padding:24px 16px 80px;}
+    h1{font-size:clamp(1.5rem,4vw,2rem); margin:0; letter-spacing:-.01em;}
+    h2{margin:0 0 6px; font-size:1.15rem;}
+    .muted{color:var(--mute); font-weight:400;}
+    .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:clamp(16px,3vw,28px);}
+    .narrow{max-width:420px; margin:12vh auto 0;}
+    .setup{margin-bottom:16px; background:#fff3e8; border-color:#f0cfae;}
+    .setup p{margin:0;}
+    .stack{display:flex; flex-direction:column; gap:16px;}
+    .grid2{display:grid; grid-template-columns:1fr; gap:16px;}
+    @media (min-width:700px){.grid2{grid-template-columns:1fr 1fr;}}
+    label, .label{display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:.9rem;}
+    input[type=text], input[type=email], input[type=password], select, textarea{
+      width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:10px; font:inherit; font-weight:400; background:#fff; color:var(--ink);
+    }
+    input:focus, textarea:focus, select:focus{outline:2px solid var(--coral); outline-offset:1px;}
+    input[disabled], select[disabled]{background:#f1ede6; color:var(--soft);}
+    .is-missing{border-color:#c0392b !important; outline:2px solid rgba(192,57,43,.28); outline-offset:1px;}
+    .btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 18px; border-radius:100px; border:1px solid var(--line); background:#fff; color:var(--ink); font:inherit; font-weight:600; font-size:.9rem; cursor:pointer; text-decoration:none;}
+    .btn.primary{background:var(--coral); border-color:var(--coral); color:#fff;}
+    .btn.danger{background:#fff; border-color:#c0392b; color:#c0392b;}
+    .btn.ghost{background:transparent;}
+    .btn.small{padding:6px 12px; font-size:.8rem;}
+    .btn[disabled]{opacity:.55; cursor:default;}
+    .bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+    .bar-actions{display:flex; gap:8px; flex-wrap:wrap;}
+    .banner{margin:0 0 16px; padding:12px 16px; border-radius:12px; background:#fff3e8; border:1px solid #f0cfae; font-size:.92rem;}
+    .banner.error{background:#fdecea; border-color:#f3b9b2; color:#8c2a1f;}
+    .banner.ok{background:#e8f6ee; border-color:#b5e0c6; color:#14653a;}
+    .msg{margin:0; font-size:.9rem; color:#c0392b; min-height:1.2em;}
+    .pending-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:12px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-weight:600; font-size:.95rem;}
+    .pending-bar[hidden], .filters[hidden], .setup[hidden]{display:none;}
+    .is-ordering .pending-bar{display:none !important;}
+    /* filtros */
+    .filters{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+    .filters .search{width:220px; max-width:100%; padding:8px 14px; border-radius:100px; font-size:.85rem;}
+    .filters select{width:auto; padding:8px 12px; border-radius:100px; font-weight:600; font-size:.85rem;}
+    .seg{display:inline-flex; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
+    .seg button, .chip{border:0; background:transparent; font:inherit; font-weight:600; font-size:.85rem; padding:7px 14px; border-radius:100px; cursor:pointer; color:var(--ink);}
+    .seg button.is-active{background:var(--coral); color:#fff;}
+    .chip{background:#fff; border:1px solid var(--line);}
+    .chip[aria-pressed=true]{background:var(--coral); border-color:var(--coral); color:#fff;}
+    .filters .n{font-weight:500; opacity:.7; margin-left:2px;}
+    /* lista */
+    .rests{display:flex; flex-direction:column; gap:10px;}
+    .rest{display:grid; grid-template-columns:96px 1fr auto; gap:14px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px;}
+    .rest .thumb{position:relative; width:96px; height:64px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#C25F26,#E07A3E); display:flex; align-items:center;}
+    .rest .thumb .bg{position:absolute; inset:0; background-size:cover; background-position:center;}
+    .rest .thumb .lg{position:relative; margin-left:8px; width:40px; height:40px; display:flex; align-items:center; justify-content:center;}
+    .rest .thumb .lg img{width:100%; height:100%; object-fit:contain;}
+    .rest .thumb .lg span{font-size:1rem;}
+    .rest h2{font-size:1rem; margin:0 0 4px; line-height:1.3;}
+    .rest .meta{display:flex; gap:6px; flex-wrap:wrap; font-size:.78rem; color:var(--soft); align-items:center;}
+    .pill{padding:2px 9px; border-radius:100px; font-weight:600; font-size:.72rem; background:#ece6dc;}
+    .pill.hide{background:#f3e9d6; color:#8a5a12;}
+    .pill.feat{background:#ffe4d0; color:var(--coral-d);}
+    .rest-actions{display:flex; gap:8px;}
+    @media (max-width:600px){.rest{grid-template-columns:80px 1fr;} .rest .thumb{width:80px;} .rest-actions{grid-column:1 / -1;}}
+    /* reordenar */
+    .order-bar{display:none; flex-direction:column; gap:12px; margin-bottom:16px; padding:14px 16px; background:#fff3e8; border:1px solid #f0cfae; border-radius:14px; font-size:.92rem;}
+    .order-bar p{margin:0;}
+    .order-actions{display:flex; gap:8px; flex-wrap:wrap;}
+    .is-ordering .order-bar{display:flex;}
+    .is-ordering .bar-actions, .is-ordering .filters, .is-ordering #filterEmpty{display:none !important;}
+    .rest.rest-order{grid-template-columns:40px 80px 1fr auto; user-select:none;}
+    .drag-handle{display:flex; align-items:center; justify-content:center; width:40px; height:48px; border:0; border-radius:10px; background:#f1ede6; color:var(--soft); font-size:1.2rem; letter-spacing:-.15em; cursor:grab; touch-action:none;}
+    .drag-handle:active{cursor:grabbing;}
+    .order-arrows{display:flex; flex-direction:column; gap:4px;}
+    .order-arrows button{width:34px; height:30px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size:.95rem;}
+    .order-arrows button[disabled]{opacity:.35; cursor:default;}
+    .rest.is-dragging{position:relative; z-index:20; box-shadow:0 14px 34px -10px rgba(0,0,0,.4); border-color:var(--coral); background:#fffaf5;}
+    /* formulario */
+    .images{display:grid; grid-template-columns:1fr; gap:16px;}
+    @media (min-width:700px){.images{grid-template-columns:1fr 1.4fr;}}
+    .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
+    .app{max-width:1180px;}
+    .rest .thumb{background:#f1ede6 center/cover no-repeat;}
+    .pill.draft{background:#f3e9d6; color:#8a5a12;}
+    .pill.free{background:#e3f5ea; color:#14653a;}
+    .img-actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    .img-actions label.btn{display:inline-flex; flex-direction:row;}
+    .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
+    .photo-prev{display:flex; align-items:center; justify-content:center; width:100%; max-width:420px; aspect-ratio:16/10; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
+    .photo-prev img{width:100%; height:100%; object-fit:cover;}
+    .price-box{border:1px solid var(--line); border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:12px; margin:0;}
+    .price-box legend{font-weight:700; font-size:.9rem; padding:0 6px;}
+    .price-fields{display:flex; flex-direction:column; gap:12px;}
+    .price-fields[hidden]{display:none;}
+    .price-row{display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:12px;}
+    @media (max-width:600px){.price-row{grid-template-columns:1fr 1fr;}}
+    .link-row{display:flex; gap:8px; align-items:center;}
+    .link-row input{flex:1;}
+    .checks{display:flex; flex-direction:column; gap:10px;}
+    .check{flex-direction:row; align-items:center; gap:8px; font-weight:600;}
+    .check input{width:18px; height:18px; accent-color:var(--coral); flex:none;}
+    .form-actions{display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;}
+    .form-actions-left{display:flex; gap:10px; flex-wrap:wrap;}
+    .edit-grid{display:grid; grid-template-columns:1fr; gap:18px; align-items:start;}
+    @media (min-width:1000px){.edit-grid{grid-template-columns:minmax(0,1fr) 440px;} .preview-col{position:sticky; top:16px;}}
+    .preview-col{display:flex; flex-direction:column; gap:10px;}
+    .pv-switch{display:inline-flex; align-self:flex-start; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
+    .pv-switch button{border:0; background:transparent; font:inherit; font-weight:600; font-size:.82rem; padding:6px 12px; border-radius:100px; cursor:pointer;}
+    .pv-switch button.is-active{background:var(--coral); color:#fff;}
+    .pv{background:#F6F2EC; border:1px solid var(--line); border-radius:16px; padding:14px;}
+    .pv[data-mode=mob]{max-width:360px;}
+    .pv-card{display:grid; grid-template-columns:130px 1fr auto; gap:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px; box-shadow:0 10px 24px -18px rgba(0,0,0,.4);}
+    .pv-img{height:96px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:1.8rem;}
+    .pv-img img{width:100%; height:100%; object-fit:cover; display:block;}
+    .pv-body{display:flex; flex-direction:column; gap:5px; min-width:0;}
+    .pv-title{font-size:.98rem; line-height:1.25; color:var(--coral-d); margin:0; word-break:break-word;}
+    .pv-hl{align-self:flex-start; font-size:.72rem; font-weight:700; color:#1f7a45; border-bottom:1.5px dotted #1f7a45;}
+    .pv-hl[hidden], .pv-tag[hidden]{display:none;}
+    .pv-desc{margin:0; font-size:.78rem; color:var(--soft); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+    .pv-tag{font-size:.72rem; color:var(--mute);}
+    .pv-side{display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between; gap:8px;}
+    .pv-price{display:flex; flex-direction:column; align-items:flex-end; margin-top:auto; line-height:1.1;}
+    .pv-price small{font-size:.68rem; color:var(--mute);}
+    .pv-price s{font-size:.7rem; color:var(--mute);}
+    .pv-price b{font-size:1.1rem; color:var(--coral-d);}
+    .pv-price .free{color:#1f7a45; font-weight:800;}
+    .pv-btn{padding:6px 12px; border-radius:100px; background:var(--coral); color:#fff; font-size:.72rem; font-weight:600; white-space:nowrap;}
+    .pv[data-mode=mob] .pv-card{grid-template-columns:80px 1fr; grid-template-areas:"img body" "img side"; gap:4px 10px;}
+    .pv[data-mode=mob] .pv-img{grid-area:img; height:80px;}
+    .pv[data-mode=mob] .pv-body{grid-area:body;}
+    .pv[data-mode=mob] .pv-side{grid-area:side; flex-direction:row; justify-content:flex-end;}
+    .pv[data-mode=mob] .pv-desc, .pv[data-mode=mob] .pv-tag, .pv[data-mode=mob] .pv-btn{display:none;}
+    /* aviso de guardando */
+    .saving{position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; background:rgba(246,242,236,.82); backdrop-filter:blur(3px);}
+    .saving[hidden]{display:none;}
+    .saving-card{display:flex; flex-direction:column; align-items:center; gap:18px; min-width:min(300px,86vw); padding:30px 36px; text-align:center; background:#fff; border-radius:22px; box-shadow:0 24px 60px -20px rgba(0,0,0,.35);}
+    .spinner{width:54px; height:54px; border-radius:50%; border:6px solid #f3d9c6; border-top-color:var(--coral); animation:spin .9s linear infinite;}
+    .saving-card p{margin:0; min-height:1.6em; font-weight:700; font-size:1.15rem; transition:opacity .22s ease;}
+    .saving-card p.is-fading{opacity:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @media (prefers-reduced-motion: reduce){.spinner{animation-duration:2.6s;}}
+  </style>
+
+  <script>
+    import { createClient } from '@supabase/supabase-js';
+    import { SUPABASE_URL, SUPABASE_KEY } from '../../lib/supabase';
+
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const $ = (id) => document.getElementById(id);
+    const BUCKET = 'blog-images'; // el mismo almacén de fotos del blog; aquí van en la carpeta «actividades/»
+
+    let session = null;
+    let todas = [];        // actividades cargadas
+    let editing = null;    // actividad en edición (null = nueva)
+    let photoUrl = null;
+    let tablaLista = true;
+
+    // ---------- utilidades ----------
+    const views = ['loginView', 'listView', 'editView'];
+    const show = (id) => views.forEach((v) => ($(v).hidden = v !== id));
+    const norm = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+    const isUrl = (u) => /^https?:\/\/\S+\.\S+$/i.test(u);
+    const leerNum = (v) => { const t = String(v || '').trim().replace(/\s/g, '').replace(',', '.'); if (!t) return null; const n = Number(t); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : NaN; };
+    const verNum = (n) => (n === null || n === undefined ? '' : String(n).replace('.', ','));
+    const precioTxt = (n, cur) => `${new Intl.NumberFormat('es-ES', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }).format(n)} ${cur}`;
+
+    function banner(el, text, kind) {
+      el.textContent = text || '';
+      el.className = 'banner' + (kind ? ' ' + kind : '');
+      el.hidden = !text;
+      if (text && kind === 'error' && el.id === 'editMsg') window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------- aviso de «guardando» ----------
+    const FRASES = [
+      'Guardando…', 'Espera un poquito…', 'Calentando motores…', 'Comprando las entradas…', 'Subiendo al mirador…',
+      'Haciendo cola por ti…', 'Bibiana, qué buen trabajo estás haciendo…', 'Un segundito, que ya casi…', 'Ya casi está…',
+      'Poniendo la web guapa…', 'Buscando el mejor plan de Nueva York…', 'Bibiana manda y la web obedece…'
+    ];
+    let frasesTimer = null;
+    function mostrarGuardando() {
+      const palabra = $('savingWord');
+      const orden = [...FRASES].sort(() => Math.random() - 0.5);
+      let i = 0;
+      palabra.textContent = orden[0];
+      palabra.classList.remove('is-fading');
+      $('saving').hidden = false;
+      clearInterval(frasesTimer);
+      frasesTimer = setInterval(() => {
+        palabra.classList.add('is-fading');
+        setTimeout(() => { i = (i + 1) % orden.length; palabra.textContent = orden[i]; palabra.classList.remove('is-fading'); }, 220);
+      }, 1600);
+    }
+    function ocultarGuardando() { clearInterval(frasesTimer); $('saving').hidden = true; }
+
+    // ---------- acceso ----------
+    async function esAdmin() {
+      const { data, error } = await sb.rpc('is_admin');
+      return !error && data === true;
+    }
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('loginMsg').textContent = '';
+      const { data, error } = await sb.auth.signInWithPassword({ email: $('loginEmail').value.trim(), password: $('loginPass').value });
+      if (error) { $('loginMsg').textContent = 'Correo o contraseña incorrectos.'; return; }
+      session = data.session;
+      if (!(await esAdmin())) {
+        await sb.auth.signOut(); session = null;
+        $('loginMsg').textContent = 'Este usuario no tiene permiso para gestionar las actividades.';
+        return;
+      }
+      $('loginPass').value = '';
+      await showList();
+    });
+    $('logoutBtn').addEventListener('click', async () => {
+      if (estadoWeb.supported && estadoWeb.pending > 0 && !confirm('Hay cambios guardados sin publicar en la web. ¿Salir igualmente? (Seguirán pendientes hasta que pulses «Actualizar web».)')) return;
+      await sb.auth.signOut(); session = null; show('loginView');
+    });
+
+    // ---------- publicar y cambios pendientes (mismo contador que el blog y los restaurantes) ----------
+    async function publicar() {
+      try {
+        const r = await fetch('/api/publish', { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token } });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) return { ok: true, msg: 'La web se está actualizando: los cambios se verán en 1-2 minutos.' };
+        if (j.error === 'not-configured') return { ok: false, msg: 'Falta conectar la publicación con Vercel (variable DEPLOY_HOOK_URL).' };
+        return { ok: false, msg: 'No se ha podido avisar a la web (' + (j.error || r.status) + ').' };
+      } catch { return { ok: false, msg: 'No se ha podido avisar a la web (sin conexión).' }; }
+    }
+    let estadoWeb = { supported: false, pending: 0 };
+    async function cargarEstadoWeb() {
+      const { data, error } = await sb.from('site_state').select('pending').maybeSingle();
+      estadoWeb.supported = !error && !!data;
+      estadoWeb.pending = data?.pending ?? 0;
+      pintarPendientes();
+    }
+    function pintarPendientes() {
+      const n = estadoWeb.pending;
+      $('pendingBar').hidden = !(estadoWeb.supported && n > 0);
+      $('pendingText').textContent = `Hay ${n} ${n === 1 ? 'cambio guardado' : 'cambios guardados'} sin publicar en la web.`;
+      $('stateWarn').hidden = estadoWeb.supported;
+      $('rebuildBtn').classList.toggle('primary', estadoWeb.supported && n > 0);
+    }
+    async function registrarCambio() {
+      if (!estadoWeb.supported) return await publicar();
+      const { error } = await sb.rpc('mark_site_dirty');
+      await cargarEstadoWeb();
+      if (error) return { ok: false, msg: 'Guardado, pero no se ha podido anotar como pendiente (' + error.message + ').' };
+      return { ok: true, msg: 'Aún no se ve en la web: pulsa «Actualizar web» cuando termines.' };
+    }
+    async function actualizarWeb() {
+      mostrarGuardando();
+      const r = await publicar();
+      if (r.ok && estadoWeb.supported) await sb.rpc('mark_site_published');
+      await cargarEstadoWeb();
+      ocultarGuardando();
+      banner($('listMsg'), r.msg, r.ok ? 'ok' : 'error');
+      if (r.ok) window.scrollTo(0, 0);
+      return r;
+    }
+    $('rebuildBtn').addEventListener('click', actualizarWeb);
+    $('pendingBtn').addEventListener('click', actualizarWeb);
+    window.addEventListener('beforeunload', (e) => {
+      if (estadoWeb.supported && estadoWeb.pending > 0) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    // ---------- lista y filtros ----------
+    const filtros = { estado: 'todas', tag: '', gratis: false, texto: '' };
+    const cumple = (a, f) =>
+      (f.estado === 'todas' || (f.estado === 'publicadas' ? a.published : !a.published)) &&
+      (!f.tag || a.tag === f.tag) &&
+      (!f.gratis || a.free) &&
+      (!f.texto || norm(a.title).includes(norm(f.texto)));
+    const etiquetas = () => [...new Set(todas.map((a) => a.tag).filter(Boolean))].sort((x, y) => x.localeCompare(y, 'es'));
+    const pill = (txt, cls = '') => { const s = document.createElement('span'); s.className = 'pill ' + cls; s.textContent = txt; return s; };
+    const precioCorto = (a) => (a.free ? 'Gratis' : a.price !== null && a.price !== undefined ? (a.price_from ? 'desde ' : '') + precioTxt(Number(a.price), a.currency || '$') : 'Sin precio');
+
+    function pintarFiltros() {
+      const caja = $('filters');
+      caja.hidden = !todas.length;
+      caja.querySelectorAll('[data-estado]').forEach((b) => {
+        b.classList.toggle('is-active', filtros.estado === b.dataset.estado);
+        b.querySelector('.n').textContent = todas.filter((a) => cumple(a, { ...filtros, estado: b.dataset.estado })).length;
+      });
+      const g = caja.querySelector('[data-toggle=gratis]');
+      g.setAttribute('aria-pressed', String(filtros.gratis));
+      g.querySelector('.n').textContent = todas.filter((a) => cumple(a, { ...filtros, gratis: true })).length;
+      const sel = $('filterTag');
+      sel.textContent = '';
+      sel.append(Object.assign(document.createElement('option'), { value: '', textContent: 'Todas las etiquetas' }));
+      for (const t of etiquetas()) sel.append(Object.assign(document.createElement('option'), { value: t, textContent: t }));
+      if (filtros.tag && !etiquetas().includes(filtros.tag)) filtros.tag = '';
+      sel.value = filtros.tag;
+      sel.hidden = !etiquetas().length;
+      if ($('filterSearch').value !== filtros.texto) $('filterSearch').value = filtros.texto;
+      $('clearFilters').hidden = filtros.estado === 'todas' && !filtros.tag && !filtros.gratis && !filtros.texto;
+    }
+
+    function miniatura(a) {
+      const t = document.createElement('div'); t.className = 'thumb';
+      if (a.image) t.style.backgroundImage = `url('${a.image}')`;
+      else { t.textContent = '🎟'; t.style.justifyContent = 'center'; t.style.fontSize = '1.4rem'; }
+      return t;
+    }
+    function metaDe(a) {
+      const meta = document.createElement('div'); meta.className = 'meta';
+      if (a.tag) meta.append(pill(a.tag));
+      meta.append(pill(precioCorto(a), a.free ? 'free' : ''));
+      if (a.highlight) meta.append(pill(a.highlight, 'free'));
+      if (!a.published) meta.append(pill('Borrador', 'draft'));
+      if (!a.link) meta.append(pill('Sin enlace', 'draft'));
+      return meta;
+    }
+
+    function renderList() {
+      pintarFiltros();
+      const list = $('actList');
+      list.textContent = '';
+      if (!todas.length) { list.textContent = 'Todavía no hay actividades. Pulsa «+ Nueva actividad».'; $('filterEmpty').hidden = true; return; }
+      const vis = todas.filter((a) => cumple(a, filtros));
+      $('filterEmpty').hidden = vis.length > 0;
+      for (const a of vis) {
+        const row = document.createElement('article'); row.className = 'rest';
+        const info = document.createElement('div');
+        const h = document.createElement('h2'); h.textContent = a.title;
+        info.append(h, metaDe(a));
+        const actions = document.createElement('div'); actions.className = 'rest-actions';
+        const edit = document.createElement('button'); edit.className = 'btn'; edit.type = 'button'; edit.textContent = 'Editar';
+        edit.addEventListener('click', () => openEditor(a));
+        actions.append(edit);
+        row.append(miniatura(a), info, actions);
+        list.append(row);
+      }
+    }
+
+    $('filters').addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.estado) filtros.estado = b.dataset.estado;
+      else if (b.dataset.toggle) filtros.gratis = !filtros.gratis;
+      else if (b.id === 'clearFilters') Object.assign(filtros, { estado: 'todas', tag: '', gratis: false, texto: '' });
+      renderList();
+    });
+    $('filterSearch').addEventListener('input', (e) => { filtros.texto = e.target.value; renderList(); });
+    $('filterTag').addEventListener('change', (e) => { filtros.tag = e.target.value; renderList(); });
+
+    async function showList(message, kind) {
+      show('listView');
+      banner($('listMsg'), message, kind);
+      window.scrollTo(0, 0);
+      cargarEstadoWeb();
+      const { data, error } = await sb.from('activities').select('*').order('position', { ascending: true, nullsFirst: false }).order('created_at', { ascending: false });
+      if (error) {
+        tablaLista = false;
+        $('setupBox').hidden = false;
+        $('newBtn').hidden = $('orderBtn').hidden = true;
+        $('actList').textContent = '';
+        $('filters').hidden = true;
+        return;
+      }
+      tablaLista = true;
+      $('setupBox').hidden = true;
+      $('newBtn').hidden = $('orderBtn').hidden = false;
+      todas = data;
+      salirOrden();
+      renderList();
+    }
+    $('newBtn').addEventListener('click', () => openEditor(null));
+    $('backBtn').addEventListener('click', () => {
+      if (hayCambiosSinGuardar() && !confirm('Tienes cambios sin guardar en esta actividad. ¿Volver sin guardar?')) return;
+      showList();
+    });
+
+    // ---------- reordenar ----------
+    let ordenando = false;
+    let ordenInicial = [];
+    const idsEnOrden = () => [...$('actList').children].map((r) => r.dataset.id);
+    function marcarCambios() {
+      $('orderSave').disabled = idsEnOrden().join() === ordenInicial.join();
+      const filas = [...$('actList').children];
+      filas.forEach((r, i) => {
+        r.querySelector('[data-mover=arriba]').disabled = i === 0;
+        r.querySelector('[data-mover=abajo]').disabled = i === filas.length - 1;
+      });
+    }
+    function filaOrden(a) {
+      const row = document.createElement('article');
+      row.className = 'rest rest-order';
+      row.dataset.id = a.id;
+      const handle = document.createElement('button');
+      handle.type = 'button'; handle.className = 'drag-handle'; handle.textContent = '⋮⋮';
+      handle.setAttribute('aria-label', 'Arrastrar para reordenar');
+      const info = document.createElement('div');
+      const h = document.createElement('h2'); h.textContent = a.title;
+      info.append(h, metaDe(a));
+      const arrows = document.createElement('div'); arrows.className = 'order-arrows';
+      for (const [dir, txt, label] of [['arriba', '↑', 'Subir'], ['abajo', '↓', 'Bajar']]) {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.mover = dir; b.textContent = txt; b.setAttribute('aria-label', label);
+        arrows.append(b);
+      }
+      row.append(handle, miniatura(a), info, arrows);
+      return row;
+    }
+    function entrarOrden() {
+      if (!tablaLista) return;
+      ordenando = true;
+      $('listView').classList.add('is-ordering');
+      banner($('listMsg'), '');
+      const list = $('actList');
+      list.textContent = '';
+      todas.forEach((a) => list.append(filaOrden(a)));
+      ordenInicial = idsEnOrden();
+      marcarCambios();
+      window.scrollTo(0, 0);
+    }
+    function salirOrden() { ordenando = false; $('listView').classList.remove('is-ordering'); }
+    $('orderBtn').addEventListener('click', entrarOrden);
+    $('orderCancel').addEventListener('click', () => { salirOrden(); renderList(); });
+    $('actList').addEventListener('click', (e) => {
+      if (!ordenando) return;
+      const b = e.target.closest('[data-mover]');
+      if (!b) return;
+      const row = b.closest('.rest');
+      const list = $('actList');
+      if (b.dataset.mover === 'arriba' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+      else if (b.dataset.mover === 'abajo' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+      marcarCambios();
+      const activo = row.querySelector(`[data-mover=${b.dataset.mover}]`);
+      (activo && !activo.disabled ? activo : row.querySelector('.drag-handle')).focus();
+    });
+
+    // Arrastrar con el asa (ratón o dedo). Los eventos se escuchan en la ventana: al mover la fila en la página,
+    // el navegador suelta la «captura» del puntero y el arrastre dejaría de seguirlo.
+    function arrastrable(lista, { asa, fila, activo = () => true, alSoltar = () => {} }) {
+      lista.addEventListener('pointerdown', (e) => {
+        if (!activo()) return;
+        const handle = e.target.closest(asa);
+        if (!handle || !lista.contains(handle)) return;
+        const row = handle.closest(fila);
+        e.preventDefault();
+        const grab = e.clientY - row.getBoundingClientRect().top;
+        let y = e.clientY;
+        let raf = 0;
+        row.classList.add('is-dragging');
+        const colocar = () => {
+          const deseada = y - grab;
+          row.style.transform = 'none';
+          const centro = deseada + row.offsetHeight / 2;
+          const otras = [...lista.children].filter((r) => r !== row);
+          let idx = 0;
+          for (const o of otras) { const r = o.getBoundingClientRect(); if (r.top + r.height / 2 < centro) idx++; }
+          if (idx !== [...lista.children].indexOf(row)) lista.insertBefore(row, otras[idx] || null);
+          row.style.transform = `translateY(${deseada - row.getBoundingClientRect().top}px)`;
+        };
+        const tick = () => {
+          if (y < 70) window.scrollBy(0, -14); else if (y > window.innerHeight - 70) window.scrollBy(0, 14);
+          colocar();
+          raf = requestAnimationFrame(tick);
+        };
+        const mover = (ev) => { y = ev.clientY; };
+        const soltar = () => {
+          cancelAnimationFrame(raf);
+          window.removeEventListener('pointermove', mover);
+          window.removeEventListener('pointerup', soltar);
+          window.removeEventListener('pointercancel', soltar);
+          row.classList.remove('is-dragging');
+          row.style.transform = '';
+          alSoltar();
+        };
+        window.addEventListener('pointermove', mover);
+        window.addEventListener('pointerup', soltar);
+        window.addEventListener('pointercancel', soltar);
+        raf = requestAnimationFrame(tick);
+      });
+    }
+    arrastrable($('actList'), { asa: '.drag-handle', fila: '.rest', activo: () => ordenando, alSoltar: marcarCambios });
+
+    $('orderSave').addEventListener('click', async () => {
+      const porId = new Map(todas.map((a) => [String(a.id), a]));
+      const ids = idsEnOrden();
+      const cambios = ids.map((id, i) => ({ id, position: i + 1 })).filter((c) => porId.get(c.id).position !== c.position);
+      $('orderSave').disabled = true;
+      mostrarGuardando();
+      const res = await Promise.all(cambios.map((c) => sb.from('activities').update({ position: c.position }).eq('id', c.id)));
+      const fallo = res.find((r) => r.error);
+      if (fallo) { $('orderSave').disabled = false; ocultarGuardando(); return banner($('listMsg'), 'No se ha podido guardar el orden: ' + fallo.error.message, 'error'); }
+      const r = cambios.some((c) => porId.get(c.id).published) ? await registrarCambio() : { ok: true, msg: 'Los borradores no cambian la web.' };
+      await showList('Orden guardado. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- foto ----------
+    async function prepararImagen(file) {
+      if (file.type === 'image/svg+xml' || file.type === 'image/gif') return { blob: file, ext: file.type === 'image/gif' ? 'gif' : 'svg', type: file.type };
+      const bmp = await createImageBitmap(file);
+      const scale = Math.min(1, 1600 / bmp.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * scale);
+      canvas.height = Math.round(bmp.height * scale);
+      canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      return { blob: await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.85)), ext: 'jpg', type: 'image/jpeg' };
+    }
+    function pintarFoto() {
+      $('photoPreview').hidden = !photoUrl; $('photoEmpty').hidden = !!photoUrl; $('photoRemove').hidden = !photoUrl;
+      if (photoUrl) $('photoPreview').src = photoUrl;
+      pintarPrevia();
+    }
+    $('photoFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!/^image\//.test(file.type)) { $('photoStatus').textContent = 'El archivo debe ser una imagen.'; return; }
+      $('photoStatus').textContent = 'Subiendo…';
+      try {
+        const img = await prepararImagen(file);
+        const path = `actividades/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${img.ext}`;
+        const { error } = await sb.storage.from(BUCKET).upload(path, img.blob, { contentType: img.type, upsert: false });
+        if (error) throw error;
+        photoUrl = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+        $('photoStatus').textContent = 'Foto subida.';
+        pintarFoto();
+      } catch (err) { $('photoStatus').textContent = 'No se ha podido subir: ' + (err.message || err); }
+      e.target.value = '';
+    });
+    $('photoRemove').addEventListener('click', () => { photoUrl = null; pintarFoto(); });
+
+    // ---------- vista previa ----------
+    function pintarPrevia() {
+      $('pvTitle').textContent = $('fTitle').value.trim() || 'Título de la actividad';
+      const hl = $('fHighlight').value.trim(); $('pvHl').hidden = !hl; $('pvHl').textContent = hl;
+      $('pvDesc').textContent = $('fDesc').value.trim();
+      const tag = $('fTag').value.trim(); $('pvTag').hidden = !tag; $('pvTag').textContent = '🎟 ' + tag;
+      $('pvImg').hidden = !photoUrl; $('pvNoImg').hidden = !!photoUrl; if (photoUrl) $('pvImg').src = photoUrl;
+      const pr = $('pvPrice'); pr.textContent = '';
+      if ($('fFree').checked) { const s = document.createElement('span'); s.className = 'free'; s.textContent = 'Gratis'; pr.append(s); return; }
+      const p = leerNum($('fPrice').value), old = leerNum($('fOldPrice').value), cur = $('fCurrency').value;
+      if (p === null || Number.isNaN(p)) return;
+      if ($('fFrom').checked) pr.append(Object.assign(document.createElement('small'), { textContent: 'desde' }));
+      if (old !== null && !Number.isNaN(old) && old > p) pr.append(Object.assign(document.createElement('s'), { textContent: precioTxt(old, cur) }));
+      pr.append(Object.assign(document.createElement('b'), { textContent: precioTxt(p, cur) }));
+    }
+    $('actForm').addEventListener('input', (e) => { if (e.target.classList) e.target.classList.remove('is-missing'); pintarPrevia(); });
+    $('actForm').addEventListener('change', pintarPrevia);
+    document.querySelector('.pv-switch').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-pv]');
+      if (!b) return;
+      document.querySelectorAll('.pv-switch button').forEach((x) => x.classList.toggle('is-active', x === b));
+      $('pv').dataset.mode = b.dataset.pv;
+    });
+    function syncPrecio() { $('priceFields').hidden = $('fFree').checked; }
+    $('fFree').addEventListener('change', syncPrecio);
+    $('testLink').addEventListener('click', () => {
+      let v = $('fLink').value.trim();
+      if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
+      if (!isUrl(v)) { $('fLink').classList.add('is-missing'); return banner($('editMsg'), 'El enlace no es válido. Ejemplo: https://www.web.com/entradas', 'error'); }
+      window.open(v, '_blank', 'noopener');
+    });
+
+    // ---------- editor ----------
+    let foto0 = '';
+    const estadoForm = () => JSON.stringify([...$('actForm').querySelectorAll('input,textarea,select')].map((x) => (x.type === 'checkbox' ? x.checked : x.value)).concat(photoUrl || ''));
+    const hayCambiosSinGuardar = () => !$('editView').hidden && estadoForm() !== foto0;
+
+    function openEditor(a, comoCopia = false) {
+      editing = comoCopia ? null : a;
+      banner($('editMsg'), '');
+      document.querySelectorAll('.is-missing').forEach((x) => x.classList.remove('is-missing'));
+      show('editView');
+      $('editTitle').textContent = comoCopia ? 'Copia de actividad' : a ? 'Editar actividad' : 'Nueva actividad';
+      $('fTitle').value = a ? (comoCopia ? a.title + ' (copia)' : a.title) : '';
+      $('fDesc').value = a?.description ?? '';
+      $('fTag').value = a?.tag ?? '';
+      $('fHighlight').value = a?.highlight ?? '';
+      $('fFree').checked = !!a?.free;
+      $('fPrice').value = verNum(a?.price);
+      $('fOldPrice').value = verNum(a?.old_price);
+      $('fCurrency').value = a?.currency === '€' ? '€' : '$';
+      $('fFrom').checked = a ? a.price_from !== false : true;
+      $('fLink').value = a?.link ?? '';
+      $('fPublished').checked = comoCopia ? false : !!a?.published;
+      photoUrl = a?.image ?? null;
+      $('photoStatus').textContent = 'Horizontal; se reduce sola a 1600 px de ancho.';
+      $('tagList').textContent = '';
+      for (const t of etiquetas()) $('tagList').append(Object.assign(document.createElement('option'), { value: t }));
+      $('deleteBtn').hidden = !editing;
+      $('dupBtn').hidden = !editing;
+      syncPrecio();
+      pintarFoto();
+      foto0 = comoCopia ? '' : estadoForm();
+      window.scrollTo(0, 0);
+    }
+    $('dupBtn').addEventListener('click', () => {
+      if (!editing) return;
+      if (hayCambiosSinGuardar() && !confirm('Tienes cambios sin guardar. ¿Duplicar la versión guardada?')) return;
+      openEditor(editing, true);
+      banner($('editMsg'), 'Esto es una copia (borrador). Cámbiala y pulsa «Guardar» para crearla.', 'ok');
+    });
+
+    // ---------- guardar ----------
+    $('actForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      banner($('editMsg'), '');
+      document.querySelectorAll('.is-missing').forEach((x) => x.classList.remove('is-missing'));
+      const title = $('fTitle').value.trim();
+      const publicar_ = $('fPublished').checked;
+      const free = $('fFree').checked;
+      const price = leerNum($('fPrice').value);
+      const old = leerNum($('fOldPrice').value);
+      let link = $('fLink').value.trim();
+      if (link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
+
+      if (!title) { $('fTitle').classList.add('is-missing'); return banner($('editMsg'), 'Escribe el título de la actividad.', 'error'); }
+      if (!free && Number.isNaN(price)) { $('fPrice').classList.add('is-missing'); return banner($('editMsg'), 'El precio no es válido. Escribe solo el número, por ejemplo 41,82.', 'error'); }
+      if (!free && Number.isNaN(old)) { $('fOldPrice').classList.add('is-missing'); return banner($('editMsg'), 'El precio anterior no es válido.', 'error'); }
+      if (link && !isUrl(link)) { $('fLink').classList.add('is-missing'); return banner($('editMsg'), 'El enlace no es válido. Ejemplo: https://www.web.com/entradas', 'error'); }
+      if (publicar_) {
+        const falta = [];
+        const marcar = (el, txt) => { el.classList.add('is-missing'); falta.push(txt); };
+        if (!photoUrl) marcar(document.querySelector('.photo-prev'), 'foto');
+        if (!$('fDesc').value.trim()) marcar($('fDesc'), 'descripción');
+        if (!free && price === null) marcar($('fPrice'), 'precio (o marca «Gratuita»)');
+        if (!link) marcar($('fLink'), 'enlace');
+        if (falta.length) return banner($('editMsg'), 'Para publicar falta: ' + falta.join(', ') + '. Si aún no está lista, desmarca «Publicada» y guárdala como borrador.', 'error');
+      }
+
+      const row = {
+        title,
+        description: $('fDesc').value.trim(),
+        image: photoUrl,
+        tag: $('fTag').value.trim(),
+        highlight: $('fHighlight').value.trim(),
+        free,
+        price: free ? null : price,
+        old_price: free ? null : old,
+        price_from: $('fFrom').checked,
+        currency: $('fCurrency').value,
+        link,
+        published: publicar_
+      };
+      $('saveBtn').disabled = true;
+      mostrarGuardando();
+      let error;
+      if (editing) ({ error } = await sb.from('activities').update(row).eq('id', editing.id));
+      else ({ error } = await sb.from('activities').insert(row));
+      $('saveBtn').disabled = false;
+      if (error) { ocultarGuardando(); return banner($('editMsg'), 'No se ha podido guardar: ' + error.message, 'error'); }
+      // Solo cuenta como cambio de la web si la actividad está (o estaba) publicada.
+      const afectaWeb = row.published || !!editing?.published;
+      const r = afectaWeb ? await registrarCambio() : { ok: true, msg: 'Guardada como borrador (no se ve en la web).' };
+      await showList((editing ? 'Actividad guardada. ' : 'Actividad creada. ') + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- borrar ----------
+    $('deleteBtn').addEventListener('click', async () => {
+      if (!editing) return;
+      if (!confirm(`¿Borrar «${editing.title}»? No se puede deshacer.`)) return;
+      mostrarGuardando();
+      const { error } = await sb.from('activities').delete().eq('id', editing.id);
+      if (error) { ocultarGuardando(); return banner($('editMsg'), 'No se ha podido borrar: ' + error.message, 'error'); }
+      const r = editing.published ? await registrarCambio() : { ok: true, msg: '' };
+      await showList('Actividad borrada. ' + r.msg, r.ok ? 'ok' : 'error');
+      ocultarGuardando();
+    });
+
+    // ---------- arranque ----------
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      session = data.session;
+      sb.auth.onAuthStateChange((_ev, s) => { session = s; });
+      if (session && (await esAdmin())) await showList();
+      else show('loginView');
+    })();
+  </script>
+</body>
+</html>

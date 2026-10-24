@@ -7,7 +7,7 @@ export default defineConfig({
   integrations: [
     // Solo estas páginas van al sitemap (el resto no se lista, pero Google puede indexarlas igualmente).
     sitemap({
-      filter: (page) => ['/', '/ebook', '/sobre-wilson'].includes(new URL(page).pathname),
+      filter: (page) => ['/', '/ebook', '/sobre-wilson', '/actividades'].includes(new URL(page).pathname),
       customPages: ['https://www.silvertoursny.com/#tours']
     })
   ],

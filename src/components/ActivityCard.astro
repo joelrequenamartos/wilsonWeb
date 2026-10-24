@@ -1,0 +1,37 @@
+---
+// Tarjeta de actividad: toda la tarjeta es un enlace a la web donde se reserva (nosotros solo informamos y redirigimos).
+import type { Activity } from '../lib/activities';
+import { formatPrice } from '../lib/activities';
+
+interface Props {
+  activity: Activity;
+}
+
+const { activity: a } = Astro.props;
+const hasPrice = !a.free && a.price !== null;
+---
+<a class="act-card" href={a.link} target="_blank" rel="noopener noreferrer sponsored" data-tag={a.tag}>
+  <div class="act-img">
+    {a.image ? <img src={a.image} alt="" loading="lazy" /> : <svg class="icon" aria-hidden="true"><use href="#i-ticket" /></svg>}
+  </div>
+  <div class="act-body">
+    <h2 class="act-title">{a.title}</h2>
+    {a.highlight && <span class="act-highlight">{a.highlight}</span>}
+    {a.description && <p class="act-desc">{a.description}</p>}
+    {a.tag && <span class="act-tag"><svg class="icon" aria-hidden="true"><use href="#i-ticket" /></svg>{a.tag}</span>}
+  </div>
+  <div class="act-side">
+    <div class="act-price">
+      {a.free ? (
+        <span class="act-free">Gratis</span>
+      ) : hasPrice ? (
+        <>
+          {a.priceFrom && <small class="act-from">desde</small>}
+          {a.oldPrice !== null && a.oldPrice > (a.price ?? 0) && <s class="act-old">{formatPrice(a.oldPrice, a.currency)}</s>}
+          <span class="act-amount">{formatPrice(a.price as number, a.currency)}</span>
+        </>
+      ) : null}
+    </div>
+    <span class="act-btn">Ver detalles</span>
+  </div>
+</a>
