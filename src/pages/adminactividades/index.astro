@@ -99,7 +99,7 @@
             </div>
           </div>
 
-          <label>Descripción <small class="muted">(2-3 líneas; en el móvil no se muestra)</small>
+          <label>Descripción <small class="muted">(en la tarjeta se ven 2-3 líneas; completa en la ventana que se abre al pulsarla)</small>
             <textarea id="fDesc" rows="3" maxlength="500" placeholder="Con las entradas al SUMMIT subiréis a uno de los mejores miradores de Nueva York…"></textarea>
           </label>
 
@@ -129,7 +129,7 @@
             </div>
           </fieldset>
 
-          <label>Enlace <small class="muted">(web donde se reserva; al pulsar la tarjeta se abre en otra pestaña)</small>
+          <label>Enlace <small class="muted">(web donde se reserva; el botón «Ver detalles» de la ventana la abre en otra pestaña)</small>
             <div class="link-row">
               <input type="text" id="fLink" inputmode="url" maxlength="600" placeholder="https://…" />
               <button class="btn small" id="testLink" type="button">Probar ↗</button>
@@ -154,6 +154,7 @@
           <div class="pv-switch" role="group" aria-label="Tamaño de la vista previa">
             <button type="button" class="is-active" data-pv="desk">🖥 Escritorio</button>
             <button type="button" data-pv="mob">📱 Móvil</button>
+            <button type="button" data-pv="pop">🪟 Ventana al pulsar</button>
           </div>
           <div class="pv" id="pv" data-mode="desk">
             <div class="pv-card">
@@ -170,7 +171,20 @@
               </div>
             </div>
           </div>
-          <small class="muted">Aproximada: así se verá en /actividades.</small>
+          <div class="pvm" id="pvm" hidden>
+            <div class="pvm-card">
+              <span class="pvm-x" aria-hidden="true">✕</span>
+              <div class="pvm-img"><img id="pvmImg" alt="" hidden /><span id="pvmNoImg">🎟</span></div>
+              <div class="pvm-body">
+                <h2 class="pvm-title" id="pvmTitle"></h2>
+                <span class="pv-hl" id="pvmHl" hidden></span>
+                <p class="pvm-desc" id="pvmDesc"></p>
+                <span class="pv-tag" id="pvmTag" hidden></span>
+              </div>
+              <div class="pvm-foot"><div class="pv-price" id="pvmPrice"></div><span class="pv-btn">Ver detalles</span></div>
+            </div>
+          </div>
+          <small class="muted" id="pvNote">Aproximada: así se verá en /actividades.</small>
         </aside>
       </div>
     </section>
@@ -288,6 +302,8 @@
     .edit-grid{display:grid; grid-template-columns:1fr; gap:18px; align-items:start;}
     @media (min-width:1000px){.edit-grid{grid-template-columns:minmax(0,1fr) 440px;} .preview-col{position:sticky; top:16px;}}
     .preview-col{display:flex; flex-direction:column; gap:10px;}
+    .pv-switch{flex-wrap:wrap;}
+    .pv[hidden]{display:none;}
     .pv-switch{display:inline-flex; align-self:flex-start; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
     .pv-switch button{border:0; background:transparent; font:inherit; font-weight:600; font-size:.82rem; padding:6px 12px; border-radius:100px; cursor:pointer;}
     .pv-switch button.is-active{background:var(--coral); color:#fff;}
@@ -313,7 +329,19 @@
     .pv[data-mode=mob] .pv-img{grid-area:img; height:80px;}
     .pv[data-mode=mob] .pv-body{grid-area:body;}
     .pv[data-mode=mob] .pv-side{grid-area:side; flex-direction:row; justify-content:flex-end;}
-    .pv[data-mode=mob] .pv-desc, .pv[data-mode=mob] .pv-tag, .pv[data-mode=mob] .pv-btn{display:none;}
+    .pv[data-mode=mob] .pv-desc, .pv[data-mode=mob] .pv-tag, .pv[data-mode=mob] .pv-btn, .pv[data-mode=mob] .pv-hl{display:none !important;}
+    .pvm{background:rgba(13,11,9,.72); border-radius:16px; padding:18px 14px; display:flex; justify-content:center;}
+    .pvm[hidden]{display:none;}
+    .pvm-card{position:relative; width:100%; max-width:340px; max-height:560px; overflow:auto; background:#fff; border-radius:18px; display:flex; flex-direction:column;}
+    .pvm-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; font-size:.8rem; box-shadow:0 3px 8px rgba(0,0,0,.25);}
+    .pvm-img{aspect-ratio:16/9; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:2rem; flex:none;}
+    .pvm-img img{width:100%; height:100%; object-fit:cover; display:block;}
+    .pvm-body{padding:14px 16px 6px; display:flex; flex-direction:column; gap:7px;}
+    .pvm-title{font-size:1.1rem; line-height:1.2; color:var(--coral-d); margin:0;}
+    .pvm-desc{margin:0; font-size:.85rem; line-height:1.6; color:var(--soft); white-space:pre-line;}
+    .pvm-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 16px 14px; border-top:1px solid var(--line); margin-top:auto; position:sticky; bottom:0; background:#fff;}
+    .pvm-foot .pv-price{margin:0; align-items:flex-start;}
+    .pvm-foot .pv-btn{padding:8px 16px; font-size:.8rem;}
     /* aviso de guardando */
     .saving{position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; background:rgba(246,242,236,.82); backdrop-filter:blur(3px);}
     .saving[hidden]{display:none;}
@@ -715,12 +743,20 @@
       const tag = $('fTag').value.trim(); $('pvTag').hidden = !tag; $('pvTag').textContent = '🎟 ' + tag;
       $('pvImg').hidden = !photoUrl; $('pvNoImg').hidden = !!photoUrl; if (photoUrl) $('pvImg').src = photoUrl;
       const pr = $('pvPrice'); pr.textContent = '';
-      if ($('fFree').checked) { const s = document.createElement('span'); s.className = 'free'; s.textContent = 'Gratis'; pr.append(s); return; }
+      // misma ficha en la ventana
+      $('pvmTitle').textContent = $('pvTitle').textContent;
+      $('pvmHl').hidden = !hl; $('pvmHl').textContent = hl;
+      $('pvmDesc').textContent = $('fDesc').value.trim() || 'Aquí se leerá la descripción completa.';
+      $('pvmTag').hidden = !tag; $('pvmTag').textContent = '🎟 ' + tag;
+      $('pvmImg').hidden = !photoUrl; $('pvmNoImg').hidden = !!photoUrl; if (photoUrl) $('pvmImg').src = photoUrl;
+      const fin = () => { $('pvmPrice').innerHTML = pr.innerHTML; };
+      if ($('fFree').checked) { const s = document.createElement('span'); s.className = 'free'; s.textContent = 'Gratis'; pr.append(s); return fin(); }
       const p = leerNum($('fPrice').value), old = leerNum($('fOldPrice').value), cur = $('fCurrency').value;
-      if (p === null || Number.isNaN(p)) return;
+      if (p === null || Number.isNaN(p)) return fin();
       if ($('fFrom').checked) pr.append(Object.assign(document.createElement('small'), { textContent: 'desde' }));
       if (old !== null && !Number.isNaN(old) && old > p) pr.append(Object.assign(document.createElement('s'), { textContent: precioTxt(old, cur) }));
       pr.append(Object.assign(document.createElement('b'), { textContent: precioTxt(p, cur) }));
+      fin();
     }
     $('actForm').addEventListener('input', (e) => { if (e.target.classList) e.target.classList.remove('is-missing'); pintarPrevia(); });
     $('actForm').addEventListener('change', pintarPrevia);
@@ -728,7 +764,10 @@
       const b = e.target.closest('[data-pv]');
       if (!b) return;
       document.querySelectorAll('.pv-switch button').forEach((x) => x.classList.toggle('is-active', x === b));
-      $('pv').dataset.mode = b.dataset.pv;
+      const pop = b.dataset.pv === 'pop';
+      $('pv').hidden = pop; $('pvm').hidden = !pop;
+      if (!pop) $('pv').dataset.mode = b.dataset.pv;
+      $('pvNote').textContent = pop ? 'Aproximada: la ventana que se abre al pulsar la tarjeta (en el móvil ocupa casi toda la pantalla).' : 'Aproximada: así se verá en /actividades.';
     });
     function syncPrecio() { $('priceFields').hidden = $('fFree').checked; }
     $('fFree').addEventListener('change', syncPrecio);

@@ -1,5 +1,6 @@
 ---
-// Tarjeta de actividad: toda la tarjeta es un enlace a la web donde se reserva (nosotros solo informamos y redirigimos).
+// Tarjeta de actividad: al pulsar en cualquier parte se abre la ficha en una ventana (pop-up) con la descripción completa;
+// desde ahí, «Ver detalles» lleva a la web donde se reserva (nosotros solo informamos y redirigimos).
 import type { Activity } from '../lib/activities';
 import { formatPrice } from '../lib/activities';
 
@@ -10,12 +11,12 @@ interface Props {
 const { activity: a } = Astro.props;
 const hasPrice = !a.free && a.price !== null;
 ---
-<a class="act-card" href={a.link} target="_blank" rel="noopener noreferrer sponsored" data-tag={a.tag}>
+<article class="act-card" data-tag={a.tag} data-link={a.link}>
   <div class="act-img">
     {a.image ? <img src={a.image} alt="" loading="lazy" /> : <svg class="icon" aria-hidden="true"><use href="#i-ticket" /></svg>}
   </div>
   <div class="act-body">
-    <h2 class="act-title">{a.title}</h2>
+    <h2 class="act-title"><button type="button" class="act-open" aria-haspopup="dialog">{a.title}</button></h2>
     {a.highlight && <span class="act-highlight">{a.highlight}</span>}
     {a.description && <p class="act-desc">{a.description}</p>}
     {a.tag && <span class="act-tag"><svg class="icon" aria-hidden="true"><use href="#i-ticket" /></svg>{a.tag}</span>}
@@ -32,6 +33,6 @@ const hasPrice = !a.free && a.price !== null;
         </>
       ) : null}
     </div>
-    <span class="act-btn">Ver detalles</span>
+    <span class="act-btn" aria-hidden="true">Ver detalles</span>
   </div>
-</a>
+</article>

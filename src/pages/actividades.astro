@@ -23,7 +23,7 @@ const tags = [...new Set(activities.map((a) => a.tag).filter(Boolean))].map((tag
         <div class="section-head">
           <span class="eyebrow">Qué hacer en Nueva York</span>
           <h1 class="section-title">Actividades en Nueva York</h1>
-          <p class="section-sub">Miradores, museos, entradas y experiencias que recomendamos. Al pulsar una actividad te llevamos a su web para reservar.</p>
+          <p class="section-sub">Miradores, museos, entradas y experiencias que recomendamos. Pulsa una actividad para ver todos los detalles y, desde ahí, ir a su web para reservar.</p>
         </div>
 
         {activities.length > 0 ? (
@@ -47,10 +47,67 @@ const tags = [...new Set(activities.map((a) => a.tag).filter(Boolean))].map((tag
       </div>
     </section>
   </main>
+
+  <div class="act-modal" id="actModal" aria-hidden="true">
+    <div class="act-modal-card" role="dialog" aria-modal="true" aria-labelledby="actmTitle">
+      <button class="act-modal-close" id="actmClose" type="button" aria-label="Cerrar"><svg class="icon"><use href="#i-close" /></svg></button>
+      <div class="act-modal-scroll">
+        <div class="act-modal-img" id="actmImg"></div>
+        <div class="act-modal-body">
+          <h2 class="act-modal-title" id="actmTitle"></h2>
+          <span class="act-highlight" id="actmHl" hidden></span>
+          <p class="act-modal-desc" id="actmDesc"></p>
+          <span class="act-tag" id="actmTag" hidden></span>
+        </div>
+      </div>
+      <div class="act-modal-foot">
+        <div class="act-price" id="actmPrice"></div>
+        <a class="act-btn" id="actmGo" href="#" target="_blank" rel="noopener noreferrer sponsored">Ver detalles</a>
+      </div>
+    </div>
+  </div>
   <Footer tours={tours} />
 </Layout>
 
 <script is:inline>
+  // Ficha de la actividad en una ventana: se rellena con los datos de la tarjeta pulsada.
+  (function () {
+    var modal = document.getElementById('actModal');
+    var list = document.getElementById('actList');
+    if (!modal || !list) return;
+    var last = null;
+    var $ = function (id) { return document.getElementById(id); };
+    function abrir(card) {
+      var img = card.querySelector('.act-img img');
+      $('actmImg').innerHTML = img ? '<img src="' + img.getAttribute('src') + '" alt="">' : '<svg class="icon" aria-hidden="true"><use href="#i-ticket" /></svg>';
+      $('actmTitle').textContent = card.querySelector('.act-open').textContent;
+      var hl = card.querySelector('.act-highlight'); $('actmHl').hidden = !hl; $('actmHl').textContent = hl ? hl.textContent : '';
+      var d = card.querySelector('.act-desc'); $('actmDesc').textContent = d ? d.textContent : '';
+      var tag = card.querySelector('.act-tag'); $('actmTag').hidden = !tag; $('actmTag').innerHTML = tag ? tag.innerHTML : '';
+      $('actmPrice').innerHTML = card.querySelector('.act-price').innerHTML;
+      $('actmGo').href = card.getAttribute('data-link');
+      last = card.querySelector('.act-open');
+      modal.setAttribute('data-open', 'true');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      modal.querySelector('.act-modal-scroll').scrollTop = 0;
+      $('actmClose').focus();
+    }
+    function cerrar() {
+      modal.setAttribute('data-open', 'false');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (last) { last.focus(); last = null; }
+    }
+    list.addEventListener('click', function (e) {
+      var card = e.target.closest('.act-card');
+      if (card) abrir(card);
+    });
+    $('actmClose').addEventListener('click', cerrar);
+    modal.addEventListener('click', function (e) { if (e.target === modal) cerrar(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.getAttribute('data-open') === 'true') cerrar(); });
+  })();
+
   (function () {
     var tabs = document.querySelectorAll('#actTabs .map-tab');
     if (!tabs.length) return;
