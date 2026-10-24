@@ -131,7 +131,7 @@
 
           <label>Enlace <small class="muted">(web donde se reserva; el botón «Ver detalles» de la ventana la abre en otra pestaña)</small>
             <div class="link-row">
-              <input type="text" id="fLink" inputmode="url" maxlength="600" placeholder="https://…" />
+              <input type="text" id="fLink" inputmode="url" maxlength="600" placeholder="https://www.web.com/entradas" />
               <button class="btn small" id="testLink" type="button">Probar ↗</button>
             </div>
           </label>
@@ -310,7 +310,7 @@
     .pv{background:#F6F2EC; border:1px solid var(--line); border-radius:16px; padding:14px;}
     .pv[data-mode=mob]{max-width:360px;}
     .pv-card{display:grid; grid-template-columns:130px 1fr auto; gap:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px; box-shadow:0 10px 24px -18px rgba(0,0,0,.4);}
-    .pv-img{height:96px; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:1.8rem;}
+    .pv-img{height:96px; min-height:0; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:1.8rem;}
     .pv-img img{width:100%; height:100%; object-fit:cover; display:block;}
     .pv-body{display:flex; flex-direction:column; gap:5px; min-width:0;}
     .pv-title{font-size:.98rem; line-height:1.25; color:var(--coral-d); margin:0; word-break:break-word;}
@@ -332,14 +332,14 @@
     .pv[data-mode=mob] .pv-desc, .pv[data-mode=mob] .pv-tag, .pv[data-mode=mob] .pv-btn, .pv[data-mode=mob] .pv-hl{display:none !important;}
     .pvm{background:rgba(13,11,9,.72); border-radius:16px; padding:18px 14px; display:flex; justify-content:center;}
     .pvm[hidden]{display:none;}
-    .pvm-card{position:relative; width:100%; max-width:340px; max-height:560px; overflow:auto; background:#fff; border-radius:18px; display:flex; flex-direction:column;}
+    .pvm-card{position:relative; width:100%; max-width:340px; overflow:hidden; background:#fff; border-radius:18px; display:flex; flex-direction:column;}
     .pvm-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; font-size:.8rem; box-shadow:0 3px 8px rgba(0,0,0,.25);}
-    .pvm-img{aspect-ratio:16/9; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:2rem; flex:none;}
+    .pvm-img{aspect-ratio:16/9; min-height:0; overflow:hidden; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:2rem; flex:none;}
     .pvm-img img{width:100%; height:100%; object-fit:cover; display:block;}
     .pvm-body{padding:14px 16px 6px; display:flex; flex-direction:column; gap:7px;}
     .pvm-title{font-size:1.1rem; line-height:1.2; color:var(--coral-d); margin:0;}
     .pvm-desc{margin:0; font-size:.85rem; line-height:1.6; color:var(--soft); white-space:pre-line;}
-    .pvm-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 16px 14px; border-top:1px solid var(--line); margin-top:auto; position:sticky; bottom:0; background:#fff;}
+    .pvm-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 16px 14px; border-top:1px solid var(--line); margin-top:auto; background:#fff;}
     .pvm-foot .pv-price{margin:0; align-items:flex-start;}
     .pvm-foot .pv-btn{padding:8px 16px; font-size:.8rem;}
     /* aviso de guardando */
@@ -773,7 +773,7 @@
     $('fFree').addEventListener('change', syncPrecio);
     $('testLink').addEventListener('click', () => {
       let v = $('fLink').value.trim();
-      if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
+      if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
       if (!isUrl(v)) { $('fLink').classList.add('is-missing'); return banner($('editMsg'), 'El enlace no es válido. Ejemplo: https://www.web.com/entradas', 'error'); }
       window.open(v, '_blank', 'noopener');
     });
@@ -798,7 +798,7 @@
       $('fOldPrice').value = verNum(a?.old_price);
       $('fCurrency').value = a?.currency === '€' ? '€' : '$';
       $('fFrom').checked = a ? a.price_from !== false : true;
-      $('fLink').value = a?.link ?? '';
+      $('fLink').value = a?.link || 'https://'; // así no hay que escribirlo
       $('fPublished').checked = comoCopia ? false : !!a?.published;
       photoUrl = a?.image ?? null;
       $('photoStatus').textContent = 'Horizontal; se reduce sola a 1600 px de ancho.';
@@ -829,6 +829,7 @@
       const price = leerNum($('fPrice').value);
       const old = leerNum($('fOldPrice').value);
       let link = $('fLink').value.trim();
+      if (/^https?:\/\/$/i.test(link)) link = ''; // solo el «https://» de ayuda = sin enlace
       if (link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
 
       if (!title) { $('fTitle').classList.add('is-missing'); return banner($('editMsg'), 'Escribe el título de la actividad.', 'error'); }
