@@ -111,7 +111,11 @@
           <div class="pvm" id="pvm" hidden>
             <div class="pvm-card">
               <span class="pvm-x" aria-hidden="true">✕</span>
-              <div class="pvm-img"><img id="pvmImg" alt="" hidden /><span id="pvmNoImg">🎟</span></div>
+              <div class="pvm-img"><img id="pvmImg" alt="" hidden /><span id="pvmNoImg">🎟</span>
+                <button type="button" class="pvm-nav prev" id="pvmPrev" aria-label="Foto anterior">‹</button>
+                <button type="button" class="pvm-nav next" id="pvmNext" aria-label="Foto siguiente">›</button>
+                <span class="pvm-count" id="pvmCount"></span>
+              </div>
               <div class="pvm-body">
                 <h2 class="pvm-title" id="pvmTitle"></h2>
                 <span class="pv-hl" id="pvmHl" hidden></span>
@@ -127,12 +131,21 @@
           <label>Título<input type="text" id="fTitle" maxlength="140" placeholder="Entradas al SUMMIT One Vanderbilt" /></label>
 
           <div class="img-box">
-            <span class="label">Foto principal</span>
+            <span class="label">Imagen de portada <small class="muted">(la de la tarjeta; también es la primera del carrusel)</small></span>
             <div class="photo-prev"><img id="photoPreview" alt="" hidden /><span id="photoEmpty" class="muted">Sin foto</span></div>
             <div class="img-actions">
               <label class="btn small">Subir foto<input type="file" id="photoFile" accept="image/*" hidden /></label>
               <button class="btn ghost small" id="photoRemove" type="button" hidden>Quitar</button>
               <small class="muted" id="photoStatus">Horizontal; se reduce sola a 1600 px de ancho.</small>
+            </div>
+          </div>
+
+          <div class="img-box">
+            <span class="label">Imágenes del carrusel <small class="muted">(solo en la ventana que se abre al pulsar la tarjeta; se pasan con flechas y se pueden ver en grande)</small></span>
+            <div class="gal" id="gal"></div>
+            <div class="img-actions">
+              <label class="btn small">+ Añadir fotos<input type="file" id="galFile" accept="image/*" multiple hidden /></label>
+              <small class="muted" id="galStatus">Puedes elegir varias a la vez. Se reducen solas a 1600 px. Máximo 20.</small>
             </div>
           </div>
 
@@ -286,6 +299,17 @@
     .img-box{display:flex; flex-direction:column; gap:10px; padding:14px; border:1px dashed var(--line); border-radius:14px; background:#fbf8f3;}
     .photo-prev{display:flex; align-items:center; justify-content:center; width:100%; max-width:420px; aspect-ratio:16/10; border-radius:12px; background:#fff; border:1px solid var(--line); overflow:hidden;}
     .photo-prev img{width:100%; height:100%; object-fit:cover;}
+    .gal{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px;}
+    .gal-item{position:relative; border-radius:10px; overflow:hidden; background:#fff; border:1px solid var(--line); aspect-ratio:4/3;}
+    .gal-item img{width:100%; height:100%; object-fit:cover; display:block;}
+    .gal-item.is-cover{outline:2px solid var(--coral); outline-offset:-2px;}
+    .gal-badge{position:absolute; left:6px; top:6px; padding:2px 8px; border-radius:100px; background:var(--coral); color:#fff; font-size:.68rem; font-weight:700;}
+    .gal-num{position:absolute; left:6px; top:6px; min-width:22px; padding:2px 7px; border-radius:100px; background:rgba(13,11,9,.65); color:#fff; font-size:.68rem; font-weight:700; text-align:center;}
+    .gal-tools{position:absolute; right:4px; bottom:4px; display:flex; gap:4px;}
+    .gal-tools button{width:26px; height:26px; border-radius:50%; border:0; background:rgba(255,255,255,.95); cursor:pointer; font-size:.78rem; box-shadow:0 2px 6px rgba(0,0,0,.25); padding:0;}
+    .gal-tools button[disabled]{opacity:.35; cursor:default;}
+    .gal-tools button.del{color:#c0392b;}
+    .gal-empty{grid-column:1/-1; font-size:.85rem;}
     .price-box{border:1px solid var(--line); border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:12px; margin:0;}
     .price-box legend{font-weight:700; font-size:.9rem; padding:0 6px;}
     .price-fields{display:flex; flex-direction:column; gap:12px;}
@@ -341,7 +365,12 @@
     .pvm-card{position:relative; width:100%; max-width:340px; overflow:hidden; background:#fff; border-radius:18px; display:flex; flex-direction:column;}
     .pvm-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; font-size:.8rem; box-shadow:0 3px 8px rgba(0,0,0,.25);}
     .pvm-img{aspect-ratio:16/9; min-height:0; overflow:hidden; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:2rem; flex:none;}
+    .pvm-img{position:relative;}
     .pvm-img img{width:100%; height:100%; object-fit:cover; display:block;}
+    .pvm-nav{position:absolute; top:50%; transform:translateY(-50%); width:30px; height:30px; border-radius:50%; border:0; background:rgba(255,255,255,.92); font-size:1.2rem; line-height:1; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,.3);}
+    .pvm-nav.prev{left:8px;} .pvm-nav.next{right:8px;}
+    .pvm-nav[hidden], .pvm-count[hidden]{display:none;}
+    .pvm-count{position:absolute; left:8px; bottom:8px; padding:2px 8px; border-radius:100px; background:rgba(13,11,9,.6); color:#fff; font-size:.7rem; font-weight:600;}
     .pvm-body{padding:14px 16px 6px; display:flex; flex-direction:column; gap:7px;}
     .pvm-title{font-size:1.1rem; line-height:1.2; color:var(--coral-d); margin:0;}
     .pvm-desc{margin:0; font-size:.85rem; line-height:1.6; color:var(--soft); white-space:pre-line;}
@@ -371,6 +400,9 @@
     let todas = [];        // actividades cargadas
     let editing = null;    // actividad en edición (null = nueva)
     let photoUrl = null;
+    let gallery = [];      // fotos extra del carrusel (sin la portada)
+    let pvmIdx = 0;
+    let galeriaSoportada = true;
     let tablaLista = true;
 
     // ---------- utilidades ----------
@@ -580,6 +612,7 @@
       $('setupBox').hidden = true;
       $('newBtn').hidden = $('orderBtn').hidden = false;
       todas = data;
+      galeriaSoportada = !data.length || 'gallery' in data[0];
       salirOrden();
       renderList();
     }
@@ -721,7 +754,7 @@
     function pintarFoto() {
       $('photoPreview').hidden = !photoUrl; $('photoEmpty').hidden = !!photoUrl; $('photoRemove').hidden = !photoUrl;
       if (photoUrl) $('photoPreview').src = photoUrl;
-      pintarPrevia();
+      pintarGaleria();
     }
     $('photoFile').addEventListener('change', async (e) => {
       const file = e.target.files[0];
@@ -754,7 +787,11 @@
       $('pvmHl').hidden = !hl; $('pvmHl').textContent = hl;
       $('pvmDesc').textContent = $('fDesc').value.trim() || 'Aquí se leerá la descripción completa.';
       $('pvmTag').hidden = !tag; $('pvmTag').textContent = '🎟 ' + tag;
-      $('pvmImg').hidden = !photoUrl; $('pvmNoImg').hidden = !!photoUrl; if (photoUrl) $('pvmImg').src = photoUrl;
+      const fotos = [photoUrl, ...gallery].filter(Boolean);
+      if (pvmIdx >= fotos.length) pvmIdx = 0;
+      $('pvmImg').hidden = !fotos.length; $('pvmNoImg').hidden = !!fotos.length; if (fotos.length) $('pvmImg').src = fotos[pvmIdx];
+      $('pvmPrev').hidden = $('pvmNext').hidden = $('pvmCount').hidden = fotos.length < 2;
+      $('pvmCount').textContent = `${pvmIdx + 1} / ${fotos.length}`;
       const fin = () => { $('pvmPrice').innerHTML = pr.innerHTML; };
       if ($('fFree').checked) { const s = document.createElement('span'); s.className = 'free'; s.textContent = 'Gratis'; pr.append(s); return fin(); }
       const p = leerNum($('fPrice').value), old = leerNum($('fOldPrice').value), cur = $('fCurrency').value;
@@ -790,6 +827,58 @@
     }
     window.addEventListener('resize', encajarPrevia);
     new ResizeObserver(encajarPrevia).observe($('pvStage'));
+    // ---------- carrusel ----------
+    $('pvmPrev').addEventListener('click', () => { const n = [photoUrl, ...gallery].filter(Boolean).length; pvmIdx = (pvmIdx - 1 + n) % n; pintarPrevia(); });
+    $('pvmNext').addEventListener('click', () => { const n = [photoUrl, ...gallery].filter(Boolean).length; pvmIdx = (pvmIdx + 1) % n; pintarPrevia(); });
+    function pintarGaleria() {
+      const g = $('gal');
+      g.textContent = '';
+      const item = (url, html) => { const d = document.createElement('div'); d.className = 'gal-item'; const im = document.createElement('img'); im.src = url; im.alt = ''; d.append(im); d.insertAdjacentHTML('beforeend', html); return d; };
+      if (photoUrl) { const c = item(photoUrl, '<span class="gal-badge">Portada</span>'); c.classList.add('is-cover'); c.title = 'La portada se cambia arriba, en «Imagen de portada»'; g.append(c); }
+      gallery.forEach((url, i) => {
+        const d = item(url, `<span class="gal-num">${i + 2}</span><span class="gal-tools">
+          <button type="button" data-g="izq" data-i="${i}" aria-label="Mover a la izquierda" ${i === 0 ? 'disabled' : ''}>←</button>
+          <button type="button" data-g="der" data-i="${i}" aria-label="Mover a la derecha" ${i === gallery.length - 1 ? 'disabled' : ''}>→</button>
+          <button type="button" class="del" data-g="del" data-i="${i}" aria-label="Quitar foto">✕</button></span>`);
+        if (!photoUrl) d.querySelector('.gal-num').textContent = String(i + 1);
+        g.append(d);
+      });
+      if (!photoUrl && !gallery.length) g.insertAdjacentHTML('beforeend', '<p class="muted gal-empty">Sin fotos todavía. La portada aparecerá aquí como primera foto.</p>');
+      pintarPrevia();
+    }
+    $('gal').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-g]');
+      if (!b) return;
+      const i = Number(b.dataset.i);
+      if (b.dataset.g === 'del') gallery.splice(i, 1);
+      else if (b.dataset.g === 'izq' && i > 0) [gallery[i - 1], gallery[i]] = [gallery[i], gallery[i - 1]];
+      else if (b.dataset.g === 'der' && i < gallery.length - 1) [gallery[i + 1], gallery[i]] = [gallery[i], gallery[i + 1]];
+      pvmIdx = 0;
+      pintarGaleria();
+    });
+    $('galFile').addEventListener('change', async (e) => {
+      const files = [...e.target.files].filter((f) => /^image\//.test(f.type));
+      e.target.value = '';
+      if (!files.length) return;
+      const hueco = 20 - gallery.length;
+      if (hueco <= 0) { $('galStatus').textContent = 'Ya hay 20 fotos: quita alguna para añadir más.'; return; }
+      const lote = files.slice(0, hueco);
+      let ok = 0, mal = 0;
+      for (const [n, file] of lote.entries()) {
+        $('galStatus').textContent = `Subiendo ${n + 1} de ${lote.length}…`;
+        try {
+          const img = await prepararImagen(file);
+          const path = `actividades/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${img.ext}`;
+          const { error } = await sb.storage.from(BUCKET).upload(path, img.blob, { contentType: img.type, upsert: false });
+          if (error) throw error;
+          gallery.push(sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl);
+          ok++;
+          pintarGaleria();
+        } catch { mal++; }
+      }
+      $('galStatus').textContent = `${ok} ${ok === 1 ? 'foto subida' : 'fotos subidas'}` + (mal ? `, ${mal} con error` : '') + (files.length > lote.length ? ` (máximo 20: se han ignorado ${files.length - lote.length})` : '') + '.';
+    });
+
     function syncPrecio() { $('priceFields').hidden = $('fFree').checked; }
     $('fFree').addEventListener('change', syncPrecio);
     $('testLink').addEventListener('click', () => {
@@ -801,7 +890,7 @@
 
     // ---------- editor ----------
     let foto0 = '';
-    const estadoForm = () => JSON.stringify([...$('actForm').querySelectorAll('input,textarea,select')].map((x) => (x.type === 'checkbox' ? x.checked : x.value)).concat(photoUrl || ''));
+    const estadoForm = () => JSON.stringify([...$('actForm').querySelectorAll('input,textarea,select')].map((x) => (x.type === 'checkbox' ? x.checked : x.value)).concat(photoUrl || '', gallery.join('|')));
     const hayCambiosSinGuardar = () => !$('editView').hidden && estadoForm() !== foto0;
 
     function openEditor(a, comoCopia = false) {
@@ -822,6 +911,8 @@
       $('fLink').value = a?.link || 'https://'; // así no hay que escribirlo
       $('fPublished').checked = comoCopia ? false : !!a?.published;
       photoUrl = a?.image ?? null;
+      gallery = Array.isArray(a?.gallery) ? a.gallery.filter((u) => typeof u === 'string' && u) : [];
+      pvmIdx = 0;
       $('photoStatus').textContent = 'Horizontal; se reduce sola a 1600 px de ancho.';
       $('tagList').textContent = '';
       for (const t of etiquetas()) $('tagList').append(Object.assign(document.createElement('option'), { value: t }));
@@ -881,7 +972,8 @@
         price_from: $('fFrom').checked,
         currency: $('fCurrency').value,
         link,
-        published: publicar_
+        published: publicar_,
+        ...(galeriaSoportada || gallery.length ? { gallery } : {})
       };
       $('saveBtn').disabled = true;
       mostrarGuardando();
@@ -889,7 +981,7 @@
       if (editing) ({ error } = await sb.from('activities').update(row).eq('id', editing.id));
       else ({ error } = await sb.from('activities').insert(row));
       $('saveBtn').disabled = false;
-      if (error) { ocultarGuardando(); return banner($('editMsg'), 'No se ha podido guardar: ' + error.message, 'error'); }
+      if (error) { ocultarGuardando(); return banner($('editMsg'), /gallery/.test(error.message) ? 'Para guardar las imágenes del carrusel hay que volver a ejecutar supabase/activities.sql en Supabase (SQL Editor → Run).' : 'No se ha podido guardar: ' + error.message, 'error'); }
       // Solo cuenta como cambio de la web si la actividad está (o estaba) publicada.
       const afectaWeb = row.published || !!editing?.published;
       const r = afectaWeb ? await registrarCambio() : { ok: true, msg: 'Guardada como borrador (no se ve en la web).' };

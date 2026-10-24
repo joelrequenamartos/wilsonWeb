@@ -10,8 +10,10 @@ interface Props {
 
 const { activity: a } = Astro.props;
 const hasPrice = !a.free && a.price !== null;
+// Fotos de la ventana: portada + carrusel (sin repetir)
+const photos = [...new Set([a.image, ...a.gallery].filter(Boolean))];
 ---
-<article class="act-card" data-tag={a.tag} data-link={a.link}>
+<article class="act-card" data-tag={a.tag} data-link={a.link} data-photos={JSON.stringify(photos)}>
   <div class="act-img">
     {a.image ? <img src={a.image} alt="" loading="lazy" /> : <svg class="icon" aria-hidden="true"><use href="#i-ticket" /></svg>}
   </div>

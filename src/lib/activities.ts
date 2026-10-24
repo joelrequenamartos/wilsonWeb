@@ -5,6 +5,7 @@ export type Activity = {
   title: string;
   description: string;
   image: string | null;
+  gallery: string[];      // fotos extra del carrusel de la ventana (sin la portada)
   tag: string;
   highlight: string;
   free: boolean;
@@ -45,6 +46,7 @@ async function load(): Promise<Activity[]> {
         title: String(r.title ?? '').trim(),
         description: String(r.description ?? '').trim(),
         image: safeUrl(r.image) || null,
+        gallery: (Array.isArray(r.gallery) ? r.gallery : []).map(safeUrl).filter(Boolean).slice(0, 20),
         tag: String(r.tag ?? '').trim(),
         highlight: String(r.highlight ?? '').trim(),
         free: !!r.free,

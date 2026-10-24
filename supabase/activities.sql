@@ -44,6 +44,9 @@ create trigger activities_set_position
   before insert on public.activities
   for each row execute function public.set_activity_position();
 
+-- Fotos extra del carrusel de la ventana (la portada va aparte, en «image»). Si la tabla ya existía, se añade aquí.
+alter table public.activities add column if not exists gallery jsonb not null default '[]'::jsonb;
+
 -- 2) Permisos ---------------------------------------------------------------------------------
 alter table public.activities enable row level security;
 
