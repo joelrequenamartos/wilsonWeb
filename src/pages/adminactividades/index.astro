@@ -86,6 +86,43 @@
       <p class="banner error" id="editMsg" role="alert" hidden></p>
 
       <div class="edit-grid">
+        <aside class="preview-col">
+          <span class="label">Vista previa</span>
+          <div class="pv-switch" role="group" aria-label="Tamaño de la vista previa">
+            <button type="button" class="is-active" data-pv="desk">🖥 Escritorio</button>
+            <button type="button" data-pv="mob">📱 Móvil</button>
+            <button type="button" data-pv="pop">🪟 Ventana al pulsar</button>
+          </div>
+          <div class="pv" id="pv" data-mode="desk"><div class="pv-stage" id="pvStage">
+            <div class="pv-card">
+              <div class="pv-img"><img id="pvImg" alt="" hidden /><span id="pvNoImg">🎟</span></div>
+              <div class="pv-body">
+                <h2 class="pv-title" id="pvTitle">Título de la actividad</h2>
+                <span class="pv-hl" id="pvHl" hidden></span>
+                <p class="pv-desc" id="pvDesc"></p>
+                <span class="pv-tag" id="pvTag" hidden></span>
+              </div>
+              <div class="pv-side">
+                <div class="pv-price" id="pvPrice"></div>
+                <span class="pv-btn">Ver detalles</span>
+              </div>
+            </div>
+          </div></div>
+          <div class="pvm" id="pvm" hidden>
+            <div class="pvm-card">
+              <span class="pvm-x" aria-hidden="true">✕</span>
+              <div class="pvm-img"><img id="pvmImg" alt="" hidden /><span id="pvmNoImg">🎟</span></div>
+              <div class="pvm-body">
+                <h2 class="pvm-title" id="pvmTitle"></h2>
+                <span class="pv-hl" id="pvmHl" hidden></span>
+                <p class="pvm-desc" id="pvmDesc"></p>
+                <span class="pv-tag" id="pvmTag" hidden></span>
+              </div>
+              <div class="pvm-foot"><div class="pv-price" id="pvmPrice"></div><span class="pv-btn">Ver detalles</span></div>
+            </div>
+          </div>
+          <small class="muted" id="pvNote">Aproximada: así se verá en /actividades.</small>
+        </aside>
         <form id="actForm" class="card stack" novalidate>
           <label>Título<input type="text" id="fTitle" maxlength="140" placeholder="Entradas al SUMMIT One Vanderbilt" /></label>
 
@@ -149,43 +186,6 @@
           </div>
         </form>
 
-        <aside class="preview-col">
-          <span class="label">Vista previa</span>
-          <div class="pv-switch" role="group" aria-label="Tamaño de la vista previa">
-            <button type="button" class="is-active" data-pv="desk">🖥 Escritorio</button>
-            <button type="button" data-pv="mob">📱 Móvil</button>
-            <button type="button" data-pv="pop">🪟 Ventana al pulsar</button>
-          </div>
-          <div class="pv" id="pv" data-mode="desk">
-            <div class="pv-card">
-              <div class="pv-img"><img id="pvImg" alt="" hidden /><span id="pvNoImg">🎟</span></div>
-              <div class="pv-body">
-                <h2 class="pv-title" id="pvTitle">Título de la actividad</h2>
-                <span class="pv-hl" id="pvHl" hidden></span>
-                <p class="pv-desc" id="pvDesc"></p>
-                <span class="pv-tag" id="pvTag" hidden></span>
-              </div>
-              <div class="pv-side">
-                <div class="pv-price" id="pvPrice"></div>
-                <span class="pv-btn">Ver detalles</span>
-              </div>
-            </div>
-          </div>
-          <div class="pvm" id="pvm" hidden>
-            <div class="pvm-card">
-              <span class="pvm-x" aria-hidden="true">✕</span>
-              <div class="pvm-img"><img id="pvmImg" alt="" hidden /><span id="pvmNoImg">🎟</span></div>
-              <div class="pvm-body">
-                <h2 class="pvm-title" id="pvmTitle"></h2>
-                <span class="pv-hl" id="pvmHl" hidden></span>
-                <p class="pvm-desc" id="pvmDesc"></p>
-                <span class="pv-tag" id="pvmTag" hidden></span>
-              </div>
-              <div class="pvm-foot"><div class="pv-price" id="pvmPrice"></div><span class="pv-btn">Ver detalles</span></div>
-            </div>
-          </div>
-          <small class="muted" id="pvNote">Aproximada: así se verá en /actividades.</small>
-        </aside>
       </div>
     </section>
   </main>
@@ -299,37 +299,43 @@
     .check input{width:18px; height:18px; accent-color:var(--coral); flex:none;}
     .form-actions{display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;}
     .form-actions-left{display:flex; gap:10px; flex-wrap:wrap;}
-    .edit-grid{display:grid; grid-template-columns:1fr; gap:18px; align-items:start;}
-    @media (min-width:1000px){.edit-grid{grid-template-columns:minmax(0,1fr) 440px;} .preview-col{position:sticky; top:16px;}}
-    .preview-col{display:flex; flex-direction:column; gap:10px;}
-    .pv-switch{flex-wrap:wrap;}
-    .pv[hidden]{display:none;}
-    .pv-switch{display:inline-flex; align-self:flex-start; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
+    .edit-grid{display:flex; flex-direction:column; gap:18px;}
+    .preview-col{display:flex; flex-direction:column; gap:10px; background:var(--bg); padding-bottom:6px;}
+    @media (min-width:900px){.preview-col.is-sticky{position:sticky; top:0; z-index:5; padding-top:10px; box-shadow:0 12px 18px -16px rgba(0,0,0,.35);}}
+    .pv-switch{display:inline-flex; flex-wrap:wrap; align-self:flex-start; background:#fff; border:1px solid var(--line); border-radius:100px; padding:3px;}
     .pv-switch button{border:0; background:transparent; font:inherit; font-weight:600; font-size:.82rem; padding:6px 12px; border-radius:100px; cursor:pointer;}
     .pv-switch button.is-active{background:var(--coral); color:#fff;}
-    .pv{background:#F6F2EC; border:1px solid var(--line); border-radius:16px; padding:14px;}
-    .pv[data-mode=mob]{max-width:360px;}
-    .pv-card{display:grid; grid-template-columns:130px 1fr auto; gap:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px; box-shadow:0 10px 24px -18px rgba(0,0,0,.4);}
-    .pv-img{height:96px; min-height:0; border-radius:10px; overflow:hidden; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:1.8rem;}
+    .pv[hidden]{display:none;}
+    .pv{background:#F6F2EC; border:1px solid var(--line); border-radius:16px; padding:14px; overflow:hidden;}
+    /* Escritorio: la tarjeta a tamaño real (968 px, como en /actividades); si no cabe, se escala entera */
+    .pv-stage{width:968px; transform-origin:top left;}
+    .pv-card{display:grid; grid-template-columns:240px 1fr auto; grid-template-areas:"img body side"; gap:26px; background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 10px 24px -18px rgba(0,0,0,.4);}
+    .pv-img{grid-area:img; height:156px; min-height:0; border-radius:12px; overflow:hidden; background:linear-gradient(135deg,#E07A3E,#A8501E); display:flex; align-items:center; justify-content:center; font-size:2.4rem;}
     .pv-img img{width:100%; height:100%; object-fit:cover; display:block;}
-    .pv-body{display:flex; flex-direction:column; gap:5px; min-width:0;}
-    .pv-title{font-size:.98rem; line-height:1.25; color:var(--coral-d); margin:0; word-break:break-word;}
-    .pv-hl{align-self:flex-start; font-size:.72rem; font-weight:700; color:#1f7a45; border-bottom:1.5px dotted #1f7a45;}
-    .pv-hl[hidden], .pv-tag[hidden]{display:none;}
-    .pv-desc{margin:0; font-size:.78rem; color:var(--soft); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
-    .pv-tag{font-size:.72rem; color:var(--mute);}
-    .pv-side{display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between; gap:8px;}
+    .pv-body{grid-area:body; display:flex; flex-direction:column; gap:8px; min-width:0;}
+    .pv-title{font-size:1.35rem; line-height:1.25; color:var(--coral-d); margin:0; word-break:break-word;}
+    .pv-hl{align-self:flex-start; font-size:.84rem; font-weight:700; color:#1f7a45; border-bottom:1.5px dotted #1f7a45;}
+    .pv-hl[hidden], .pv-tag[hidden]{display:none !important;}
+    .pv-desc{margin:0; font-size:.95rem; line-height:1.55; color:var(--soft); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+    .pv-tag{margin-top:auto; font-size:.82rem; color:var(--mute);}
+    .pv-side{grid-area:side; display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between; gap:14px; min-width:150px;}
     .pv-price{display:flex; flex-direction:column; align-items:flex-end; margin-top:auto; line-height:1.1;}
-    .pv-price small{font-size:.68rem; color:var(--mute);}
-    .pv-price s{font-size:.7rem; color:var(--mute);}
-    .pv-price b{font-size:1.1rem; color:var(--coral-d);}
-    .pv-price .free{color:#1f7a45; font-weight:800;}
-    .pv-btn{padding:6px 12px; border-radius:100px; background:var(--coral); color:#fff; font-size:.72rem; font-weight:600; white-space:nowrap;}
-    .pv[data-mode=mob] .pv-card{grid-template-columns:80px 1fr; grid-template-areas:"img body" "img side"; gap:4px 10px;}
-    .pv[data-mode=mob] .pv-img{grid-area:img; height:80px;}
-    .pv[data-mode=mob] .pv-body{grid-area:body;}
-    .pv[data-mode=mob] .pv-side{grid-area:side; flex-direction:row; justify-content:flex-end;}
-    .pv[data-mode=mob] .pv-desc, .pv[data-mode=mob] .pv-tag, .pv[data-mode=mob] .pv-btn, .pv[data-mode=mob] .pv-hl{display:none !important;}
+    .pv-price small{font-size:.8rem; color:var(--mute);}
+    .pv-price s{font-size:.82rem; color:var(--mute);}
+    .pv-price b{font-size:1.6rem; color:var(--coral-d); font-weight:800;}
+    .pv-price .free{color:#1f7a45; font-weight:800; font-size:1.3rem;}
+    .pv-btn{padding:10px 22px; border-radius:100px; background:var(--coral); color:#fff; font-size:.92rem; font-weight:600; white-space:nowrap;}
+    /* Móvil: igual que /actividades en el teléfono */
+    .pv[data-mode=mob] .pv-stage{width:366px; transform:none !important; height:auto !important;}
+    .pv[data-mode=mob] .pv-card{grid-template-columns:96px 1fr auto; grid-template-areas:"img title title" "img hl hl" "img tag price"; gap:4px 12px; padding:12px; border-radius:14px; align-items:start;}
+    .pv[data-mode=mob] .pv-body, .pv[data-mode=mob] .pv-side{display:contents;}
+    .pv[data-mode=mob] .pv-img{grid-row:1 / 4; height:100%; min-height:96px; max-height:120px; font-size:1.6rem;}
+    .pv[data-mode=mob] .pv-title{grid-area:title; font-size:1.02rem;}
+    .pv[data-mode=mob] .pv-hl{grid-area:hl; justify-self:start; font-size:.76rem;}
+    .pv[data-mode=mob] .pv-tag{grid-area:tag; align-self:end; margin:0; font-size:.76rem;}
+    .pv[data-mode=mob] .pv-price{grid-area:price; align-self:end; margin:0;}
+    .pv[data-mode=mob] .pv-price b{font-size:1.2rem;}
+    .pv[data-mode=mob] .pv-desc, .pv[data-mode=mob] .pv-btn{display:none !important;}
     .pvm{background:rgba(13,11,9,.72); border-radius:16px; padding:18px 14px; display:flex; justify-content:center;}
     .pvm[hidden]{display:none;}
     .pvm-card{position:relative; width:100%; max-width:340px; overflow:hidden; background:#fff; border-radius:18px; display:flex; flex-direction:column;}
@@ -767,8 +773,23 @@
       const pop = b.dataset.pv === 'pop';
       $('pv').hidden = pop; $('pvm').hidden = !pop;
       if (!pop) $('pv').dataset.mode = b.dataset.pv;
+      document.querySelector('.preview-col').classList.toggle('is-sticky', b.dataset.pv === 'desk');
+      encajarPrevia();
       $('pvNote').textContent = pop ? 'Aproximada: la ventana que se abre al pulsar la tarjeta (en el móvil ocupa casi toda la pantalla).' : 'Aproximada: así se verá en /actividades.';
     });
+    // La tarjeta de escritorio se dibuja a tamaño real y se escala para caber en el ancho disponible.
+    function encajarPrevia() {
+      const stage = $('pvStage'), pv = $('pv');
+      pv.style.height = '';
+      if (pv.dataset.mode !== 'desk' || pv.hidden) { stage.style.transform = ''; return; }
+      const k = Math.min(1, (pv.clientWidth - 28) / 968);
+      stage.style.transform = k < 1 ? `scale(${k})` : '';
+      stage.style.height = '';
+      const h = stage.offsetHeight;
+      if (k < 1) pv.style.height = Math.ceil(h * k) + 30 + 'px';
+    }
+    window.addEventListener('resize', encajarPrevia);
+    new ResizeObserver(encajarPrevia).observe($('pvStage'));
     function syncPrecio() { $('priceFields').hidden = $('fFree').checked; }
     $('fFree').addEventListener('change', syncPrecio);
     $('testLink').addEventListener('click', () => {
@@ -808,6 +829,8 @@
       $('dupBtn').hidden = !editing;
       syncPrecio();
       pintarFoto();
+      document.querySelector('.preview-col').classList.toggle('is-sticky', $('pv').dataset.mode === 'desk' && !$('pv').hidden);
+      requestAnimationFrame(encajarPrevia);
       foto0 = comoCopia ? '' : estadoForm();
       window.scrollTo(0, 0);
     }

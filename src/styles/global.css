@@ -1513,10 +1513,14 @@
   .act-btn{display:inline-flex; align-items:center; justify-content:center; padding:10px 22px; border-radius:100px; background:var(--coral); color:#fff; font-weight:600; font-size:.92rem; white-space:nowrap; transition:background .15s ease;}
   @media (max-width:700px){
     .act-list{gap:12px;}
-    .act-card{grid-template-columns:96px 1fr; grid-template-areas:"img body" "img side"; gap:6px 14px; padding:12px;}
-    .act-img{height:96px; align-self:start;}
-    .act-title{font-size:1.02rem;}
-    .act-card .act-desc, .act-card .act-tag, .act-card .act-btn, .act-card .act-highlight{display:none;} /* el texto verde y la descripción se leen en la ventana */
-    .act-side{flex-direction:row; align-items:flex-end; justify-content:flex-end; min-width:0;}
+    /* Móvil: foto a la izquierda; a la derecha título, texto verde y abajo etiqueta + precio (la descripción, en la ventana) */
+    .act-card{grid-template-columns:96px 1fr auto; grid-template-areas:"img title title" "img hl hl" "img tag price"; gap:4px 12px; padding:12px; align-items:start;}
+    .act-card .act-body, .act-card .act-side{display:contents;}
+    .act-img{grid-area:img; grid-row:1 / 4; height:100%; min-height:96px; max-height:120px; align-self:stretch;}
+    .act-title{grid-area:title; font-size:1.02rem;}
+    .act-card .act-highlight{grid-area:hl; justify-self:start; font-size:.76rem;}
+    .act-card .act-tag{grid-area:tag; align-self:end; margin:0; font-size:.76rem;}
+    .act-card .act-price{grid-area:price; align-self:end; margin:0;}
+    .act-card .act-desc, .act-card .act-btn{display:none;}
     .act-amount{font-size:1.2rem;}
   }
