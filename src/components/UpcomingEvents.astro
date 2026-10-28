@@ -44,6 +44,7 @@ const events = all.map((e) => {
               <div class="upcoming-bigdate" aria-label={event.label}><span class:list={['upcoming-day', { 'is-range': event.range }]}>{event.num}</span><span class:list={['upcoming-mon', { 'is-range': event.range && event.mon.includes('-') }]}>{event.mon}</span></div>
               <h3>{event.title}</h3>
               {event.meta && <span class="upcoming-meta">{event.meta}</span>}
+              {event.meta && <span class="upcoming-more" role="button" tabindex="0" hidden>Leer más</span>}
             </Tag>
           );
         })}
@@ -52,3 +53,29 @@ const events = all.map((e) => {
   </div>
 </section>
 )}
+
+<script>
+  // «Leer más»: el texto se corta a 3 líneas y el botón solo aparece si de verdad hay más texto.
+  const cards = document.querySelectorAll<HTMLElement>('#proximos-eventos .upcoming-card');
+  const check = () => cards.forEach((card) => {
+    const meta = card.querySelector<HTMLElement>('.upcoming-meta');
+    const more = card.querySelector<HTMLElement>('.upcoming-more');
+    if (!meta || !more || card.classList.contains('is-open')) return;
+    more.hidden = meta.scrollHeight <= meta.clientHeight + 1;
+  });
+  cards.forEach((card) => {
+    const more = card.querySelector<HTMLElement>('.upcoming-more');
+    if (!more) return;
+    const toggle = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const open = card.classList.toggle('is-open');
+      more.textContent = open ? 'Leer menos' : 'Leer más';
+    };
+    more.addEventListener('click', toggle);
+    more.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') toggle(e); });
+  });
+  check();
+  window.addEventListener('resize', check);
+  document.fonts?.ready.then(check);
+</script>

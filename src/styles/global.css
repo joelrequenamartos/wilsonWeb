@@ -1204,12 +1204,15 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:0;
     container-type:inline-size; user-select:none; color:var(--ink);
   }
-  .upcoming-day{font-family:"Poppins"; font-weight:900; font-size:54cqw; line-height:.9; letter-spacing:-.03em;}
+  .upcoming-day{color:var(--coral); font-family:"Poppins"; font-weight:900; font-size:54cqw; line-height:.9; letter-spacing:-.03em;}
   .upcoming-mon{font-family:"Poppins"; font-weight:800; font-size:21cqw; line-height:1; text-transform:uppercase; letter-spacing:.04em;}
   .upcoming-day.is-range{font-size:27cqw; letter-spacing:-.04em;}
   .upcoming-mon.is-range{font-size:14cqw;}
   .upcoming-card h3{margin-top:14px; font-size:.95rem; line-height:1.25;}
-  .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono";}
+  .upcoming-meta{margin-top:8px; font-size:.8rem; color:var(--ink-mute); font-family:"Space Mono"; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; line-clamp:3; overflow:hidden;}
+  .upcoming-card.is-open .upcoming-meta{display:block; -webkit-line-clamp:unset; line-clamp:none;}
+  .upcoming-more{margin-top:6px; font-size:.78rem; font-weight:700; color:var(--coral-dark); cursor:pointer; text-decoration:underline; text-underline-offset:3px;}
+  .upcoming-more[hidden]{display:none;}
 
   /* ---------- botón «Ver todos» y página de todos los artículos (10 por página) ---------- */
   .blog-empty{margin-top:8px; padding:28px 0; font-size:1.1rem; color:var(--ink-soft);}
