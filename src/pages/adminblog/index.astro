@@ -172,7 +172,7 @@
   <dialog id="evDialog" class="btn-dialog ev-dialog">
     <form id="evForm" class="stack" novalidate>
       <h2 id="evDialogTitle">Insertar categoría de eventos</h2>
-      <label>Título de la categoría<input type="text" id="evTitle" maxlength="80" placeholder="Eventos mensuales" /></label>
+      <label>Título de la categoría <small class="muted">(opcional: déjalo vacío si prefieres poner tú el título como H2 o H3 en el texto)</small><input type="text" id="evTitle" maxlength="80" placeholder="Sin título" /></label>
       <div id="evRows" class="ev-rows"></div>
       <button type="button" class="btn" id="evAdd">+ Añadir evento</button>
       <p class="msg" id="evMsg" role="alert"></p>
@@ -959,7 +959,7 @@
           ? `<a class="monthly-go" href="${escH(x.l)}" target="_blank" rel="noopener noreferrer" aria-label="Más información: ${escH(x.t)}"><svg class="icon"><use href="#i-arrow"></use></svg></a>` : '';
         return `<li class="monthly-item${x.m ? ' is-monthly' : ''}"><time class="monthly-badge${b.range ? ' is-range' : ''}" datetime="${escH(x.d)}"><b>${escH(b.num)}</b><span>${escH(b.mon)}</span></time><div class="monthly-text"><div class="monthly-title">${escH(x.t)}</div>${x.s ? `<p>${escH(x.s)}</p>` : ''}</div>${go}</li>`;
       }).join('');
-      return `<div class="ev-title section-title">${escH(v.t)}</div><ul class="monthly-list">${items}</ul>`;
+      return `${v.t ? `<div class="ev-title section-title">${escH(v.t)}</div>` : ''}<ul class="monthly-list">${items}</ul>`;
     }
     let eventosRegistrado = false;
     function registrarEventos() {
@@ -1052,7 +1052,7 @@
             if (x.l && !/^https?:\/\/\S+$/i.test(x.l)) return ($('evMsg').textContent = `${n}: el enlace debe empezar por https://`);
             if (x.m && !x.l) return ($('evMsg').textContent = `${n}: un evento mensual necesita el enlace del botón.`);
           }
-          fin({ t: $('evTitle').value.trim() || 'Eventos mensuales', e: filas });
+          fin({ t: $('evTitle').value.trim(), e: filas });
         };
         dlg.showModal();
         $('evTitle').focus();
