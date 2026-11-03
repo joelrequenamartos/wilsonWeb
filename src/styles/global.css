@@ -1421,9 +1421,11 @@
   .post-index-title .icon{width:18px; height:18px;}
   .post-index ul{list-style:none; margin-top:14px; padding:0; display:flex; flex-direction:column; gap:10px;}
   .post-index a{color:var(--ink); font-weight:600; text-decoration:none; line-height:1.4;}
-  /* Los subtítulos (h3) van sangrados bajo su título (h2), con una rayita naranja delante y letra más ligera */
-  .post-index-sub{padding-left:30px; position:relative;}
-  .post-index-sub::before{content:""; position:absolute; left:10px; top:.72em; width:10px; height:2px; background:var(--coral); border-radius:2px;}
+  /* Los títulos (h2) llevan un punto naranja delante; los subtítulos (h3) van sangrados, con un guion y letra más ligera */
+  .post-index li{position:relative; padding-left:16px;}
+  .post-index li::before{content:"·"; position:absolute; left:0; top:0; font-weight:800; color:var(--coral);}
+  .post-index li.post-index-sub{padding-left:32px;}
+  .post-index li.post-index-sub::before{content:"-"; left:16px;}
   .post-index-sub a{font-weight:400; font-size:.95em; color:var(--ink-soft);}
   @media (hover:hover){.post-index a:hover{color:var(--coral-dark);}}
   .post-body h2, .post-body h3{scroll-margin-top:110px;}
